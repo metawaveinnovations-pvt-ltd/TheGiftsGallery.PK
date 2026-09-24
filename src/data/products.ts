@@ -1,0 +1,322 @@
+import { Product, Category, Occasion, PolicyItem } from '../types';
+
+export const BRAND_INFO = {
+  name: 'The Gift Gallery',
+  shortName: 'TGG',
+  tagline: 'Gifts for Every Moment.',
+  instagramHandle: '@thegiftsgallery.pk',
+  instagramUrl: 'https://www.instagram.com/thegiftsgallery.pk/',
+  whatsappNumber: '03390088458',
+  whatsappIntl: '+923390088458',
+  whatsappUrl: 'https://wa.me/923390088458',
+  deliveryCoverage: 'Nationwide Delivery across Pakistan (Karachi, Lahore, Islamabad, Rawalpindi, Peshawar, Multan & All Major Cities)',
+  noticePeriod: '1–2 Days Prior Notice Required',
+  standardHours: '1:00 PM – 10:00 PM',
+};
+
+export const CATEGORIES: Category[] = [
+  {
+    id: 'birthday',
+    name: 'Birthday Gifts',
+    subtitle: 'Unforgettable Celebrations',
+    iconName: 'Cake',
+    description: 'Customized hampers, sweet delights, luxury pairings and celebratory balloons curated to delight them on their special day.',
+  },
+  {
+    id: 'anniversary',
+    name: 'Anniversary Gifts',
+    subtitle: 'Celebrate Your Story',
+    iconName: 'HeartHandshake',
+    description: 'Heartfelt gestures, custom initials, luxury fragrances and keepsake boxes crafted to honor timeless love.',
+  },
+  {
+    id: 'romantic',
+    name: 'Love & Romantic Gifts',
+    subtitle: 'Thoughtful Expressions',
+    iconName: 'Heart',
+    description: 'Bespoke romantic hampers, gourmet chocolates, delicate floral notes and handwritten sentiment cards.',
+  },
+  {
+    id: 'personalized',
+    name: 'Personalized Gifts',
+    subtitle: 'Made Truly Yours',
+    iconName: 'UserCheck',
+    description: 'Custom photo frames, personalized ceramic mugs, monogrammed emerald tote bags, and engraved keepsakes.',
+  },
+  {
+    id: 'graduation',
+    name: 'Graduation Gifts',
+    subtitle: 'New Beginnings',
+    iconName: 'GraduationCap',
+    description: 'Celebrate academic milestone achievements with refined pens, watches, customized keepsakes, and treats.',
+  },
+  {
+    id: 'baby',
+    name: 'New Baby Gifts',
+    subtitle: 'Welcoming New Joy',
+    iconName: 'Baby',
+    description: 'Tender baby gift sets, soft toys, comforting keepsakes and celebratory newborn presentation baskets.',
+  },
+  {
+    id: 'corporate',
+    name: 'Corporate Gifts',
+    subtitle: 'Professional & Elegant',
+    iconName: 'Briefcase',
+    description: 'Distinguished executive gift sets, branded presentation boxes, high-end accessories and festive company hampers.',
+  },
+  {
+    id: 'surprise_boxes',
+    name: 'Surprise Boxes & Packaging',
+    subtitle: 'Bespoke Unboxing',
+    iconName: 'Package',
+    description: 'Signature TGG emerald magnetic boxes, gold-foiled ribbon wraps and luxury boutique shopping bags.',
+  },
+];
+
+export const PRODUCTS: Product[] = [
+  {
+    id: 'watch-perfume',
+    name: 'Watch & Perfume Luxury Box',
+    category: 'Special Gifts for Him',
+    tagline: 'Timeless style. Lasting impression.',
+    description: 'Our premier gentleman’s gift set featuring a distinguished chronograph watch with gold accents and a luxury prestige fragrance, nestled in a matte black cushioned TGG box with custom sentiment card.',
+    image: '/src/assets/images/tgg_luxury_watch_perfume_box_1790253135569.jpg',
+    priceDisplay: 'PKR 8,000 – 28,000+',
+    isPopular: true,
+    tiers: [
+      { size: 'Small', price: 'PKR 8,000 - 12,000' },
+      { size: 'Medium', price: 'PKR 12,000 - 18,000' },
+      { size: 'Large (Premium)', price: 'PKR 18,000 - 28,000+' },
+    ],
+    features: ['Luxury chronograph watch', 'Designer fragrance bottle', 'Velvet-lined TGG gift box', 'Handwritten gold-foil note card'],
+  },
+  {
+    id: 'snacks-chocolates',
+    name: 'Snacks & Chocolates Basket',
+    category: 'Customized Gift Baskets',
+    tagline: 'A sweet mix for every joyful moment.',
+    description: 'Handcrafted woven wicker basket dressed with rich forest green ribbon and signature TGG gold medallion, filled with Ferrero Rocher, Cadbury Dairy Milk, Pringles, Snickers, KitKat, and gourmet spreads.',
+    image: '/src/assets/images/tgg_snack_chocolate_basket_1790253121230.jpg',
+    priceDisplay: 'PKR 1,500 – 5,000',
+    isPopular: true,
+    tiers: [
+      { size: 'Small', price: 'PKR 1,500 - 2,000' },
+      { size: 'Medium', price: 'PKR 2,200 - 3,000' },
+      { size: 'Large (Premium)', price: 'PKR 3,500 - 5,000' },
+    ],
+    features: ['Artisan wicker basket', 'Premium imported chocolates', 'Salty & sweet gourmet treats', 'Emerald green satin ribbon bow'],
+  },
+  {
+    id: 'jewelry-makeup',
+    name: 'Jewelry & Makeup Velvet Basket',
+    category: 'Accessories & Beauty',
+    tagline: 'Elegant essentials for beauty, style & confidence.',
+    description: 'A round forest-green velvet boutique box tied with champagne gold satin ribbon, featuring shimmering gold necklace and earrings, high-end cosmetic picks, beauty brushes, and silk hair accessories.',
+    image: '/src/assets/images/tgg_jewelry_makeup_hamper_1790253148071.jpg',
+    priceDisplay: 'PKR 2,000 – 9,000+',
+    isPopular: true,
+    tiers: [
+      { size: 'Small', price: 'PKR 2,000 - 3,000' },
+      { size: 'Medium', price: 'PKR 3,500 - 5,000' },
+      { size: 'Large (Premium)', price: 'PKR 5,500 - 9,000+' },
+    ],
+    features: ['Emerald velvet rigid box', 'Curated jewelry pieces', 'Premium cosmetics & brushes', 'Satin scrunchie & gift tag'],
+  },
+  {
+    id: 'wallet-chain',
+    name: 'Wallet & Chain Presentation Box',
+    category: 'Special Gifts for Him',
+    tagline: 'Classic style. Everyday essential.',
+    description: 'Rich genuine leather wallet stamped with TGG hardware detailing paired with a solid polished metal chain accessory, arranged inside an elegant black gift case.',
+    image: '/src/assets/images/tgg_luxury_watch_perfume_box_1790253135569.jpg',
+    priceDisplay: 'PKR 4,000 – 18,000+',
+    isPopular: false,
+    tiers: [
+      { size: 'Small', price: 'PKR 4,000 - 7,000' },
+      { size: 'Medium', price: 'PKR 7,000 - 12,000' },
+      { size: 'Large (Premium)', price: 'PKR 12,000 - 18,000+' },
+    ],
+    features: ['Hand-stitched leather wallet', 'Heavy-duty polished chain', 'Sleek matte presentation box', 'Custom anniversary/birthday card'],
+  },
+  {
+    id: 'personalized-keepsake',
+    name: 'Personalized Memories Gift Set',
+    category: 'Personalized Gifts',
+    tagline: 'Make it truly yours with custom names and photos.',
+    description: 'Featuring an engraved "Together Forever" wooden photo frame, a ceramic mug with "Good Vibes Only" or your custom quote, and an emerald green tote bag customized with your recipient’s name.',
+    image: '/src/assets/images/tgg_personalized_gift_set_1790253160626.jpg',
+    priceDisplay: 'Price on Request (PKR 2,500 – 6,000)',
+    isPopular: true,
+    tiers: [
+      { size: 'Small', price: 'PKR 2,500 - 3,500' },
+      { size: 'Medium', price: 'PKR 3,500 - 4,800' },
+      { size: 'Large (Premium)', price: 'PKR 4,800 - 6,500' },
+    ],
+    features: ['Custom photo frame printing', 'Personalized ceramic mug', 'Custom embroidered/printed tote bag', 'Eco-kraft presentation packaging'],
+  },
+  {
+    id: 'signature-packaging',
+    name: 'Customized Packaging & Magnetic Boxes',
+    category: 'Bespoke Packaging',
+    tagline: 'Elevate your gift with boutique presentation.',
+    description: 'Signature TGG rigid boxes in forest green, champagne gold and blush tones, embellished with gold-leaf hot stamping, grosgrain ribbon ties, and rope-handled boutique shopping bags.',
+    image: '/src/assets/images/tgg_hero_curated_gifting_1790253103850.jpg',
+    priceDisplay: 'Price on Request',
+    features: ['Magnetic clasp rigid construction', 'Gold-foil TGG monogram', 'Luxe satin/grosgrain ribbon', 'Custom color theme coordination'],
+  },
+];
+
+export const OCCASIONS: Occasion[] = [
+  {
+    id: 'Birthdays',
+    name: 'Birthdays',
+    tagline: 'Make their day unforgettable.',
+    iconName: 'Cake',
+  },
+  {
+    id: 'Anniversaries',
+    name: 'Anniversaries',
+    tagline: 'Celebrate your love story.',
+    iconName: 'Heart',
+  },
+  {
+    id: 'Surprises',
+    name: 'Surprises',
+    tagline: 'Because unexpected moments matter most.',
+    iconName: 'Sparkles',
+  },
+  {
+    id: 'Weddings',
+    name: 'Weddings',
+    tagline: 'Celebrate love and new horizons beautifully.',
+    iconName: 'Gem',
+  },
+  {
+    id: 'Graduations',
+    name: 'Graduations',
+    tagline: 'A thoughtful tribute for a new beginning.',
+    iconName: 'GraduationCap',
+  },
+  {
+    id: 'Just Because',
+    name: 'Just Because',
+    tagline: 'Sometimes no special reason is needed.',
+    iconName: 'Smile',
+  },
+];
+
+export const HOW_IT_WORKS_STEPS = [
+  {
+    step: '01',
+    title: 'Choose',
+    description: 'Browse our curated catalog, view real price ranges, or tell us your unique gifting vision.',
+  },
+  {
+    step: '02',
+    title: 'Customize',
+    description: 'Share recipient preferences, preferred colors, theme, occasion, and your personal heartfelt message.',
+  },
+  {
+    step: '03',
+    title: 'Confirm',
+    description: 'We connect directly on WhatsApp to finalize design details, timing, address, and secure advance payment.',
+  },
+  {
+    step: '04',
+    title: 'Gift',
+    description: 'We prepare your gift with artisan care and coordinate prompt, pristine delivery right to the doorstep.',
+  },
+];
+
+export const POLICIES: PolicyItem[] = [
+  {
+    id: 1,
+    title: 'Ordering Notice',
+    badgeLabel: 'Notice',
+    shortText: 'No order will be accepted without prior 1–2 days notice.',
+    fullDetails: 'Because every gift hamper, box, and personalized arrangement is custom-curated with freshly procured items and meticulous hand-packaging, orders must be placed at least 1–2 days ahead.',
+  },
+  {
+    id: 2,
+    title: 'Delivery Timings',
+    badgeLabel: 'Timings',
+    shortText: 'Standard delivery timings are from 1:00 PM to 10:00 PM.',
+    fullDetails: 'Deliveries run smoothly throughout afternoon and evening slots across cities in Pakistan. Time slots help ensure someone is available at the address to receive the parcel safely.',
+  },
+  {
+    id: 3,
+    title: 'Special Deliveries',
+    badgeLabel: 'Midnight',
+    shortText: 'For special deliveries (e.g., 12 AM midnight birthday surprises), extra charges apply.',
+    fullDetails: 'We are delighted to arrange magical midnight surprises! Because this involves off-hours logistics and dedicated couriers, a separate nominal special delivery charge is applied.',
+  },
+  {
+    id: 4,
+    title: 'Delivery Cost',
+    badgeLabel: 'Shipping',
+    shortText: 'There will be no discount on the delivery cost.',
+    fullDetails: 'Delivery charges cover actual rider and nationwide courier fees ensuring careful handling of fragile items, baskets, and glass bottles. Delivery rates are fixed and non-discountable.',
+  },
+  {
+    id: 5,
+    title: 'Order Details',
+    badgeLabel: 'Verification',
+    shortText: 'Orders must be clearly mentioned. Reconfirm all details before payment.',
+    fullDetails: 'To ensure absolute satisfaction, please clearly specify item types, spelling of recipient names, delivery address, and contact numbers before transferring funds.',
+  },
+  {
+    id: 6,
+    title: 'Payment Policy',
+    badgeLabel: 'Payment',
+    shortText: 'Full payment is required in advance. No cancellations after dispatch.',
+    fullDetails: 'As each hamper involves custom procurement and personalized items, 100% advance payment is required to initiate preparation. Once packed and dispatched, orders cannot be cancelled or refunded.',
+  },
+  {
+    id: 7,
+    title: 'Service Value',
+    badgeLabel: 'Craftsmanship',
+    shortText: 'Our pricing reflects the time, effort, curation, and fuel invested in your surprise.',
+    fullDetails: 'We pour genuine artistic effort, sourcing time, luxury wrapping materials, and dedicated courier logistics into creating each memorable experience. We kindly request customers respect this craft.',
+  },
+  {
+    id: 8,
+    title: 'New Customer Discount',
+    badgeLabel: 'Welcome',
+    shortText: 'A generous introductory discount is available for eligible new customers.',
+    fullDetails: 'We love welcoming new friends to The Gift Gallery family! When placing your first gift order via WhatsApp, mention you are a new customer to receive your welcome privilege.',
+  },
+  {
+    id: 9,
+    title: 'Communication',
+    badgeLabel: 'Response',
+    shortText: 'Please allow 3–4 hours for a response when messaging us.',
+    fullDetails: 'Our team is often hands-on assembling delicate boxes and styling hampers. We strive to reply as quickly as possible; during peak gifting periods, please allow 3–4 hours for thoughtful replies.',
+  },
+];
+
+export const INSTAGRAM_POSTS = [
+  {
+    id: 'post-1',
+    image: '/src/assets/images/tgg_hero_curated_gifting_1790253103850.jpg',
+    caption: 'Bespoke emerald green presentation with gold foil accents. Every ribbon tied with love. 🎀',
+    likes: '482',
+  },
+  {
+    id: 'post-2',
+    image: '/src/assets/images/tgg_snack_chocolate_basket_1790253121230.jpg',
+    caption: 'The crowd favorite: Artisanal snacks & Ferrero Rocher basket ready for a birthday surprise in Lahore! 🍫',
+    likes: '614',
+  },
+  {
+    id: 'post-3',
+    image: '/src/assets/images/tgg_luxury_watch_perfume_box_1790253135569.jpg',
+    caption: 'Luxury for him. Timeless chronograph watch paired with Bleu fragrance in our matte black case. ⌚',
+    likes: '529',
+  },
+  {
+    id: 'post-4',
+    image: '/src/assets/images/tgg_jewelry_makeup_hamper_1790253148071.jpg',
+    caption: 'Beauty, sparkles and silk scrunchies. Round velvet hamper for a special anniversary moment. ✨',
+    likes: '741',
+  },
+];

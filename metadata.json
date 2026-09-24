@@ -1,0 +1,6 @@
+{
+  "name": "The Gift Gallery | Premium Gifting & Curated Moments",
+  "description": "The Gift Gallery — thoughtfully curated gifts, beautifully presented for birthdays, anniversaries, surprises and every special moment. Nationwide delivery across Pakistan.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
