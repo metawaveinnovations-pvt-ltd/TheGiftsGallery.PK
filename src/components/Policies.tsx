@@ -1,10 +1,29 @@
 import React, { useState } from 'react';
 import { POLICIES } from '../data/products';
 import { Logo } from './Logo';
-import { Shield, Clock, Moon, Truck, FileText, CreditCard, Sparkles, Tag, MessageSquare, X, ChevronRight } from 'lucide-react';
+import {
+  Shield,
+  Clock,
+  Moon,
+  Truck,
+  FileText,
+  CreditCard,
+  Sparkles,
+  Tag,
+  MessageSquare,
+  X,
+  ChevronDown,
+  ChevronUp,
+  FileCheck,
+} from 'lucide-react';
 
 export const Policies: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
+  const [expandedId, setExpandedId] = useState<number | null>(null);
+
+  const toggleExpand = (id: number) => {
+    setExpandedId((prev) => (prev === id ? null : id));
+  };
 
   const getPolicyIcon = (id: number) => {
     switch (id) {
@@ -40,14 +59,14 @@ export const Policies: React.FC = () => {
           <span className="text-xs font-semibold tracking-widest uppercase text-[#C59B27] block mb-2">
             TRANSPARENT & HONEST
           </span>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-[#14382C] tracking-tight mb-3">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-[#14382C] tracking-tight mb-3 text-balance">
             Customer & Order Policies
           </h2>
-          <p className="text-sm font-serif italic text-[#9E7B1A] mb-3">
+          <p className="text-sm sm:text-base font-serif italic text-[#9E7B1A] mb-3">
             Our Uncompromising Commitment To You
           </p>
           <p className="text-xs sm:text-sm text-slate-600 font-light max-w-xl mx-auto">
-            To ensure a smooth, dependable and delightful gifting experience, please review our core operational guidelines.
+            To ensure a seamless, dependable and delightful gifting journey across Pakistan, please review our core operational guidelines.
           </p>
           <div className="mt-4 flex items-center justify-center gap-3">
             <span className="h-[1px] w-12 bg-[#C59B27]/40" />
@@ -56,35 +75,61 @@ export const Policies: React.FC = () => {
           </div>
         </div>
 
-        {/* Compact Grid of the 9 Policies */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        {/* Authentic Gold Wax-Seal Styled Cards Grid (9 Policies) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {POLICIES.map((item) => {
             const Icon = getPolicyIcon(item.id);
+            const isExpanded = expandedId === item.id;
+
             return (
               <div
                 key={item.id}
-                className="bg-white rounded-xl p-5 border border-[#EADBCE] shadow-sm hover:border-[#C59B27]/60 transition-all flex flex-col justify-between"
+                className="bg-white rounded-2xl p-6 border border-[#EADBCE] shadow-sm hover:border-[#C59B27]/60 hover:shadow-md transition-all flex flex-col justify-between"
               >
                 <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2.5">
-                      <span className="w-6 h-6 rounded-full bg-[#14382C] text-[#DFC066] text-xs font-bold flex items-center justify-center font-serif">
+                  {/* Card Header with Gold Wax Seal Motif */}
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      {/* Wax seal styled numbered badge */}
+                      <div className="relative w-8 h-8 rounded-full bg-gradient-to-br from-[#DFC066] via-[#C59B27] to-[#9E7B1A] text-white flex items-center justify-center shadow-sm font-serif font-bold text-xs border border-[#F5F0E6]">
                         {item.id}
-                      </span>
-                      <h3 className="text-base font-serif font-bold text-[#14382C]">
-                        {item.title}
-                      </h3>
+                      </div>
+                      <div>
+                        <h3 className="text-base font-serif font-bold text-[#14382C]">
+                          {item.title}
+                        </h3>
+                        <span className="text-[10px] uppercase font-semibold text-[#9E7B1A] tracking-wider">
+                          {item.badgeLabel}
+                        </span>
+                      </div>
                     </div>
                     <Icon className="w-4 h-4 text-[#C59B27]" />
                   </div>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    {item.shortText}
+
+                  {/* Core Short Policy Text */}
+                  <p className="text-xs text-slate-700 leading-relaxed font-medium mb-3">
+                    “{item.shortText}”
                   </p>
+
+                  {/* Expandable full explanation */}
+                  {isExpanded && (
+                    <div className="mt-3 pt-3 border-t border-slate-100 text-[11px] text-slate-600 leading-relaxed bg-[#FBF9F5] p-3 rounded-xl border border-[#EADBCE]/50 animate-in fade-in duration-200">
+                      {item.fullDetails}
+                    </div>
+                  )}
                 </div>
 
-                <div className="mt-4 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-                  <span className="font-medium text-[#9E7B1A]">{item.badgeLabel}</span>
-                  <span className="text-slate-500">Guideline #{item.id}</span>
+                {/* Card Footer toggle */}
+                <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                  <span className="text-slate-500">Official Clause 0{item.id}</span>
+                  <button
+                    type="button"
+                    onClick={() => toggleExpand(item.id)}
+                    className="inline-flex items-center gap-1 font-semibold text-[#14382C] hover:text-[#C59B27] transition-colors cursor-pointer"
+                  >
+                    <span>{isExpanded ? 'Less' : 'Details'}</span>
+                    {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                  </button>
                 </div>
               </div>
             );
@@ -94,11 +139,12 @@ export const Policies: React.FC = () => {
         {/* View Full Policies Button & Modal Trigger */}
         <div className="text-center">
           <button
+            type="button"
             onClick={() => setModalOpen(true)}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs font-semibold text-[#14382C] bg-[#F4EFE6] hover:bg-[#EADBCE] border border-[#C59B27]/40 shadow-sm transition-all duration-200"
+            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-xs font-semibold text-[#14382C] bg-[#F4EFE6] hover:bg-[#EADBCE] border border-[#C59B27]/40 shadow-sm hover:shadow transition-all duration-200 active:scale-[0.98] cursor-pointer"
           >
-            <span>View Full Policies & Gifting Terms</span>
-            <ChevronRight className="w-4 h-4 text-[#C59B27]" />
+            <FileCheck className="w-4 h-4 text-[#C59B27]" />
+            <span>Read Complete Official Customer Handbook</span>
           </button>
         </div>
 
@@ -106,9 +152,16 @@ export const Policies: React.FC = () => {
 
       {/* Full Policies Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-[#FBF9F5] rounded-3xl max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-[#C59B27]/40 shadow-2xl relative p-6 sm:p-10">
-            
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+          onClick={() => setModalOpen(false)}
+        >
+          <div
+            className="bg-[#FBF9F5] rounded-3xl max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-[#C59B27]/40 shadow-2xl relative p-6 sm:p-10"
+            onClick={(e) => e.stopPropagation()}
+          >
             {/* Close button */}
             <button
               onClick={() => setModalOpen(false)}
@@ -120,7 +173,7 @@ export const Policies: React.FC = () => {
 
             {/* Modal Header */}
             <div className="text-center mb-8">
-              <Logo variant="emblem" className="mb-2" />
+              <Logo variant="mark" size={80} className="mb-2" />
               <h3 className="text-2xl sm:text-3xl font-serif font-bold text-[#14382C]">
                 Customer & Order Policies
               </h3>
@@ -128,7 +181,7 @@ export const Policies: React.FC = () => {
                 Our Uncompromising Commitment To You
               </p>
               <p className="text-xs text-slate-500 mt-2">
-                The Gift Gallery · Official Customer Experience Guidelines
+                The Gift Gallery (TGG) · Official Customer Experience Guidelines
               </p>
             </div>
 
@@ -143,30 +196,28 @@ export const Policies: React.FC = () => {
                     <h4 className="font-serif font-bold text-base text-[#14382C]">
                       {p.title}
                     </h4>
+                    <span className="text-[10px] uppercase font-semibold text-slate-500">
+                      ({p.badgeLabel})
+                    </span>
                   </div>
-                  <p className="text-xs font-semibold text-slate-800 mb-1">
+                  <p className="text-xs sm:text-sm font-medium text-slate-800 mb-1 leading-relaxed">
                     {p.shortText}
                   </p>
-                  <p className="text-xs text-slate-600 leading-relaxed">
+                  <p className="text-xs text-slate-600 leading-relaxed font-light">
                     {p.fullDetails}
                   </p>
                 </div>
               ))}
             </div>
 
-            {/* Modal Footer Note */}
+            {/* Modal Footer */}
             <div className="mt-8 pt-6 border-t border-[#EADBCE] text-center">
-              <p className="text-xs font-serif italic text-[#14382C] font-semibold">
-                “THANK YOU FOR ALLOWING US TO SHARE YOUR MOMENT.”
-              </p>
-              <p className="text-[11px] text-slate-500 mt-1">
-                The Gift Gallery · GIFTS • SURPRISES • MEMORIES
-              </p>
               <button
+                type="button"
                 onClick={() => setModalOpen(false)}
-                className="mt-5 px-6 py-2.5 rounded-full text-xs font-semibold text-white bg-[#14382C] hover:bg-[#0D261E]"
+                className="px-6 py-2.5 rounded-full text-xs font-semibold text-white bg-[#14382C] hover:bg-[#0D261E] transition-colors"
               >
-                I Understand & Agree
+                Understood & Close
               </button>
             </div>
 

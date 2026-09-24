@@ -13,6 +13,7 @@ import { Occasions } from './components/Occasions';
 import { HowItWorks } from './components/HowItWorks';
 import { DeliveryService } from './components/DeliveryService';
 import { Policies } from './components/Policies';
+import { GiftingGuideFAQ } from './components/GiftingGuideFAQ';
 import { OrderForm } from './components/OrderForm';
 import { InstagramSection } from './components/InstagramSection';
 import { FinalCTA } from './components/FinalCTA';
@@ -25,6 +26,8 @@ export default function App() {
     product: Product;
     selectedTier?: string;
   } | null>(null);
+
+  const [selectedOccasionForOrder, setSelectedOccasionForOrder] = useState<string | null>(null);
 
   const scrollToOrder = () => {
     const el = document.getElementById('order-form');
@@ -42,14 +45,15 @@ export default function App() {
 
   const handleOrderProduct = (product: Product, selectedTier?: string) => {
     setSelectedProductForOrder({ product, selectedTier });
+    scrollToOrder();
   };
 
-  const handleSelectCategory = (categoryName: string) => {
+  const handleSelectCategory = () => {
     scrollToGifts();
   };
 
   const handleSelectOccasion = (occasionName: string) => {
-    // Scroll to order form
+    setSelectedOccasionForOrder(occasionName);
     scrollToOrder();
   };
 
@@ -83,9 +87,13 @@ export default function App() {
         {/* 9. Customer & Order Policies (Compact + Modal) */}
         <Policies />
 
+        {/* 9.5. Gifting Guide & SEO FAQ Section */}
+        <GiftingGuideFAQ />
+
         {/* 10. Main Order Form & 11. Smart WhatsApp Order Flow */}
         <OrderForm
           initialProduct={selectedProductForOrder}
+          initialOccasion={selectedOccasionForOrder}
           onClearInitialProduct={() => setSelectedProductForOrder(null)}
         />
 

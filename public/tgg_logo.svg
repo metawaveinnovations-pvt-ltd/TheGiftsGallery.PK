@@ -1,0 +1,202 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 280" width="100%" height="100%">
+  <defs>
+    <!-- Metallic Gold Gradients -->
+    <linearGradient id="goldRibbonLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EED894" />
+      <stop offset="35%" stop-color="#CFA445" />
+      <stop offset="70%" stop-color="#AE7E24" />
+      <stop offset="100%" stop-color="#E2C172" />
+    </linearGradient>
+
+    <linearGradient id="goldRibbonRight" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#F2DD9E" />
+      <stop offset="35%" stop-color="#D3A94B" />
+      <stop offset="70%" stop-color="#AA7920" />
+      <stop offset="100%" stop-color="#E2C172" />
+    </linearGradient>
+
+    <linearGradient id="goldRibbonFold" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#845D14" />
+      <stop offset="50%" stop-color="#B28227" />
+      <stop offset="100%" stop-color="#5E400B" />
+    </linearGradient>
+
+    <linearGradient id="goldKnot" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F9E8B2" />
+      <stop offset="50%" stop-color="#C69B37" />
+      <stop offset="100%" stop-color="#7B5614" />
+    </linearGradient>
+
+    <linearGradient id="goldStem" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#9C721D" />
+      <stop offset="40%" stop-color="#F5E2A8" />
+      <stop offset="70%" stop-color="#D0A444" />
+      <stop offset="100%" stop-color="#8A6016" />
+    </linearGradient>
+
+    <linearGradient id="goldLetterG" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F4DE9F" />
+      <stop offset="30%" stop-color="#D3A748" />
+      <stop offset="70%" stop-color="#B38428" />
+      <stop offset="100%" stop-color="#E5C77A" />
+    </linearGradient>
+
+    <linearGradient id="goldTail" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F8E8B6" />
+      <stop offset="30%" stop-color="#D5A94B" />
+      <stop offset="65%" stop-color="#9E731F" />
+      <stop offset="100%" stop-color="#F2D891" />
+    </linearGradient>
+
+    <!-- Subtle drop shadow for realism -->
+    <filter id="ribbonShadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="1" dy="2" stdDeviation="2.5" flood-color="#3A2805" flood-opacity="0.25" />
+    </filter>
+
+    <filter id="letterShadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="1" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.18" />
+    </filter>
+  </defs>
+
+  <g id="tgg-official-logo">
+    <!-- ==================== 1. GOLDEN RIBBON BOW AT TOP ==================== -->
+    <g id="ribbon-bow" filter="url(#ribbonShadow)">
+      
+      <!-- LEFT BOW LOOP (Outer Loop) -->
+      <path d="M 197 73 
+               C 160 48, 122 18, 92 12 
+               C 62 6, 40 18, 43 38 
+               C 46 54, 76 68, 116 76 
+               C 152 82, 185 80, 195 78 
+               Z" 
+            fill="url(#goldRibbonLeft)" />
+
+      <!-- LEFT BOW INNER FOLD / UNDERSIDE SHADOW -->
+      <path d="M 94 13 
+               C 62 10, 41 21, 44 38 
+               C 46 51, 68 62, 102 69 
+               C 85 58, 75 46, 74 36 
+               C 72 24, 82 16, 94 13 
+               Z" 
+            fill="url(#goldRibbonFold)" opacity="0.85" />
+
+      <!-- RIGHT BOW LOOP (Outer Loop) -->
+      <path d="M 203 73 
+               C 240 48, 278 18, 308 12 
+               C 338 6, 360 18, 357 38 
+               C 354 54, 324 68, 284 76 
+               C 248 82, 215 80, 205 78 
+               Z" 
+            fill="url(#goldRibbonRight)" />
+
+      <!-- RIGHT BOW INNER FOLD / UNDERSIDE SHADOW -->
+      <path d="M 306 13 
+               C 338 10, 359 21, 356 38 
+               C 354 51, 332 62, 298 69 
+               C 315 58, 325 46, 326 36 
+               C 328 24, 318 16, 306 13 
+               Z" 
+            fill="url(#goldRibbonFold)" opacity="0.85" />
+
+      <!-- CENTER KNOT -->
+      <path d="M 194 70 
+               C 194 66, 198 64, 200 64 
+               C 202 64, 206 66, 206 70 
+               L 204 84 
+               C 204 87, 201 88, 200 88 
+               C 199 88, 196 87, 196 84 
+               Z" 
+            fill="url(#goldKnot)" stroke="#B3862D" stroke-width="0.8" />
+
+      <!-- VERTICAL RIBBON STEM -->
+      <rect x="195.5" y="84" width="9" height="92" rx="1.5" fill="url(#goldStem)" />
+    </g>
+
+    <!-- ==================== 2. LETTERS T, G, G ==================== -->
+    <g id="letters" filter="url(#letterShadow)">
+      
+      <!-- LEFT LETTER: T (Deep Forest Green, Serif) -->
+      <!-- Top Crossbar with serifs -->
+      <path d="M 38 126 
+               L 38 135 
+               C 48 135, 52 137, 52 143 
+               L 52 144 
+               L 77 144 
+               L 77 228 
+               C 77 236, 73 238, 62 239 
+               L 62 247 
+               L 115 247 
+               L 115 239 
+               C 104 238, 100 236, 100 228 
+               L 100 144 
+               L 125 144 
+               L 125 143 
+               C 125 137, 129 135, 139 135 
+               L 139 126 
+               Z" 
+            fill="#0E2D21" />
+
+      <!-- MIDDLE LETTER: G (Champagne Gold, Serif) -->
+      <path d="M 218 126 
+               C 192 126, 155 140, 137 166 
+               C 123 186, 121 213, 134 233 
+               C 149 254, 182 263, 212 258 
+               C 230 255, 245 246, 252 238 
+               L 246 230 
+               C 240 236, 227 245, 210 246 
+               C 183 248, 161 237, 153 218 
+               C 143 194, 154 162, 179 146 
+               C 194 136, 210 137, 219 140 
+               C 229 144, 237 153, 241 161 
+               L 250 156 
+               C 244 143, 233 131, 218 126 
+               Z" 
+            fill="url(#goldLetterG)" />
+
+      <!-- RIGHT LETTER: G (Deep Forest Green, Serif) -->
+      <path d="M 334 126 
+               C 308 126, 271 140, 253 166 
+               C 239 186, 237 213, 250 233 
+               C 265 254, 298 263, 328 258 
+               C 346 255, 360 245, 366 238 
+               L 366 195 
+               L 316 195 
+               L 316 204 
+               C 324 204, 329 206, 331 211 
+               L 331 233 
+               C 325 239, 316 244, 304 244 
+               C 280 244, 263 227, 260 205 
+               C 256 179, 274 150, 301 141 
+               C 313 137, 326 138, 334 141 
+               C 344 145, 351 154, 355 161 
+               L 364 156 
+               C 358 143, 348 131, 334 126 
+               Z" 
+            fill="#0E2D21" />
+
+    </g>
+
+    <!-- ==================== 3. FLOWING GOLDEN RIBBON TAIL ==================== -->
+    <!-- Swashes across from middle stem through right G with dynamic taper -->
+    <g id="ribbon-tail" filter="url(#ribbonShadow)">
+      <path d="M 175 198 
+               C 192 182, 222 173, 254 176 
+               C 285 179, 310 193, 332 214 
+               C 350 231, 372 250, 388 254 
+               C 390 254, 392 253, 393 251 
+               C 391 247, 381 240, 369 229 
+               C 348 210, 324 195, 296 186 
+               C 264 176, 230 176, 202 186 
+               C 188 191, 178 196, 175 198 
+               Z" 
+            fill="url(#goldTail)" />
+
+      <!-- Subtle ribbon top edge highlight -->
+      <path d="M 175 198 
+               C 202 186, 230 176, 264 176 
+               C 296 186, 324 195, 348 210 
+               C 369 229, 381 240, 391 247" 
+            fill="none" stroke="#FFF2C6" stroke-width="1.2" opacity="0.6" />
+    </g>
+  </g>
+</svg>

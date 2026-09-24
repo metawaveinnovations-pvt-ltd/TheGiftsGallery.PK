@@ -47,6 +47,11 @@ export const InstagramSection: React.FC = () => {
                 referrerPolicy="no-referrer"
               />
 
+              {/* Corner TGG Hallmark Badge */}
+              <div className="absolute top-2.5 right-2.5 bg-white/90 backdrop-blur-sm p-1 rounded-md border border-[#C59B27]/40 shadow-sm opacity-90 group-hover:opacity-100 transition-opacity">
+                <img src="/tgg_logo.png" alt="TGG Official" className="w-5 h-auto object-contain" referrerPolicy="no-referrer" />
+              </div>
+
               {/* Hover Scrim */}
               <div className="absolute inset-0 bg-[#14382C]/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 text-white">
                 <p className="text-[11px] line-clamp-2 mb-2 font-medium leading-tight">

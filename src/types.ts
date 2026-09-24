@@ -14,6 +14,7 @@ export interface Product {
   priceDisplay: string;
   isPopular?: boolean;
   features: string[];
+  tags?: string[];
 }
 
 export interface Category {

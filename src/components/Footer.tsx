@@ -10,11 +10,13 @@ export const Footer: React.FC = () => {
 
   const navLinks = [
     { label: 'Home', href: '#home' },
-    { label: 'Gifts', href: '#gifts' },
+    { label: 'Gifts & Baskets', href: '#gifts' },
+    { label: 'Collections', href: '#categories' },
     { label: 'Occasions', href: '#occasions' },
     { label: 'How It Works', href: '#how-it-works' },
+    { label: 'FAQs & Guide', href: '#faq-guide' },
     { label: 'Policies', href: '#policies' },
-    { label: 'Order', href: '#order-form' },
+    { label: 'Order Form', href: '#order-form' },
   ];
 
   return (
@@ -27,7 +29,9 @@ export const Footer: React.FC = () => {
           {/* Brand Col (5 cols) */}
           <div className="md:col-span-5 flex flex-col items-start">
             <div className="flex items-center gap-3 mb-4">
-              <Logo variant="emblem" isDark={true} className="w-12 h-12" />
+              <div className="p-1.5 rounded-xl bg-white/95 border border-[#C59B27]/60 shadow-md flex items-center justify-center shrink-0">
+                <Logo variant="mark" size={56} />
+              </div>
               <div>
                 <span className="font-serif text-xl font-bold text-white tracking-wide block">
                   The Gift Gallery
@@ -119,6 +123,16 @@ export const Footer: React.FC = () => {
             </button>
           </div>
 
+        </div>
+
+        {/* Keyword Semantic Breadcrumb Index for Search Console & SEO */}
+        <div className="pt-8 pb-4 border-b border-emerald-950/60">
+          <div className="text-[11px] font-medium text-emerald-100/40 uppercase tracking-wider mb-2">
+            Popular Searches &amp; Specialties
+          </div>
+          <p className="text-[11px] text-emerald-100/60 leading-relaxed">
+            Anniversary Gifts · Birthday Gifts · Gifts Shop Pakistan · Gifts Packaging · Snacks Basket · Makeup Basket · Luxury Watches · Genuine Leather Wallets · Designer Bracelets · Boutiques · Curated Hampers · Corporate Event Gifts · Karachi Gift Delivery · Lahore Gift Shop · Islamabad Midnight Delivery
+          </p>
         </div>
 
         {/* Footer Statement & Copyright */}

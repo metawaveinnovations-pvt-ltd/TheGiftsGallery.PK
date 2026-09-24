@@ -96,8 +96,8 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick }) => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/10 pointer-events-none" />
 
                 {/* Floating Official TGG Badge */}
-                <div className="absolute top-4 right-4 bg-[#FBF9F5]/95 backdrop-blur-md rounded-full p-1.5 shadow-md border border-[#C59B27]/50">
-                  <Logo variant="emblem" className="w-14 h-14" />
+                <div className="absolute top-4 right-4 bg-[#FBF9F5]/95 backdrop-blur-md rounded-2xl p-2 shadow-md border border-[#C59B27]/50 flex items-center justify-center">
+                  <Logo variant="mark" size={64} />
                 </div>
 
                 {/* Bottom caption overlay */}

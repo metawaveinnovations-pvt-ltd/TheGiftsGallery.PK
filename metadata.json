@@ -1,6 +1,6 @@
 {
-  "name": "The Gift Gallery | Premium Gifting & Curated Moments",
-  "description": "The Gift Gallery — thoughtfully curated gifts, beautifully presented for birthdays, anniversaries, surprises and every special moment. Nationwide delivery across Pakistan.",
+  "name": "The Gift Gallery | Gifts Shop, Baskets, Anniversary & Birthday Gifts",
+  "description": "The Gift Gallery (TGG) — Pakistan's premier gifts shop for anniversary gifts, birthday gifts, bespoke gifts packaging, snacks basket, makeup basket, watches, wallets, bracelets, and boutique accessories. Nationwide delivery across Karachi, Lahore, Islamabad.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
