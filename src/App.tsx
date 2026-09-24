@@ -19,6 +19,8 @@ import { InstagramSection } from './components/InstagramSection';
 import { FinalCTA } from './components/FinalCTA';
 import { Footer } from './components/Footer';
 import { QuickWhatsAppFloat } from './components/QuickWhatsAppFloat';
+import { PWAInstallBanner } from './components/PWAInstallBanner';
+import { MobileAppNavBar } from './components/MobileAppNavBar';
 import { Product } from './types';
 
 export default function App() {
@@ -58,7 +60,10 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FBF9F5] text-[#1C2826] selection:bg-[#14382C] selection:text-[#FBF9F5]">
+    <div className="min-h-screen flex flex-col bg-[#FBF9F5] text-[#1C2826] selection:bg-[#14382C] selection:text-[#FBF9F5] pb-16 md:pb-0">
+      {/* PWA Home Screen Installation Prompt (Mobile / Tablet / Desktop) */}
+      <PWAInstallBanner />
+
       {/* 1. Sticky Navigation Bar */}
       <Header onOrderClick={scrollToOrder} />
 
@@ -107,7 +112,13 @@ export default function App() {
       {/* 14. Footer */}
       <Footer />
 
-      {/* Floating WhatsApp Quick Ordering Trigger */}
+      {/* Native App-Style Mobile Bottom Navigation Dock */}
+      <MobileAppNavBar
+        onOrderClick={scrollToOrder}
+        hasSelectedProduct={!!selectedProductForOrder}
+      />
+
+      {/* Floating WhatsApp Quick Ordering Trigger (Desktop / Laptop) */}
       <QuickWhatsAppFloat />
     </div>
   );

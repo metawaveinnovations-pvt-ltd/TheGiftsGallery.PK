@@ -103,23 +103,23 @@ export const FeaturedGifts: React.FC<FeaturedGiftsProps> = ({ onOrderProduct }) 
           </div>
         </div>
 
-        {/* Category Pills (Responsive horizontal scroll with item counts) */}
-        <div className="flex items-center justify-start sm:justify-center overflow-x-auto pb-4 mb-10 gap-2 no-scrollbar">
+        {/* Category Pills (Touch-optimized horizontal scroll tab strip) */}
+        <div className="flex items-center justify-start sm:justify-center overflow-x-auto pb-4 mb-10 gap-2 no-scrollbar px-1 sm:px-0 touch-pan-x">
           {categories.map((cat) => {
             const count = getCategoryCount(cat);
             return (
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-4 py-2 rounded-full text-xs font-semibold tracking-wide transition-all whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${
+                className={`min-h-[44px] px-4 py-2 rounded-full text-xs font-semibold tracking-wide transition-all whitespace-nowrap cursor-pointer flex items-center gap-1.5 active:scale-95 touch-manipulation ${
                   selectedCategory === cat
-                    ? 'bg-[#14382C] text-white shadow-md shadow-[#14382C]/10 scale-105'
+                    ? 'bg-[#14382C] text-white shadow-md shadow-[#14382C]/15 scale-[1.02]'
                     : 'bg-[#F4EFE6] text-slate-700 hover:bg-[#EADBCE]'
                 }`}
               >
                 <span>{cat}</span>
                 <span
-                  className={`text-[10px] px-1.5 py-0.5 rounded-full ${
+                  className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${
                     selectedCategory === cat
                       ? 'bg-white/20 text-[#DFC066]'
                       : 'bg-black/5 text-slate-500'
@@ -282,7 +282,7 @@ export const FeaturedGifts: React.FC<FeaturedGiftsProps> = ({ onOrderProduct }) 
                 <div className="p-6 pt-0 mt-2 flex items-center gap-2">
                   <button
                     onClick={() => onOrderProduct(product, currentTier?.size)}
-                    className="flex-1 py-2.5 rounded-xl bg-[#14382C] text-white hover:bg-[#0f2920] font-medium text-xs tracking-wide transition-all shadow-sm hover:shadow flex items-center justify-center gap-1.5 cursor-pointer group/btn"
+                    className="flex-1 min-h-[44px] py-2.5 rounded-xl bg-[#14382C] text-white hover:bg-[#0f2920] font-medium text-xs tracking-wide transition-all shadow-sm hover:shadow flex items-center justify-center gap-1.5 cursor-pointer group/btn active:scale-[0.98]"
                   >
                     <Gift className="w-3.5 h-3.5 text-[#DFC066] group-hover/btn:rotate-12 transition-transform" />
                     <span>Order on WhatsApp</span>
@@ -290,7 +290,7 @@ export const FeaturedGifts: React.FC<FeaturedGiftsProps> = ({ onOrderProduct }) 
 
                   <button
                     onClick={() => setQuickViewProduct(product)}
-                    className="p-2.5 rounded-xl border border-[#EADBCE] text-[#14382C] hover:bg-[#F4EFE6] transition-colors cursor-pointer"
+                    className="min-h-[44px] min-w-[44px] p-2.5 rounded-xl border border-[#EADBCE] text-[#14382C] hover:bg-[#F4EFE6] transition-colors cursor-pointer flex items-center justify-center active:scale-95"
                     title="Quick preview"
                     aria-label="Quick preview"
                   >

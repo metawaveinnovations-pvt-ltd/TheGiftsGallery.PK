@@ -1,0 +1,33 @@
+{
+  "id": "/",
+  "name": "The Gift Gallery | Luxury Gifts & Hampers",
+  "short_name": "Gift Gallery",
+  "description": "Curated luxury gift hampers, bespoke packaging, anniversary & birthday gifts across Pakistan.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#14382C",
+  "background_color": "#FBF9F5",
+  "categories": ["shopping", "lifestyle"],
+  "icons": [
+    {
+      "src": "/pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

@@ -38,10 +38,10 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick }) => {
             </p>
 
             {/* CTA Buttons */}
-            <div className="flex flex-wrap items-center gap-4 w-full sm:w-auto mb-10">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full sm:w-auto mb-8 sm:mb-10">
               <button
                 onClick={onExploreClick}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-full text-sm font-semibold tracking-wide text-white bg-[#14382C] hover:bg-[#0D261E] shadow-md hover:shadow-lg transition-all duration-200 border border-[#C59B27]/50 active:scale-[0.98]"
+                className="w-full sm:w-auto min-h-[48px] inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-full text-sm font-semibold tracking-wide text-white bg-[#14382C] hover:bg-[#0D261E] shadow-md hover:shadow-lg transition-all duration-200 border border-[#C59B27]/50 active:scale-[0.98] cursor-pointer"
               >
                 <Gift className="w-4 h-4 text-[#DFC066]" />
                 <span>Explore Gifts</span>
@@ -51,7 +51,7 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick }) => {
                 href={BRAND_INFO.whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-full text-sm font-semibold tracking-wide text-[#14382C] bg-[#F4EFE6] hover:bg-[#EADBCE] border border-[#C59B27]/50 transition-all duration-200 shadow-sm hover:shadow"
+                className="w-full sm:w-auto min-h-[48px] inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-full text-sm font-semibold tracking-wide text-[#14382C] bg-[#F4EFE6] hover:bg-[#EADBCE] border border-[#C59B27]/50 transition-all duration-200 shadow-sm hover:shadow active:scale-[0.98]"
               >
                 <MessageCircle className="w-4 h-4 text-[#14382C]" />
                 <span>Order on WhatsApp</span>
@@ -59,7 +59,7 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick }) => {
             </div>
 
             {/* Trust Markers */}
-            <div className="pt-6 border-t border-[#EADBCE] w-full grid grid-cols-3 gap-2 sm:gap-4 text-slate-600">
+            <div className="pt-6 border-t border-[#EADBCE] w-full grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-4 text-slate-600">
               <div className="flex items-center gap-2">
                 <Truck className="w-4 h-4 text-[#C59B27] shrink-0" />
                 <span className="text-xs font-medium">Nationwide PK Delivery</span>

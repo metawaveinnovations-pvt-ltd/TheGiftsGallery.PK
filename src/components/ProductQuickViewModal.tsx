@@ -33,45 +33,48 @@ export const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({
       role="dialog"
       aria-modal="true"
       aria-labelledby="quick-view-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-6 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
       onClick={onClose}
     >
       <div
-        className="bg-[#FBF9F5] rounded-3xl max-w-4xl w-full max-h-[92vh] overflow-y-auto border border-[#C59B27]/40 shadow-2xl relative"
+        className="bg-[#FBF9F5] rounded-t-3xl sm:rounded-3xl max-w-4xl w-full max-h-[88vh] sm:max-h-[92vh] overflow-y-auto border-t sm:border border-[#C59B27]/40 shadow-2xl relative pb-[max(1rem,env(safe-area-inset-bottom))] animate-in slide-in-from-bottom-5 duration-300"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Mobile Swipe Grab Handle */}
+        <div className="w-12 h-1.5 bg-slate-300/80 rounded-full mx-auto mt-3 mb-1 sm:hidden" />
+
         {/* Close Button */}
         <button
           onClick={onClose}
           aria-label="Close dialog"
-          className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-white/90 backdrop-blur-md text-slate-700 hover:text-black hover:bg-white shadow-sm flex items-center justify-center transition-colors border border-slate-200"
+          className="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 w-9 h-9 rounded-full bg-white/90 backdrop-blur-md text-slate-700 hover:text-black hover:bg-white shadow-sm flex items-center justify-center transition-colors border border-slate-200 cursor-pointer"
         >
           <X className="w-5 h-5" />
         </button>
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-0">
           
-          {/* Left Column: Product Imagery (5 cols) */}
-          <div className="md:col-span-5 relative bg-[#F5F0E6] flex items-center justify-center overflow-hidden min-h-[300px] md:min-h-[460px] rounded-t-3xl md:rounded-l-3xl md:rounded-tr-none">
+          {/* Left Column: Product Imagery (5 cols on desktop, responsive hero on mobile) */}
+          <div className="md:col-span-5 relative bg-[#F5F0E6] flex items-center justify-center overflow-hidden h-60 sm:h-72 md:h-full md:min-h-[460px] rounded-t-2xl sm:rounded-t-none md:rounded-l-3xl">
             <OptimizedImage
               src={product.image}
               alt={product.name}
-              aspectRatio="aspect-square md:aspect-[4/5]"
+              aspectRatio="aspect-video sm:aspect-square md:aspect-[4/5]"
               className="w-full h-full max-h-[460px]"
               priority={true}
               fallbackTitle={product.name}
               categoryName={product.category}
             />
             {product.isPopular && (
-              <span className="absolute top-4 left-4 bg-[#14382C] text-[#DFC066] text-xs font-semibold px-3 py-1 rounded-full shadow-md border border-[#C59B27]/40 z-10">
+              <span className="absolute top-3 left-3 sm:top-4 sm:left-4 bg-[#14382C] text-[#DFC066] text-xs font-semibold px-3 py-1 rounded-full shadow-md border border-[#C59B27]/40 z-10">
                 Signature Choice
               </span>
             )}
-            <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/60 to-transparent p-4 text-white z-10">
-              <span className="text-[11px] uppercase tracking-wider text-[#DFC066] font-semibold">
+            <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/60 to-transparent p-3 sm:p-4 text-white z-10">
+              <span className="text-[10px] sm:text-[11px] uppercase tracking-wider text-[#DFC066] font-semibold">
                 Authentic Handcrafting
               </span>
-              <p className="text-xs text-white/90 font-light">
+              <p className="text-[11px] sm:text-xs text-white/90 font-light">
                 Assembled fresh with personalized note card
               </p>
             </div>
@@ -174,7 +177,7 @@ export const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({
                 href={getWhatsAppLink()}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full text-xs font-semibold text-[#14382C] bg-[#F4EFE6] hover:bg-[#EADBCE] border border-[#C59B27]/50 shadow-sm transition-all"
+                className="w-full sm:flex-1 min-h-[44px] inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full text-xs font-semibold text-[#14382C] bg-[#F4EFE6] hover:bg-[#EADBCE] border border-[#C59B27]/50 shadow-sm transition-all active:scale-[0.98]"
               >
                 <MessageCircle className="w-4 h-4 text-[#14382C]" />
                 <span>Order on WhatsApp</span>
@@ -185,7 +188,7 @@ export const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({
                   onSelectForOrderForm(product, currentTier?.size);
                   onClose();
                 }}
-                className="w-full sm:flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full text-xs font-semibold text-white bg-[#14382C] hover:bg-[#0D261E] border border-[#C59B27]/40 shadow-sm transition-all active:scale-[0.98]"
+                className="w-full sm:flex-1 min-h-[44px] inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full text-xs font-semibold text-white bg-[#14382C] hover:bg-[#0D261E] border border-[#C59B27]/40 shadow-sm transition-all active:scale-[0.98] cursor-pointer"
               >
                 <Gift className="w-4 h-4 text-[#DFC066]" />
                 <span>Customize in Form</span>

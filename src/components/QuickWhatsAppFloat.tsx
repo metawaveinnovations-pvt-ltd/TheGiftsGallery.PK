@@ -6,9 +6,9 @@ export const QuickWhatsAppFloat: React.FC = () => {
   return (
     <aside
       aria-label="Direct WhatsApp Ordering Support"
-      className="fixed bottom-5 right-5 z-30 group flex items-center gap-2"
+      className="hidden md:flex fixed bottom-6 right-6 z-30 group items-center gap-2 animate-in fade-in"
     >
-      <span className="hidden sm:inline-block bg-[#14382C] text-[#DFC066] text-xs font-semibold px-3 py-1.5 rounded-full shadow-md border border-[#C59B27]/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
+      <span className="bg-[#14382C] text-[#DFC066] text-xs font-semibold px-3 py-1.5 rounded-full shadow-md border border-[#C59B27]/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
         Order on WhatsApp
       </span>
       <a
