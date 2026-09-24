@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Product } from '../types';
 import { BRAND_INFO } from '../data/products';
 import { X, Check, MessageCircle, Gift, ShieldCheck, Sparkles } from 'lucide-react';
+import { OptimizedImage } from './OptimizedImage';
 
 interface ProductQuickViewModalProps {
   product: Product | null;
@@ -52,18 +53,21 @@ export const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({
           
           {/* Left Column: Product Imagery (5 cols) */}
           <div className="md:col-span-5 relative bg-[#F5F0E6] flex items-center justify-center overflow-hidden min-h-[300px] md:min-h-[460px] rounded-t-3xl md:rounded-l-3xl md:rounded-tr-none">
-            <img
+            <OptimizedImage
               src={product.image}
               alt={product.name}
-              className="w-full h-full object-cover object-center max-h-[460px]"
-              referrerPolicy="no-referrer"
+              aspectRatio="aspect-square md:aspect-[4/5]"
+              className="w-full h-full max-h-[460px]"
+              priority={true}
+              fallbackTitle={product.name}
+              categoryName={product.category}
             />
             {product.isPopular && (
-              <span className="absolute top-4 left-4 bg-[#14382C] text-[#DFC066] text-xs font-semibold px-3 py-1 rounded-full shadow-md border border-[#C59B27]/40">
+              <span className="absolute top-4 left-4 bg-[#14382C] text-[#DFC066] text-xs font-semibold px-3 py-1 rounded-full shadow-md border border-[#C59B27]/40 z-10">
                 Signature Choice
               </span>
             )}
-            <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/60 to-transparent p-4 text-white">
+            <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/60 to-transparent p-4 text-white z-10">
               <span className="text-[11px] uppercase tracking-wider text-[#DFC066] font-semibold">
                 Authentic Handcrafting
               </span>

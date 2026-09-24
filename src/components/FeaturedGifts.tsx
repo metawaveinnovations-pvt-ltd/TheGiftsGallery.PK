@@ -3,6 +3,7 @@ import { PRODUCTS } from '../data/products';
 import { Product } from '../types';
 import { Gift, Check, Eye, Search, Sparkles, X } from 'lucide-react';
 import { ProductQuickViewModal } from './ProductQuickViewModal';
+import { OptimizedImage } from './OptimizedImage';
 
 interface FeaturedGiftsProps {
   onOrderProduct: (product: Product, selectedTier?: string) => void;
@@ -169,11 +170,14 @@ export const FeaturedGifts: React.FC<FeaturedGiftsProps> = ({ onOrderProduct }) 
                     onClick={() => setQuickViewProduct(product)}
                     className="relative aspect-[4/3] overflow-hidden bg-[#F4EFE6] cursor-pointer"
                   >
-                    <img
+                    <OptimizedImage
                       src={product.image}
                       alt={product.name}
-                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                      referrerPolicy="no-referrer"
+                      aspectRatio="aspect-[4/3]"
+                      className="w-full h-full"
+                      imgClassName="group-hover:scale-105 transition-transform duration-500"
+                      fallbackTitle={product.name}
+                      categoryName={product.category}
                     />
                     
                     {/* Badge */}
@@ -194,7 +198,7 @@ export const FeaturedGifts: React.FC<FeaturedGiftsProps> = ({ onOrderProduct }) 
                     </div>
 
                     {/* Quick View Overlay on Hover */}
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center z-10">
                       <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/95 text-[#14382C] text-xs font-semibold shadow-md transform translate-y-2 group-hover:translate-y-0 transition-transform">
                         <Eye className="w-3.5 h-3.5 text-[#C59B27]" />
                         <span>Quick View &amp; Details</span>

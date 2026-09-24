@@ -2,6 +2,7 @@ import React from 'react';
 import { BRAND_INFO } from '../data/products';
 import { Gift, MessageCircle, Sparkles, ShieldCheck, Truck, Heart } from 'lucide-react';
 import { Logo } from './Logo';
+import { OptimizedImage } from './OptimizedImage';
 
 interface HeroProps {
   onExploreClick: () => void;
@@ -84,12 +85,16 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick }) => {
               <div className="absolute -inset-2.5 rounded-3xl border border-[#C59B27]/40 pointer-events-none transform rotate-1" />
               
               <div className="relative rounded-2xl overflow-hidden bg-white shadow-xl border border-[#EADBCE]">
-                {/* Hero Editorial Photography */}
-                <img
-                  src="/src/assets/images/tgg_hero_curated_gifting_1790253103850.jpg"
+                {/* Hero Editorial Photography (Fast WebP & high priority) */}
+                <OptimizedImage
+                  src="/assets/images/tgg_hero_curated_gifting_1790253103850.jpg"
                   alt="The Gift Gallery curated presentation"
-                  className="w-full h-80 sm:h-96 object-cover object-center transform transition-transform duration-700 hover:scale-105"
-                  referrerPolicy="no-referrer"
+                  aspectRatio="aspect-square sm:aspect-[4/3]"
+                  className="w-full h-80 sm:h-96"
+                  imgClassName="transform transition-transform duration-700 hover:scale-105"
+                  priority={true}
+                  fallbackTitle="Curated Bespoke Gifting"
+                  categoryName="The Gift Gallery"
                 />
 
                 {/* Subtle scrim & brand tag */}

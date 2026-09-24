@@ -80,7 +80,7 @@ export const PRODUCTS: Product[] = [
     category: 'Anniversary Gifts',
     tagline: 'Celebrate your timeless love story in pure luxury.',
     description: 'Our flagship anniversary gift hamper showcasing silk preserved eternity roses, custom gold-engraved initials, artisan chocolates, scented botanical candle, and handwritten vow card in our signature emerald velvet magnetic box.',
-    image: '/src/assets/images/tgg_jewelry_makeup_hamper_1790253148071.jpg',
+    image: '/assets/images/tgg_jewelry_makeup_hamper_1790253148071.jpg',
     priceDisplay: 'PKR 4,500 – 16,000+',
     isPopular: true,
     tiers: [
@@ -97,7 +97,7 @@ export const PRODUCTS: Product[] = [
     category: 'Birthday Gifts',
     tagline: 'Unbox pure joy, smiles, and sweet celebrations.',
     description: 'A vibrant, celebratory birthday gift basket dressed with metallic gold balloons, party popper, Belgian chocolates, sweet bites, and custom birthday card tied with our signature TGG ribbon.',
-    image: '/src/assets/images/tgg_snack_chocolate_basket_1790253121230.jpg',
+    image: '/assets/images/tgg_snack_chocolate_basket_1790253121230.jpg',
     priceDisplay: 'PKR 2,500 – 7,500',
     isPopular: true,
     tiers: [
@@ -114,7 +114,7 @@ export const PRODUCTS: Product[] = [
     category: 'Snacks Basket',
     tagline: 'A sweet & savory mix for every joyful moment.',
     description: 'Handcrafted woven wicker basket dressed with rich forest green ribbon and signature TGG gold medallion, filled with Ferrero Rocher, Cadbury Dairy Milk, Pringles, Snickers, KitKat, and gourmet spreads.',
-    image: '/src/assets/images/tgg_snack_chocolate_basket_1790253121230.jpg',
+    image: '/assets/images/tgg_snack_chocolate_basket_1790253121230.jpg',
     priceDisplay: 'PKR 1,500 – 5,000',
     isPopular: true,
     tiers: [
@@ -131,7 +131,7 @@ export const PRODUCTS: Product[] = [
     category: 'Makeup Basket',
     tagline: 'Elegant essentials for beauty, style & confidence.',
     description: 'A round forest-green velvet boutique box tied with champagne gold satin ribbon, featuring shimmering gold necklace and earrings, high-end cosmetic picks, beauty brushes, and silk hair accessories.',
-    image: '/src/assets/images/tgg_jewelry_makeup_hamper_1790253148071.jpg',
+    image: '/assets/images/tgg_jewelry_makeup_hamper_1790253148071.jpg',
     priceDisplay: 'PKR 2,000 – 9,000+',
     isPopular: true,
     tiers: [
@@ -148,7 +148,7 @@ export const PRODUCTS: Product[] = [
     category: 'Watches & Accessories',
     tagline: 'Timeless style. Lasting impression.',
     description: 'Our premier gentleman’s gift set featuring a distinguished chronograph watch with gold accents and a luxury prestige fragrance, nestled in a matte black cushioned TGG box with custom sentiment card.',
-    image: '/src/assets/images/tgg_luxury_watch_perfume_box_1790253135569.jpg',
+    image: '/assets/images/tgg_luxury_watch_perfume_box_1790253135569.jpg',
     priceDisplay: 'PKR 8,000 – 28,000+',
     isPopular: true,
     tiers: [
@@ -165,7 +165,7 @@ export const PRODUCTS: Product[] = [
     category: 'Wallets & Accessories',
     tagline: 'Classic style. Everyday essential.',
     description: 'Rich genuine leather wallet stamped with TGG hardware detailing paired with a solid polished metal chain accessory, arranged inside an elegant black gift case.',
-    image: '/src/assets/images/tgg_luxury_watch_perfume_box_1790253135569.jpg',
+    image: '/assets/images/tgg_luxury_watch_perfume_box_1790253135569.jpg',
     priceDisplay: 'PKR 4,000 – 18,000+',
     isPopular: false,
     tiers: [
@@ -182,7 +182,7 @@ export const PRODUCTS: Product[] = [
     category: 'Bracelets & Accessories',
     tagline: 'Delicate wrist elegance and shimmering charm.',
     description: 'Boutique collection of layered gold and silver-tone charm bracelets, paired with delicate pearl pins, silk satin scrunchie, and keepsake presentation pouch with personalized note.',
-    image: '/src/assets/images/tgg_jewelry_makeup_hamper_1790253148071.jpg',
+    image: '/assets/images/tgg_jewelry_makeup_hamper_1790253148071.jpg',
     priceDisplay: 'PKR 2,200 – 6,500',
     isPopular: true,
     tiers: [
@@ -199,7 +199,7 @@ export const PRODUCTS: Product[] = [
     category: 'Personalized Gifts',
     tagline: 'Make it truly yours with custom names and photos.',
     description: 'Featuring an engraved "Together Forever" wooden photo frame, a ceramic mug with "Good Vibes Only" or your custom quote, and an emerald green tote bag customized with your recipient’s name.',
-    image: '/src/assets/images/tgg_personalized_gift_set_1790253160626.jpg',
+    image: '/assets/images/tgg_personalized_gift_set_1790253160626.jpg',
     priceDisplay: 'Price on Request (PKR 2,500 – 6,000)',
     isPopular: true,
     tiers: [
@@ -216,7 +216,7 @@ export const PRODUCTS: Product[] = [
     category: 'Gifts Packaging',
     tagline: 'Elevate your gift with boutique luxury presentation.',
     description: 'Signature TGG rigid boxes in forest green, champagne gold and blush tones, embellished with gold-leaf hot stamping, grosgrain ribbon ties, and rope-handled boutique shopping bags.',
-    image: '/src/assets/images/tgg_hero_curated_gifting_1790253103850.jpg',
+    image: '/assets/images/tgg_hero_curated_gifting_1790253103850.jpg',
     priceDisplay: 'Price on Request',
     features: ['Magnetic clasp rigid construction', 'Gold-foil TGG monogram', 'Luxe satin/grosgrain ribbon', 'Custom color theme coordination'],
     tags: ['gifts packaging', 'boutiques', 'events', 'gifts shop'],
@@ -354,25 +354,25 @@ export const POLICIES: PolicyItem[] = [
 export const INSTAGRAM_POSTS = [
   {
     id: 'post-1',
-    image: '/src/assets/images/tgg_hero_curated_gifting_1790253103850.jpg',
+    image: '/assets/images/tgg_hero_curated_gifting_1790253103850.jpg',
     caption: 'Bespoke emerald green presentation with gold foil accents. Every ribbon tied with love. 🎀',
     likes: '482',
   },
   {
     id: 'post-2',
-    image: '/src/assets/images/tgg_snack_chocolate_basket_1790253121230.jpg',
+    image: '/assets/images/tgg_snack_chocolate_basket_1790253121230.jpg',
     caption: 'The crowd favorite: Artisanal snacks & Ferrero Rocher basket ready for a birthday surprise in Lahore! 🍫',
     likes: '614',
   },
   {
     id: 'post-3',
-    image: '/src/assets/images/tgg_luxury_watch_perfume_box_1790253135569.jpg',
+    image: '/assets/images/tgg_luxury_watch_perfume_box_1790253135569.jpg',
     caption: 'Luxury for him. Timeless chronograph watch paired with Bleu fragrance in our matte black case. ⌚',
     likes: '529',
   },
   {
     id: 'post-4',
-    image: '/src/assets/images/tgg_jewelry_makeup_hamper_1790253148071.jpg',
+    image: '/assets/images/tgg_jewelry_makeup_hamper_1790253148071.jpg',
     caption: 'Beauty, sparkles and silk scrunchies. Round velvet hamper for a special anniversary moment. ✨',
     likes: '741',
   },

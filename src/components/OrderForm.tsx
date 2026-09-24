@@ -17,6 +17,7 @@ import {
   Heart,
 } from 'lucide-react';
 import { Logo } from './Logo';
+import { OptimizedImage } from './OptimizedImage';
 
 interface OrderFormProps {
   initialProduct?: { product: Product; selectedTier?: string } | null;
@@ -285,35 +286,50 @@ Please confirm availability and booking details. Thank you!`;
         </div>
 
         {/* Selected Product Banner if applicable */}
-        {selectedProductId && (
-          <div className="max-w-4xl mx-auto mb-8 bg-[#14382C] text-white rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 border border-[#C59B27]/40 shadow-md animate-in fade-in">
-            <div className="flex items-center gap-3 text-center sm:text-left">
-              <div className="w-10 h-10 rounded-xl bg-white/10 text-[#DFC066] flex items-center justify-center shrink-0">
-                <Gift className="w-5 h-5" />
+        {selectedProductId && (() => {
+          const selectedProduct = PRODUCTS.find((p) => p.id === selectedProductId);
+          return (
+            <div className="max-w-4xl mx-auto mb-8 bg-[#14382C] text-white rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 border border-[#C59B27]/40 shadow-md animate-in fade-in">
+              <div className="flex items-center gap-3 text-center sm:text-left">
+                {selectedProduct?.image ? (
+                  <div className="w-12 h-12 rounded-xl overflow-hidden border border-[#C59B27]/40 shrink-0">
+                    <OptimizedImage
+                      src={selectedProduct.image}
+                      alt={selectedProduct.name}
+                      aspectRatio="aspect-square"
+                      className="w-full h-full"
+                      priority={true}
+                    />
+                  </div>
+                ) : (
+                  <div className="w-10 h-10 rounded-xl bg-white/10 text-[#DFC066] flex items-center justify-center shrink-0">
+                    <Gift className="w-5 h-5" />
+                  </div>
+                )}
+                <div>
+                  <span className="text-xs uppercase tracking-wider text-[#DFC066] font-semibold block">
+                    Selected Item For Order
+                  </span>
+                  <span className="font-serif text-lg font-bold">
+                    {selectedProduct?.name}
+                    {selectedTier && ` · ${selectedTier} Tier`}
+                  </span>
+                </div>
               </div>
-              <div>
-                <span className="text-xs uppercase tracking-wider text-[#DFC066] font-semibold block">
-                  Selected Item For Order
-                </span>
-                <span className="font-serif text-lg font-bold">
-                  {PRODUCTS.find((p) => p.id === selectedProductId)?.name}
-                  {selectedTier && ` · ${selectedTier} Tier`}
-                </span>
-              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedProductId('');
+                  setSelectedTier('');
+                  if (onClearInitialProduct) onClearInitialProduct();
+                }}
+                className="text-xs font-medium text-emerald-200 hover:text-white underline cursor-pointer"
+              >
+                Clear Selection
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={() => {
-                setSelectedProductId('');
-                setSelectedTier('');
-                if (onClearInitialProduct) onClearInitialProduct();
-              }}
-              className="text-xs font-medium text-emerald-200 hover:text-white underline"
-            >
-              Clear Selection
-            </button>
-          </div>
-        )}
+          );
+        })()}
 
         {/* Main Content: Form OR Success State */}
         {isSubmitted ? (

@@ -35,20 +35,25 @@ export const Logo: React.FC<LogoProps> = ({
   // The Exact Official TGG Image Logo Component
   const ExactTGGMark = ({ markWidth = width }: { markWidth?: number }) => {
     return (
-      <img
-        src="/tgg_logo.png"
-        alt="The Gift Gallery (TGG) Official Logo"
-        width={markWidth}
-        style={{
-          width: markWidth,
-          height: 'auto',
-          aspectRatio: '400 / 280',
-          maxHeight: '100%',
-        }}
-        className="shrink-0 object-contain drop-shadow-sm transition-transform duration-300 group-hover:scale-105 select-none"
-        referrerPolicy="no-referrer"
-        loading="eager"
-      />
+      <picture className="shrink-0 inline-flex items-center justify-center">
+        <source srcSet="/tgg_logo.webp" type="image/webp" />
+        <source srcSet="/tgg_logo.png" type="image/png" />
+        <img
+          src="/tgg_logo.png"
+          alt="The Gift Gallery (TGG) Official Logo"
+          width={markWidth}
+          style={{
+            width: markWidth,
+            height: 'auto',
+            aspectRatio: '400 / 280',
+            maxHeight: '100%',
+          }}
+          className="shrink-0 object-contain drop-shadow-sm transition-transform duration-300 group-hover:scale-105 select-none"
+          referrerPolicy="no-referrer"
+          loading="eager"
+          decoding="async"
+        />
+      </picture>
     );
   };
 

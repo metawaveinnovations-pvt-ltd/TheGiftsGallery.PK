@@ -1,6 +1,7 @@
 import React from 'react';
 import { INSTAGRAM_POSTS, BRAND_INFO } from '../data/products';
 import { Instagram, Heart, ExternalLink } from 'lucide-react';
+import { OptimizedImage } from './OptimizedImage';
 
 export const InstagramSection: React.FC = () => {
   return (
@@ -38,22 +39,25 @@ export const InstagramSection: React.FC = () => {
               href={BRAND_INFO.instagramUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="group relative aspect-square rounded-2xl overflow-hidden bg-slate-100 border border-[#EADBCE] shadow-sm block"
+              className="group relative aspect-square rounded-2xl overflow-hidden bg-[#F4EFE6] border border-[#EADBCE] shadow-sm block"
             >
-              <img
+              <OptimizedImage
                 src={post.image}
                 alt="The Gift Gallery moment"
-                className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                referrerPolicy="no-referrer"
+                aspectRatio="aspect-square"
+                className="w-full h-full"
+                imgClassName="group-hover:scale-105 transition-transform duration-500"
+                fallbackTitle={post.caption}
+                categoryName="Instagram"
               />
 
               {/* Corner TGG Hallmark Badge */}
-              <div className="absolute top-2.5 right-2.5 bg-white/90 backdrop-blur-sm p-1 rounded-md border border-[#C59B27]/40 shadow-sm opacity-90 group-hover:opacity-100 transition-opacity">
+              <div className="absolute top-2.5 right-2.5 bg-white/90 backdrop-blur-sm p-1 rounded-md border border-[#C59B27]/40 shadow-sm opacity-90 group-hover:opacity-100 transition-opacity z-10">
                 <img src="/tgg_logo.png" alt="TGG Official" className="w-5 h-auto object-contain" referrerPolicy="no-referrer" />
               </div>
 
               {/* Hover Scrim */}
-              <div className="absolute inset-0 bg-[#14382C]/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 text-white">
+              <div className="absolute inset-0 bg-[#14382C]/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 text-white z-20">
                 <p className="text-[11px] line-clamp-2 mb-2 font-medium leading-tight">
                   {post.caption}
                 </p>
