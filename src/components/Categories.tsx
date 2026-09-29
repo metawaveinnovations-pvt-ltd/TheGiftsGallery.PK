@@ -1,5 +1,5 @@
 import React from 'react';
-import { CATEGORIES } from '../data/products';
+import { usePortal } from '../context/PortalContext';
 import { ArrowRight, Cake, HeartHandshake, Heart, UserCheck, GraduationCap, Baby, Briefcase, Package } from 'lucide-react';
 
 interface CategoriesProps {
@@ -7,6 +7,7 @@ interface CategoriesProps {
 }
 
 export const Categories: React.FC<CategoriesProps> = ({ onSelectCategory }) => {
+  const { categories } = usePortal();
   const getIcon = (iconName: string) => {
     switch (iconName) {
       case 'Cake':
@@ -54,7 +55,7 @@ export const Categories: React.FC<CategoriesProps> = ({ onSelectCategory }) => {
 
         {/* Categories Grid (8 categories) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {CATEGORIES.map((cat) => {
+          {categories.map((cat) => {
             const Icon = getIcon(cat.iconName);
             return (
               <div

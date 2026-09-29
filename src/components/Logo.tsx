@@ -57,17 +57,24 @@ export const Logo: React.FC<LogoProps> = ({
     );
   };
 
+  const handleHomeClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   // 1. Navigation variant (Clean and compact for sticky header)
   if (variant === 'nav') {
     return (
       <a
         href="#home"
-        className={`group flex items-center gap-3 transition-opacity hover:opacity-95 ${className}`}
+        onClick={handleHomeClick}
+        title="The Gift Gallery (TGG) — Home"
+        className={`group flex items-center gap-3 transition-opacity hover:opacity-95 cursor-pointer ${className}`}
       >
         <ExactTGGMark markWidth={52} />
         <div className="flex flex-col">
           <span
-            className={`font-serif text-lg sm:text-xl font-bold tracking-tight leading-tight ${
+            className={`font-serif text-lg sm:text-xl font-bold tracking-tight leading-tight group-hover:text-[#C59B27] transition-colors ${
               isDark ? 'text-white' : 'text-[#0E2D21]'
             }`}
           >
@@ -84,7 +91,16 @@ export const Logo: React.FC<LogoProps> = ({
   // 2. Pure mark variant (Only the bow and monogram)
   if (variant === 'mark' || variant === 'emblem') {
     return (
-      <div className={`inline-flex items-center justify-center ${className}`}>
+      <div
+        onClick={handleHomeClick}
+        role="link"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') handleHomeClick(e as unknown as React.MouseEvent);
+        }}
+        title="The Gift Gallery (TGG) — Home"
+        className={`group inline-flex items-center justify-center cursor-pointer ${className}`}
+      >
         <ExactTGGMark markWidth={typeof size === 'number' ? size : 75} />
       </div>
     );
@@ -92,11 +108,16 @@ export const Logo: React.FC<LogoProps> = ({
 
   // 3. Full centerpiece variant (For Hero, Brand section, Footer, Order Confirmation)
   return (
-    <div className={`flex flex-col items-center text-center ${className}`}>
+    <a
+      href="#home"
+      onClick={handleHomeClick}
+      title="The Gift Gallery (TGG) — Home"
+      className={`group flex flex-col items-center text-center cursor-pointer ${className}`}
+    >
       <ExactTGGMark markWidth={typeof size === 'number' ? size : 150} />
       <div className="mt-3">
         <h2
-          className={`font-serif text-xl sm:text-2xl font-bold tracking-wider uppercase ${
+          className={`font-serif text-xl sm:text-2xl font-bold tracking-wider uppercase group-hover:text-[#C59B27] transition-colors ${
             isDark ? 'text-white' : 'text-[#0E2D21]'
           }`}
         >
@@ -106,6 +127,6 @@ export const Logo: React.FC<LogoProps> = ({
           Gifts for Every Moment.
         </p>
       </div>
-    </div>
+    </a>
   );
 };

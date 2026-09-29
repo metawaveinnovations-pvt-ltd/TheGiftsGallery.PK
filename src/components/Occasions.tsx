@@ -1,5 +1,5 @@
 import React from 'react';
-import { OCCASIONS } from '../data/products';
+import { usePortal } from '../context/PortalContext';
 import { Cake, Heart, Sparkles, Gem, GraduationCap, Smile, ArrowUpRight } from 'lucide-react';
 
 interface OccasionsProps {
@@ -7,6 +7,7 @@ interface OccasionsProps {
 }
 
 export const Occasions: React.FC<OccasionsProps> = ({ onSelectOccasion }) => {
+  const { occasions } = usePortal();
   const getIcon = (iconName: string) => {
     switch (iconName) {
       case 'Cake':
@@ -54,7 +55,7 @@ export const Occasions: React.FC<OccasionsProps> = ({ onSelectOccasion }) => {
 
         {/* Occasions Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {OCCASIONS.map((occasion) => {
+          {occasions.map((occasion) => {
             const Icon = getIcon(occasion.iconName);
             return (
               <div

@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
 import { Product } from '../types';
 import { BRAND_INFO } from '../data/products';
-import { X, Check, MessageCircle, Gift, ShieldCheck, Sparkles } from 'lucide-react';
+import { X, Check, MessageCircle, Gift, ShieldCheck, Sparkles, ShoppingBag } from 'lucide-react';
 import { OptimizedImage } from './OptimizedImage';
 
 interface ProductQuickViewModalProps {
   product: Product | null;
   onClose: () => void;
   onSelectForOrderForm: (product: Product, tierSize?: string) => void;
+  onCheckoutProduct?: (product: Product, tierSize?: string) => void;
 }
 
 export const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({
   product,
   onClose,
   onSelectForOrderForm,
+  onCheckoutProduct,
 }) => {
   if (!product) return null;
 
@@ -172,27 +174,40 @@ export const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({
             </div>
 
             {/* Modal Actions */}
-            <div className="pt-4 border-t border-[#EADBCE] flex flex-col sm:flex-row items-center gap-3">
-              <a
-                href={getWhatsAppLink()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full sm:flex-1 min-h-[44px] inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full text-xs font-semibold text-[#14382C] bg-[#F4EFE6] hover:bg-[#EADBCE] border border-[#C59B27]/50 shadow-sm transition-all active:scale-[0.98]"
-              >
-                <MessageCircle className="w-4 h-4 text-[#14382C]" />
-                <span>Order on WhatsApp</span>
-              </a>
+            <div className="pt-4 border-t border-[#EADBCE] flex flex-col sm:flex-row items-center gap-2.5">
+              {onCheckoutProduct && (
+                <button
+                  onClick={() => {
+                    onCheckoutProduct(product, currentTier?.size);
+                    onClose();
+                  }}
+                  className="w-full sm:flex-1 min-h-[44px] inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full text-xs font-semibold text-white bg-[#14382C] hover:bg-[#0D261E] border border-[#C59B27]/40 shadow-sm transition-all active:scale-[0.98] cursor-pointer"
+                >
+                  <ShoppingBag className="w-4 h-4 text-[#DFC066]" />
+                  <span>Order &amp; Checkout</span>
+                </button>
+              )}
 
               <button
                 onClick={() => {
                   onSelectForOrderForm(product, currentTier?.size);
                   onClose();
                 }}
-                className="w-full sm:flex-1 min-h-[44px] inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full text-xs font-semibold text-white bg-[#14382C] hover:bg-[#0D261E] border border-[#C59B27]/40 shadow-sm transition-all active:scale-[0.98] cursor-pointer"
+                className="w-full sm:flex-1 min-h-[44px] inline-flex items-center justify-center gap-2 px-4 py-3 rounded-full text-xs font-semibold text-[#14382C] bg-[#F4EFE6] hover:bg-[#EADBCE] border border-[#C59B27]/40 shadow-sm transition-all active:scale-[0.98] cursor-pointer"
               >
-                <Gift className="w-4 h-4 text-[#DFC066]" />
-                <span>Customize in Form</span>
+                <Gift className="w-4 h-4 text-[#C59B27]" />
+                <span>Customize Form</span>
               </button>
+
+              <a
+                href={getWhatsAppLink()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto min-h-[44px] inline-flex items-center justify-center gap-1.5 px-4 py-3 rounded-full text-xs font-semibold text-[#14382C] bg-white hover:bg-[#F4EFE6] border border-[#EADBCE] shadow-sm transition-all active:scale-[0.98]"
+              >
+                <MessageCircle className="w-4 h-4 text-[#25D366]" />
+                <span>WhatsApp</span>
+              </a>
             </div>
 
           </div>

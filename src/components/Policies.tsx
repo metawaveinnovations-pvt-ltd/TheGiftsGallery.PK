@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { POLICIES } from '../data/products';
+import { usePortal } from '../context/PortalContext';
 import { Logo } from './Logo';
 import {
   Shield,
@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 
 export const Policies: React.FC = () => {
+  const { policies } = usePortal();
   const [modalOpen, setModalOpen] = useState(false);
   const [expandedId, setExpandedId] = useState<number | null>(null);
 
@@ -77,7 +78,7 @@ export const Policies: React.FC = () => {
 
         {/* Authentic Gold Wax-Seal Styled Cards Grid (9 Policies) */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {POLICIES.map((item) => {
+          {policies.map((item) => {
             const Icon = getPolicyIcon(item.id);
             const isExpanded = expandedId === item.id;
 
@@ -187,7 +188,7 @@ export const Policies: React.FC = () => {
 
             {/* Modal Content */}
             <div className="space-y-6 text-slate-700 divide-y divide-[#EADBCE]">
-              {POLICIES.map((p) => (
+              {policies.map((p) => (
                 <div key={p.id} className="pt-5 first:pt-0">
                   <div className="flex items-baseline gap-2 mb-1.5">
                     <span className="font-serif font-bold text-sm text-[#C59B27]">

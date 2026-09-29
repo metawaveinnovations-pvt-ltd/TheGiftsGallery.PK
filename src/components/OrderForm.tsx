@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { OrderFormData, Product } from '../types';
-import { BRAND_INFO, PRODUCTS } from '../data/products';
+import { OrderFormData, PortalOrder, Product } from '../types';
+import { BRAND_INFO } from '../data/products';
+import { usePortal } from '../context/PortalContext';
 import {
   Gift,
   MessageCircle,
@@ -9,12 +10,10 @@ import {
   Copy,
   Check,
   AlertCircle,
-  Calendar,
   Sparkles,
-  MapPin,
-  Clock,
   Send,
-  Heart,
+  ShoppingBag,
+  Package,
 } from 'lucide-react';
 import { Logo } from './Logo';
 import { OptimizedImage } from './OptimizedImage';
@@ -23,40 +22,42 @@ interface OrderFormProps {
   initialProduct?: { product: Product; selectedTier?: string } | null;
   initialOccasion?: string | null;
   onClearInitialProduct?: () => void;
+  onProceedToCheckout?: () => void;
+  onOpenUserPortal?: () => void;
 }
-
-const PAKISTANI_CITIES = [
-  'Karachi',
-  'Lahore',
-  'Islamabad',
-  'Rawalpindi',
-  'Peshawar',
-  'Multan',
-  'Faisalabad',
-  'Sialkot',
-  'Quetta',
-  'Gujranwala',
-];
 
 export const OrderForm: React.FC<OrderFormProps> = ({
   initialProduct,
   initialOccasion,
   onClearInitialProduct,
+  onProceedToCheckout,
+  onOpenUserPortal,
 }) => {
+  const {
+    products,
+    formOptions,
+    siteSettings,
+    userProfile,
+    isUserAuthenticated,
+    openAuthModal,
+    createOrderFromForm,
+    setCheckoutDraft,
+  } = usePortal();
+
   const [formData, setFormData] = useState<OrderFormData>({
-    fullName: '',
-    whatsappNumber: '',
-    instagramHandle: '',
-    giftType: 'Birthday Gift',
-    giftFor: 'Her',
-    budgetRange: 'PKR 5,000 – 10,000',
+    fullName: isUserAuthenticated ? userProfile.fullName : '',
+    whatsappNumber: isUserAuthenticated ? userProfile.whatsappNumber : '',
+    instagramHandle: isUserAuthenticated ? userProfile.instagramHandle : '',
+    giftType: formOptions.giftTypes[0] || 'Birthday Gift',
+    giftFor: formOptions.giftForOptions[0] || 'Her',
+    budgetRange: formOptions.budgetRanges[1] || 'PKR 5,000 – 10,000',
     deliveryDate: '',
-    deliveryTime: '4 PM – 7 PM',
+    deliveryTime: formOptions.deliverySlots[1] || '4 PM – 7 PM (Evening)',
     recipientName: '',
     personalMessage: '',
     specialRequests: '',
-    city: 'Lahore',
-    deliveryAddress: '',
+    city: isUserAuthenticated ? userProfile.city : 'Lahore',
+    deliveryAddress: isUserAuthenticated ? userProfile.defaultAddress : '',
   });
 
   const [selectedProductId, setSelectedProductId] = useState<string>('');
@@ -64,6 +65,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
   const [isOtherCity, setIsOtherCity] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<keyof OrderFormData, string>>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [createdOrder, setCreatedOrder] = useState<PortalOrder | null>(null);
   const [copied, setCopied] = useState(false);
 
   // Sync when initialOccasion prop changes
@@ -114,47 +116,11 @@ export const OrderForm: React.FC<OrderFormProps> = ({
     }
   }, [initialProduct]);
 
-  const giftTypes = [
-    'Birthday Gift',
-    'Anniversary Gift',
-    'Special Gifts for Him',
-    'Romantic Gift',
-    'Customized Gift Basket',
-    'Graduation Gift',
-    'Wedding Gift',
-    'Corporate Gift',
-    'Personalized Gift',
-    'Surprise Gift',
-    'Other Bespoke Idea',
-  ];
-
-  const giftForOptions = [
-    'Her',
-    'Him',
-    'Spouse / Partner',
-    'Mother / Father',
-    'Friend / Bestie',
-    'Sibling',
-    'Colleague / Boss',
-    'Child',
-    'Other',
-  ];
-
-  const budgetOptions = [
-    'Under PKR 2,000',
-    'PKR 2,000 – 5,000',
-    'PKR 5,000 – 10,000',
-    'PKR 10,000 – 18,000',
-    'PKR 18,000 – 28,000+',
-    'Not Sure — Recommend Something',
-  ];
-
-  const deliveryTimes = [
-    '1 PM – 4 PM (Standard Afternoon)',
-    '4 PM – 7 PM (Standard Evening)',
-    '7 PM – 10 PM (Standard Night)',
-    '12 AM Midnight Surprise (Special Surcharge)',
-  ];
+  const giftTypes = formOptions.giftTypes;
+  const giftForOptions = formOptions.giftForOptions;
+  const budgetOptions = formOptions.budgetRanges;
+  const deliveryTimes = formOptions.deliverySlots;
+  const pakistaniCities = formOptions.cities;
 
   const handleCitySelect = (cityName: string) => {
     setIsOtherCity(false);
@@ -196,14 +162,15 @@ export const OrderForm: React.FC<OrderFormProps> = ({
   };
 
   const generateWhatsAppMessage = () => {
-    const selectedProd = PRODUCTS.find((p) => p.id === selectedProductId);
+    const selectedProd = products.find((p) => p.id === selectedProductId);
     const prodDetails = selectedProd
       ? `*Selected Product:* ${selectedProd.name}${selectedTier ? ` (${selectedTier})` : ''}\n`
       : '';
+    const orderRefLine = createdOrder ? `*Order Tracking ID:* ${createdOrder.id}\n` : '';
 
     return `Hello The Gift Gallery! 🎁
 I would like to place a custom gift order.
-
+${orderRefLine}
 *Name:* ${formData.fullName}
 *WhatsApp:* ${formData.whatsappNumber}
 ${formData.instagramHandle ? `*Instagram:* ${formData.instagramHandle}\n` : ''}${prodDetails}*Occasion / Gift Type:* ${formData.giftType}
@@ -220,11 +187,45 @@ Please confirm availability and booking details. Thank you!`;
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validate()) {
+      const selectedProd = products.find((p) => p.id === selectedProductId);
+      const logged = createOrderFromForm(formData, selectedProd, selectedTier || undefined);
+      setCreatedOrder(logged);
       setIsSubmitted(true);
       const element = document.getElementById('order-form');
       if (element) {
         element.scrollIntoView({ behavior: 'smooth' });
       }
+    }
+  };
+
+  const handleGoToCheckoutPage = () => {
+    const selectedProd = products.find((p) => p.id === selectedProductId);
+    setCheckoutDraft({
+      product: selectedProd,
+      selectedTier: selectedTier || undefined,
+      giftType: formData.giftType,
+      giftFor: formData.giftFor,
+      budgetRange: formData.budgetRange,
+      deliveryDate: formData.deliveryDate,
+      deliveryTime: formData.deliveryTime,
+      recipientName: formData.recipientName,
+      personalMessage: formData.personalMessage,
+      specialRequests: formData.specialRequests,
+      city: formData.city,
+      deliveryAddress: formData.deliveryAddress,
+      fullName: formData.fullName,
+      whatsappNumber: formData.whatsappNumber,
+      instagramHandle: formData.instagramHandle,
+    });
+    if (!isUserAuthenticated) {
+      openAuthModal(
+        'Sign in or create your complimentary account to proceed to Checkout & Payment (Card, COD, or Bank Transfer).',
+        () => {
+          if (onProceedToCheckout) onProceedToCheckout();
+        }
+      );
+    } else if (onProceedToCheckout) {
+      onProceedToCheckout();
     }
   };
 
@@ -236,7 +237,7 @@ Please confirm availability and booking details. Thank you!`;
 
   const handleWhatsAppRedirect = () => {
     const text = encodeURIComponent(generateWhatsAppMessage());
-    window.open(`${BRAND_INFO.whatsappUrl}?text=${text}`, '_blank');
+    window.open(`${siteSettings.whatsappUrl || BRAND_INFO.whatsappUrl}?text=${text}`, '_blank');
   };
 
   const handleReset = () => {
@@ -287,7 +288,7 @@ Please confirm availability and booking details. Thank you!`;
 
         {/* Selected Product Banner if applicable */}
         {selectedProductId && (() => {
-          const selectedProduct = PRODUCTS.find((p) => p.id === selectedProductId);
+          const selectedProduct = products.find((p) => p.id === selectedProductId);
           return (
             <div className="max-w-4xl mx-auto mb-8 bg-[#14382C] text-white rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 border border-[#C59B27]/40 shadow-md animate-in fade-in">
               <div className="flex items-center gap-3 text-center sm:text-left">
@@ -342,10 +343,15 @@ Please confirm availability and booking details. Thank you!`;
             <Logo variant="mark" size={80} className="mb-4" />
 
             <h3 className="text-2xl sm:text-3xl font-serif font-bold text-[#14382C] mb-2">
-              Your Order Request Is Ready!
+              Order Logged &amp; Ready!
             </h3>
+            {createdOrder && (
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#F4EFE6] border border-[#C59B27]/40 text-xs font-mono font-bold text-[#14382C] mb-3">
+                <span>Tracking ID: {createdOrder.id}</span>
+              </div>
+            )}
             <p className="text-xs sm:text-sm text-slate-600 mb-6 font-light">
-              We have generated your customized order summary. Click below to launch WhatsApp and finalize your booking with our team.
+              Your order has been logged in our system. You can track its live status in your User Portal or send the summary directly to our WhatsApp concierge.
             </p>
 
             {/* Structured Summary Preview Box */}
@@ -354,23 +360,34 @@ Please confirm availability and booking details. Thank you!`;
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row items-center gap-3 justify-center mb-6">
+            <div className="flex flex-col sm:flex-row flex-wrap items-center gap-3 justify-center mb-6">
               <button
                 type="button"
                 onClick={handleWhatsAppRedirect}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full text-sm font-semibold text-white bg-[#14382C] hover:bg-[#0D261E] shadow-md hover:shadow-lg transition-all duration-200 border border-[#C59B27]/40 active:scale-[0.98] cursor-pointer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-sm font-semibold text-white bg-[#14382C] hover:bg-[#0D261E] shadow-md hover:shadow-lg transition-all duration-200 border border-[#C59B27]/40 active:scale-[0.98] cursor-pointer"
               >
                 <MessageCircle className="w-4 h-4 text-[#DFC066]" />
                 <span>Send via WhatsApp Now</span>
               </button>
 
+              {onOpenUserPortal && (
+                <button
+                  type="button"
+                  onClick={onOpenUserPortal}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full text-sm font-semibold text-[#14382C] bg-[#F4EFE6] hover:bg-[#EADBCE] border border-[#C59B27]/40 transition-all cursor-pointer"
+                >
+                  <Package className="w-4 h-4 text-[#C59B27]" />
+                  <span>Track in User Portal</span>
+                </button>
+              )}
+
               <button
                 type="button"
                 onClick={handleCopyMessage}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full text-sm font-semibold text-[#14382C] bg-[#F4EFE6] hover:bg-[#EADBCE] border border-[#C59B27]/40 transition-all cursor-pointer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full text-sm font-semibold text-[#14382C] bg-white hover:bg-[#F4EFE6] border border-[#EADBCE] transition-all cursor-pointer"
               >
                 {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-[#14382C]" />}
-                <span>{copied ? 'Copied to Clipboard!' : 'Copy Order Text'}</span>
+                <span>{copied ? 'Copied!' : 'Copy Text'}</span>
               </button>
             </div>
 
@@ -546,7 +563,7 @@ Please confirm availability and booking details. Thank you!`;
                       Select Delivery City <span className="text-red-500">*</span>
                     </label>
                     <div className="flex flex-wrap gap-1.5 mb-2">
-                      {PAKISTANI_CITIES.map((c) => (
+                      {pakistaniCities.map((c) => (
                         <button
                           key={c}
                           type="button"
@@ -710,17 +727,28 @@ Please confirm availability and booking details. Thank you!`;
                   </div>
                 </div>
 
-                {/* Submit button */}
-                <div className="pt-4">
-                  <button
-                    type="submit"
-                    className="w-full py-4 px-6 rounded-full text-sm font-semibold tracking-wide text-white bg-[#14382C] hover:bg-[#0D261E] shadow-md hover:shadow-lg transition-all duration-200 border border-[#C59B27]/40 flex items-center justify-center gap-2 active:scale-[0.99] cursor-pointer"
-                  >
-                    <Send className="w-4 h-4 text-[#DFC066]" />
-                    <span>Review & Send Order to WhatsApp Concierge</span>
-                  </button>
-                  <p className="text-center text-[11px] text-slate-500 mt-2.5">
-                    No immediate online payment taken. We connect directly on WhatsApp to confirm details.
+                {/* Submit & Checkout buttons */}
+                <div className="pt-4 space-y-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={handleGoToCheckoutPage}
+                      className="w-full py-4 px-5 rounded-full text-xs sm:text-sm font-semibold tracking-wide text-white bg-[#14382C] hover:bg-[#0D261E] shadow-md hover:shadow-lg transition-all duration-200 border border-[#C59B27]/50 flex items-center justify-center gap-2 active:scale-[0.99] cursor-pointer"
+                    >
+                      <ShoppingBag className="w-4 h-4 text-[#DFC066] shrink-0" />
+                      <span>Proceed to Checkout (Card / COD / Transfer)</span>
+                    </button>
+
+                    <button
+                      type="submit"
+                      className="w-full py-4 px-5 rounded-full text-xs sm:text-sm font-semibold tracking-wide text-[#14382C] bg-[#F4EFE6] hover:bg-[#EADBCE] transition-all duration-200 border border-[#C59B27]/50 flex items-center justify-center gap-2 active:scale-[0.99] cursor-pointer"
+                    >
+                      <Send className="w-4 h-4 text-[#14382C] shrink-0" />
+                      <span>Quick WhatsApp Concierge Order</span>
+                    </button>
+                  </div>
+                  <p className="text-center text-[11px] text-slate-500">
+                    Choose full Checkout for Card, COD, or Bank Transfer — or book via WhatsApp Concierge.
                   </p>
                 </div>
 

@@ -1,15 +1,20 @@
 import React, { useState, useMemo } from 'react';
-import { PRODUCTS } from '../data/products';
+import { usePortal } from '../context/PortalContext';
 import { Product } from '../types';
-import { Gift, Check, Eye, Search, Sparkles, X } from 'lucide-react';
+import { Gift, Check, Eye, Search, Sparkles, X, Heart, ShoppingBag } from 'lucide-react';
 import { ProductQuickViewModal } from './ProductQuickViewModal';
 import { OptimizedImage } from './OptimizedImage';
 
 interface FeaturedGiftsProps {
   onOrderProduct: (product: Product, selectedTier?: string) => void;
+  onCheckoutProduct?: (product: Product, selectedTier?: string) => void;
 }
 
-export const FeaturedGifts: React.FC<FeaturedGiftsProps> = ({ onOrderProduct }) => {
+export const FeaturedGifts: React.FC<FeaturedGiftsProps> = ({
+  onOrderProduct,
+  onCheckoutProduct,
+}) => {
+  const { products, wishlistIds, toggleWishlist } = usePortal();
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeTiers, setActiveTiers] = useState<Record<string, number>>({});
@@ -28,7 +33,7 @@ export const FeaturedGifts: React.FC<FeaturedGiftsProps> = ({ onOrderProduct }) 
   ];
 
   const filteredProducts = useMemo(() => {
-    return PRODUCTS.filter((p) => {
+    return products.filter((p) => {
       const matchesCategory =
         selectedCategory === 'All' ||
         p.category === selectedCategory ||
@@ -46,11 +51,11 @@ export const FeaturedGifts: React.FC<FeaturedGiftsProps> = ({ onOrderProduct }) 
 
       return matchesCategory && matchesSearch;
     });
-  }, [selectedCategory, searchQuery]);
+  }, [products, selectedCategory, searchQuery]);
 
   const getCategoryCount = (categoryName: string) => {
-    if (categoryName === 'All') return PRODUCTS.length;
-    return PRODUCTS.filter(
+    if (categoryName === 'All') return products.length;
+    return products.filter(
       (p) =>
         p.category === categoryName ||
         p.tags?.some((t) => t.toLowerCase() === categoryName.toLowerCase())
@@ -281,16 +286,44 @@ export const FeaturedGifts: React.FC<FeaturedGiftsProps> = ({ onOrderProduct }) 
                 {/* Card Action Footer */}
                 <div className="p-6 pt-0 mt-2 flex items-center gap-2">
                   <button
-                    onClick={() => onOrderProduct(product, currentTier?.size)}
-                    className="flex-1 min-h-[44px] py-2.5 rounded-xl bg-[#14382C] text-white hover:bg-[#0f2920] font-medium text-xs tracking-wide transition-all shadow-sm hover:shadow flex items-center justify-center gap-1.5 cursor-pointer group/btn active:scale-[0.98]"
+                    onClick={() =>
+                      onCheckoutProduct
+                        ? onCheckoutProduct(product, currentTier?.size)
+                        : onOrderProduct(product, currentTier?.size)
+                    }
+                    className="flex-1 min-h-[44px] py-2.5 px-3 rounded-xl bg-[#14382C] text-white hover:bg-[#0f2920] font-semibold text-xs tracking-wide transition-all shadow-sm hover:shadow flex items-center justify-center gap-1.5 cursor-pointer group/btn active:scale-[0.98]"
                   >
-                    <Gift className="w-3.5 h-3.5 text-[#DFC066] group-hover/btn:rotate-12 transition-transform" />
-                    <span>Order on WhatsApp</span>
+                    <ShoppingBag className="w-3.5 h-3.5 text-[#DFC066] group-hover/btn:scale-110 transition-transform shrink-0" />
+                    <span>Order &amp; Checkout</span>
+                  </button>
+
+                  <button
+                    onClick={() => onOrderProduct(product, currentTier?.size)}
+                    className="min-h-[44px] px-3 py-2.5 rounded-xl bg-[#F4EFE6] hover:bg-[#EADBCE] border border-[#C59B27]/40 text-[#14382C] font-semibold text-xs transition-colors cursor-pointer flex items-center justify-center gap-1 active:scale-95"
+                    title="Customize in Order Form"
+                  >
+                    <Gift className="w-3.5 h-3.5 text-[#C59B27]" />
+                    <span className="hidden sm:inline">Customize</span>
+                  </button>
+
+                  <button
+                    onClick={() => toggleWishlist(product.id)}
+                    className={`min-h-[44px] min-w-[40px] p-2.5 rounded-xl border transition-colors cursor-pointer flex items-center justify-center active:scale-95 ${
+                      wishlistIds.includes(product.id)
+                        ? 'border-rose-200 bg-rose-50 text-rose-600'
+                        : 'border-[#EADBCE] text-slate-500 hover:bg-[#F4EFE6]'
+                    }`}
+                    title={wishlistIds.includes(product.id) ? 'Saved in Wishlist' : 'Save to Wishlist'}
+                    aria-label="Save to Wishlist"
+                  >
+                    <Heart
+                      className={`w-4 h-4 ${wishlistIds.includes(product.id) ? 'fill-rose-500 text-rose-500' : ''}`}
+                    />
                   </button>
 
                   <button
                     onClick={() => setQuickViewProduct(product)}
-                    className="min-h-[44px] min-w-[44px] p-2.5 rounded-xl border border-[#EADBCE] text-[#14382C] hover:bg-[#F4EFE6] transition-colors cursor-pointer flex items-center justify-center active:scale-95"
+                    className="min-h-[44px] min-w-[40px] p-2.5 rounded-xl border border-[#EADBCE] text-[#14382C] hover:bg-[#F4EFE6] transition-colors cursor-pointer flex items-center justify-center active:scale-95"
                     title="Quick preview"
                     aria-label="Quick preview"
                   >
@@ -332,6 +365,14 @@ export const FeaturedGifts: React.FC<FeaturedGiftsProps> = ({ onOrderProduct }) 
           onClose={() => setQuickViewProduct(null)}
           onSelectForOrderForm={(prod, tier) => {
             onOrderProduct(prod, tier);
+            setQuickViewProduct(null);
+          }}
+          onCheckoutProduct={(prod, tier) => {
+            if (onCheckoutProduct) {
+              onCheckoutProduct(prod, tier);
+            } else {
+              onOrderProduct(prod, tier);
+            }
             setQuickViewProduct(null);
           }}
         />

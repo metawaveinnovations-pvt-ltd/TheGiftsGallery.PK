@@ -1,7 +1,10 @@
 import React from 'react';
 import { Gift, Sparkles, HeartHandshake } from 'lucide-react';
+import { BRAND_INFO } from '../data/products';
+import { usePortal } from '../context/PortalContext';
 
 export const BrandIntro: React.FC = () => {
+  const { siteSettings } = usePortal();
   const cards = [
     {
       icon: Gift,
@@ -29,14 +32,17 @@ export const BrandIntro: React.FC = () => {
         
         {/* Intro Header */}
         <div className="max-w-3xl mx-auto text-center mb-16">
-          <div className="inline-block text-xs font-semibold tracking-widest uppercase text-[#C59B27] mb-3">
+          <a
+            href="#home"
+            className="inline-block text-xs font-semibold tracking-widest uppercase text-[#C59B27] hover:text-[#14382C] transition-colors mb-3"
+          >
             THE TGG PHILOSOPHY
-          </div>
+          </a>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-[#14382C] mb-6 tracking-tight">
-            Thoughtfully Chosen. Beautifully Gifted.
+            {siteSettings.brandPhilosophyTitle}
           </h2>
           <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-light">
-            “At The Gift Gallery, we believe a gift is more than an object — it is a feeling, a memory, and a way of saying ‘you matter.’”
+            {siteSettings.brandPhilosophyQuote}
           </p>
           <div className="mt-6 flex items-center justify-center gap-3">
             <span className="h-[1px] w-12 bg-[#C59B27]/40" />
@@ -73,6 +79,50 @@ export const BrandIntro: React.FC = () => {
               </div>
             );
           })}
+        </div>
+
+        {/* Editorial Tech Partnership & Management Signature */}
+        <div className="mt-14 pt-10 border-t border-[#EADBCE]/90 flex flex-col lg:flex-row items-center justify-between gap-6 text-center lg:text-left">
+          <div className="space-y-1.5">
+            <div className="text-xs font-semibold tracking-widest uppercase text-[#C59B27]">
+              Official Technology Partnership · Digital Commerce
+            </div>
+            <p className="font-serif text-xl sm:text-2xl font-bold text-[#14382C] tracking-tight">
+              <a
+                href="#home"
+                className="hover:text-[#C59B27] transition-colors"
+                title="The Gifts Gallery — Home"
+              >
+                The Gifts Gallery
+              </a>
+              <span className="text-[#C59B27] font-normal mx-1.5">×</span>
+              <a
+                href={BRAND_INFO.partnerUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-[#C59B27] underline decoration-[#C59B27]/40 hover:decoration-[#C59B27] underline-offset-4 transition-colors"
+                title="Visit MetaWave Innovations LTD"
+              >
+                MetaWave Innovations LTD
+              </a>
+            </p>
+          </div>
+
+          <p className="text-xs sm:text-sm text-slate-600 max-w-xl leading-relaxed">
+            Blending bespoke gifting artistry with seamless digital experience — platform architecture, digital operations, and brand experience proudly{' '}
+            <span className="font-semibold text-[#14382C]">
+              Managed by{' '}
+              <a
+                href={BRAND_INFO.partnerUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline decoration-[#C59B27]/60 hover:text-[#C59B27] transition-colors"
+              >
+                MetaWave Innovations LTD
+              </a>
+            </span>
+            .
+          </p>
         </div>
 
       </div>

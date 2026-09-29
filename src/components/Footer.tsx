@@ -1,10 +1,19 @@
 import React from 'react';
 import { Logo } from './Logo';
 import { BRAND_INFO } from '../data/products';
-import { Instagram, MessageCircle, MapPin, ArrowUp } from 'lucide-react';
+import { usePortal } from '../context/PortalContext';
+import { AppViewMode } from '../types';
+import { Instagram, MessageCircle, MapPin, ArrowUp, User, ShieldCheck, ShoppingBag } from 'lucide-react';
 
-export const Footer: React.FC = () => {
+interface FooterProps {
+  onNavigateView?: (view: AppViewMode) => void;
+}
+
+export const Footer: React.FC<FooterProps> = ({ onNavigateView }) => {
+  const { siteSettings, isUserAuthenticated, openAuthModal } = usePortal();
+
   const scrollToTop = () => {
+    if (onNavigateView) onNavigateView('storefront');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -28,19 +37,24 @@ export const Footer: React.FC = () => {
           
           {/* Brand Col (5 cols) */}
           <div className="md:col-span-5 flex flex-col items-start">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-1.5 rounded-xl bg-white/95 border border-[#C59B27]/60 shadow-md flex items-center justify-center shrink-0">
+            <a
+              href="#home"
+              onClick={scrollToTop}
+              title="The Gift Gallery (TGG) — Home"
+              className="group flex items-center gap-3 mb-4 cursor-pointer"
+            >
+              <div className="p-1.5 rounded-xl bg-white/95 border border-[#C59B27]/60 shadow-md flex items-center justify-center shrink-0 group-hover:border-[#DFC066] transition-colors">
                 <Logo variant="mark" size={56} />
               </div>
               <div>
-                <span className="font-serif text-xl font-bold text-white tracking-wide block">
+                <span className="font-serif text-xl font-bold text-white group-hover:text-[#DFC066] transition-colors tracking-wide block">
                   The Gift Gallery
                 </span>
                 <span className="text-xs text-[#DFC066] font-semibold tracking-wider uppercase">
                   TGG · Pakistan
                 </span>
               </div>
-            </div>
+            </a>
 
             <p className="text-sm font-serif italic text-emerald-100/80 mb-4 max-w-sm">
               “Gifts for Every Moment.”
@@ -50,9 +64,42 @@ export const Footer: React.FC = () => {
               Thoughtfully curated gifts, bespoke hampers, luxury fragrances, and personalized keepsakes delivered with care across Pakistan.
             </p>
 
-            <div className="flex items-center gap-2 text-xs text-emerald-200/80">
+            <div className="flex items-center gap-2 text-xs text-emerald-200/80 mb-5">
               <MapPin className="w-4 h-4 text-[#DFC066] shrink-0" />
               <span>Nationwide Delivery across Pakistan</span>
+            </div>
+
+            {/* Co-Branded Tech Partnership & Management Callout */}
+            <div className="pt-4 border-t border-emerald-900/60 w-full max-w-sm">
+              <div className="text-[11px] font-semibold tracking-wider uppercase text-[#DFC066] mb-1">
+                <a
+                  href="#home"
+                  onClick={scrollToTop}
+                  className="hover:text-white transition-colors"
+                >
+                  The Gifts Gallery
+                </a>{' '}
+                <span>×</span>{' '}
+                <a
+                  href={BRAND_INFO.partnerUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-white underline decoration-[#DFC066]/50 hover:decoration-white transition-colors"
+                >
+                  MetaWave Innovations LTD
+                </a>
+              </div>
+              <p className="text-xs text-emerald-100/70 leading-relaxed">
+                Official Tech Partnership · Digitally Managed by{' '}
+                <a
+                  href={BRAND_INFO.partnerUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-white font-medium hover:text-[#DFC066] underline decoration-[#C59B27]/50 hover:decoration-[#DFC066] transition-colors"
+                >
+                  MetaWave Innovations LTD
+                </a>
+              </p>
             </div>
           </div>
 
@@ -66,12 +113,67 @@ export const Footer: React.FC = () => {
                 <li key={link.label}>
                   <a
                     href={link.href}
+                    onClick={() => {
+                      if (onNavigateView) onNavigateView('storefront');
+                    }}
                     className="hover:text-[#DFC066] transition-colors"
                   >
                     {link.label}
                   </a>
                 </li>
               ))}
+              {onNavigateView && (
+                <>
+                  <li className="pt-2 border-t border-emerald-900/50">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!isUserAuthenticated) {
+                          openAuthModal(
+                            'Sign in or create an account to access Checkout & Payment.',
+                            () => onNavigateView('checkout')
+                          );
+                        } else {
+                          onNavigateView('checkout');
+                        }
+                      }}
+                      className="inline-flex items-center gap-1.5 text-[#DFC066] hover:text-white font-semibold transition-colors cursor-pointer"
+                    >
+                      <ShoppingBag className="w-3.5 h-3.5" />
+                      <span>Order Checkout (Card / COD / Transfer)</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!isUserAuthenticated) {
+                          openAuthModal(
+                            'Sign in to open your User Portal and track orders.',
+                            () => onNavigateView('user-portal')
+                          );
+                        } else {
+                          onNavigateView('user-portal');
+                        }
+                      }}
+                      className="inline-flex items-center gap-1.5 hover:text-[#DFC066] transition-colors cursor-pointer"
+                    >
+                      <User className="w-3.5 h-3.5 text-[#DFC066]" />
+                      <span>My Gifting Portal (Track Orders)</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() => onNavigateView('admin-portal')}
+                      className="inline-flex items-center gap-1.5 hover:text-[#DFC066] transition-colors cursor-pointer"
+                    >
+                      <ShieldCheck className="w-3.5 h-3.5 text-[#DFC066]" />
+                      <span>Admin Concierge Portal</span>
+                    </button>
+                  </li>
+                </>
+              )}
             </ul>
           </div>
 
@@ -135,15 +237,61 @@ export const Footer: React.FC = () => {
           </p>
         </div>
 
-        {/* Footer Statement & Copyright */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+        {/* Footer Statement, Tech Partnership & Copyright */}
+        <div className="pt-8 flex flex-col lg:flex-row items-center justify-between gap-4 text-center lg:text-left">
           
-          <div className="text-xs font-serif tracking-widest text-[#DFC066] font-semibold">
+          <a
+            href="#home"
+            onClick={scrollToTop}
+            className="text-xs font-serif tracking-widest text-[#DFC066] hover:text-white transition-colors font-semibold"
+          >
             GIFTS • SURPRISES • MEMORIES
+          </a>
+
+          <div className="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-3 text-[11px] text-emerald-100/70">
+            <span className="font-medium text-emerald-100/90">
+              <a
+                href="#home"
+                onClick={scrollToTop}
+                className="hover:text-[#DFC066] transition-colors"
+              >
+                The Gifts Gallery
+              </a>{' '}
+              <span className="text-[#DFC066]">×</span>{' '}
+              <a
+                href={BRAND_INFO.partnerUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-[#DFC066] underline decoration-[#C59B27]/50 hover:decoration-[#DFC066] transition-colors"
+              >
+                MetaWave Innovations LTD
+              </a>{' '}
+              Tech Partnership
+            </span>
+            <span aria-hidden="true" className="hidden sm:inline text-emerald-100/30">·</span>
+            <span>
+              Managed by{' '}
+              <a
+                href={BRAND_INFO.partnerUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-[#DFC066] hover:text-white underline decoration-[#DFC066]/50 hover:decoration-white transition-colors"
+              >
+                MetaWave Innovations LTD
+              </a>
+            </span>
           </div>
 
           <p className="text-[11px] text-emerald-100/50">
-            © 2026 The Gift Gallery. All rights reserved.
+            © 2026{' '}
+            <a
+              href="#home"
+              onClick={scrollToTop}
+              className="hover:text-[#DFC066] transition-colors"
+            >
+              The Gift Gallery
+            </a>
+            . All rights reserved.
           </p>
 
         </div>

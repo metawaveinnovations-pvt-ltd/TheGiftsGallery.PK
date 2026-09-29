@@ -10,10 +10,15 @@ export const InstagramSection: React.FC = () => {
         
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-2 text-xs font-semibold tracking-widest uppercase text-[#C59B27] mb-2">
+          <a
+            href={BRAND_INFO.instagramUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-xs font-semibold tracking-widest uppercase text-[#C59B27] hover:text-[#14382C] transition-colors mb-2"
+          >
             <Instagram className="w-3.5 h-3.5" />
             <span>COMMUNITY & INSPIRATION</span>
-          </div>
+          </a>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-[#14382C] tracking-tight mb-3">
             Follow The Moments
           </h2>

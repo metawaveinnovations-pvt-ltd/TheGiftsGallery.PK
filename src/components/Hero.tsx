@@ -1,6 +1,6 @@
 import React from 'react';
-import { BRAND_INFO } from '../data/products';
-import { Gift, MessageCircle, Sparkles, ShieldCheck, Truck, Heart } from 'lucide-react';
+import { usePortal } from '../context/PortalContext';
+import { Gift, MessageCircle, Sparkles, ShieldCheck, Truck, Heart, Instagram } from 'lucide-react';
 import { Logo } from './Logo';
 import { OptimizedImage } from './OptimizedImage';
 
@@ -9,6 +9,8 @@ interface HeroProps {
 }
 
 export const Hero: React.FC<HeroProps> = ({ onExploreClick }) => {
+  const { siteSettings } = usePortal();
+
   return (
     <section id="home" className="relative overflow-hidden bg-gradient-to-b from-[#FBF9F5] via-[#F6F1E7] to-[#FBF9F5] py-12 md:py-20 lg:py-24 border-b border-[#EADBCE]/60">
       {/* Subtle background ambient accents */}
@@ -21,20 +23,40 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick }) => {
           {/* Left Column: Editorial Headline & Actions (7 cols) */}
           <div className="lg:col-span-7 flex flex-col items-start text-left">
             
-            {/* Small eyebrow */}
-            <div className="inline-flex items-center gap-2 mb-4 text-xs font-semibold tracking-widest uppercase text-[#14382C] border-b border-[#C59B27]/60 pb-1">
-              <Sparkles className="w-3.5 h-3.5 text-[#C59B27]" />
-              <span>THE GIFT GALLERY • TGG</span>
+            {/* Small eyebrow: Clickable Brand & Instagram */}
+            <div className="inline-flex flex-wrap items-center gap-2 mb-4 text-xs font-semibold tracking-widest uppercase text-[#14382C] border-b border-[#C59B27]/60 pb-1">
+              <a
+                href="#home"
+                className="inline-flex items-center gap-1.5 hover:text-[#C59B27] transition-colors"
+                title="The Gift Gallery (TGG) — Home"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-[#C59B27]" />
+                <span>{siteSettings.heroEyebrow}</span>
+              </a>
+              <span aria-hidden="true" className="text-[#C59B27]/60">·</span>
+              <a
+                href={siteSettings.instagramUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-[#C59B27] hover:text-[#14382C] transition-colors normal-case tracking-normal font-medium"
+                title="Visit @thegiftsgallery.pk on Instagram"
+              >
+                <Instagram className="w-3.5 h-3.5" />
+                <span>{siteSettings.instagramHandle}</span>
+              </a>
             </div>
 
             {/* Main Heading */}
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif font-bold text-[#14382C] leading-[1.1] tracking-tight mb-6">
-              Gifts for <span className="italic font-normal text-[#C59B27]">Every Moment.</span>
+              {siteSettings.heroHeadlinePrefix}{' '}
+              <span className="italic font-normal text-[#C59B27]">
+                {siteSettings.heroHeadlineHighlight}
+              </span>
             </h1>
 
             {/* Supporting Copy */}
             <p className="text-lg sm:text-xl text-slate-600 font-normal leading-relaxed max-w-xl mb-8">
-              Thoughtfully curated gifts, beautifully presented and made to turn ordinary moments into memorable ones.
+              {siteSettings.heroSubtitle}
             </p>
 
             {/* CTA Buttons */}
@@ -48,7 +70,7 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick }) => {
               </button>
 
               <a
-                href={BRAND_INFO.whatsappUrl}
+                href={siteSettings.whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full sm:w-auto min-h-[48px] inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-full text-sm font-semibold tracking-wide text-[#14382C] bg-[#F4EFE6] hover:bg-[#EADBCE] border border-[#C59B27]/50 transition-all duration-200 shadow-sm hover:shadow active:scale-[0.98]"
@@ -62,15 +84,15 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick }) => {
             <div className="pt-6 border-t border-[#EADBCE] w-full grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-4 text-slate-600">
               <div className="flex items-center gap-2">
                 <Truck className="w-4 h-4 text-[#C59B27] shrink-0" />
-                <span className="text-xs font-medium">Nationwide PK Delivery</span>
+                <span className="text-xs font-medium">{siteSettings.heroTrustBadge1}</span>
               </div>
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-[#C59B27] shrink-0" />
-                <span className="text-xs font-medium">Handcrafted Packaging</span>
+                <span className="text-xs font-medium">{siteSettings.heroTrustBadge2}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Heart className="w-4 h-4 text-[#C59B27] shrink-0" />
-                <span className="text-xs font-medium">Personalized Touch</span>
+                <span className="text-xs font-medium">{siteSettings.heroTrustBadge3}</span>
               </div>
             </div>
 
@@ -87,7 +109,7 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick }) => {
               <div className="relative rounded-2xl overflow-hidden bg-white shadow-xl border border-[#EADBCE]">
                 {/* Hero Editorial Photography (Fast WebP & high priority) */}
                 <OptimizedImage
-                  src="/assets/images/tgg_hero_curated_gifting_1790253103850.jpg"
+                  src={siteSettings.heroImageUrl}
                   alt="The Gift Gallery curated presentation"
                   aspectRatio="aspect-square sm:aspect-[4/3]"
                   className="w-full h-80 sm:h-96"
@@ -108,10 +130,10 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick }) => {
                 {/* Bottom caption overlay */}
                 <div className="absolute bottom-0 inset-x-0 p-5 text-white">
                   <div className="text-[11px] font-semibold uppercase tracking-wider text-[#DFC066] mb-1">
-                    Signature Hampers & Bespoke Boxes
+                    {siteSettings.heroCaptionTag}
                   </div>
                   <div className="font-serif text-lg font-medium leading-snug">
-                    Curated with devotion, delivered with grace.
+                    {siteSettings.heroCaptionTitle}
                   </div>
                 </div>
               </div>
@@ -122,8 +144,12 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick }) => {
                   ★
                 </div>
                 <div>
-                  <p className="text-xs font-semibold text-slate-900">“The best surprise service in Pakistan!”</p>
-                  <p className="text-[10px] text-slate-500">Verified Client · Lahore & Karachi</p>
+                  <p className="text-xs font-semibold text-slate-900">
+                    {siteSettings.heroReviewQuote}
+                  </p>
+                  <p className="text-[10px] text-slate-500">
+                    {siteSettings.heroReviewAuthor}
+                  </p>
                 </div>
               </div>
 
