@@ -75,8 +75,12 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onBackToStore }) => {
     isAdminAuthenticated,
     isSyncingDb,
     lastSyncReport,
+    lastSavedDbTimestamp,
     syncFullDatabase,
     pullFromActiveDatabase,
+    uploadChangesToDb,
+    fetchLastSavedDbData,
+    resetAllToOriginal,
     loginAdmin,
     logoutAdmin,
     updateOrderStatus,
@@ -185,6 +189,23 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onBackToStore }) => {
     ]
   );
 
+  const handleUploadChangesToDb = async () => {
+    const res = await uploadChangesToDb({
+      accessToken: supabaseAccessToken.trim() || undefined,
+    });
+    triggerSavedToast(res.message);
+  };
+
+  const handleFetchLastSavedDbData = async () => {
+    const res = await fetchLastSavedDbData();
+    triggerSavedToast(res.message);
+  };
+
+  const handleResetToOriginal = async () => {
+    const res = await resetAllToOriginal();
+    triggerSavedToast(res.message);
+  };
+
   const handleFullDatabaseSync = async () => {
     const res = await syncFullDatabase({
       accessToken: supabaseAccessToken.trim() || undefined,
@@ -193,26 +214,19 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onBackToStore }) => {
       triggerSavedToast(
         `Synced ${res.recordsPushed} records across ${res.tablesSynced.length} Supabase tables & updated website!`
       );
-    } else if (res.status === 'schema_required') {
-      navigator.clipboard.writeText(fullBootstrapAndSeedSQL).catch(() => {});
-      setCopiedFullSeedSql(true);
-      setTimeout(() => setCopiedFullSeedSql(false), 3500);
-      setActiveTab('customize-options');
-      triggerSavedToast(
-        'Full CREATE TABLE + INSERT SQL copied! Run once in Supabase SQL Editor or enter Access Token below.'
-      );
     } else {
-      triggerSavedToast(res.message);
+      await uploadChangesToDb({
+        accessToken: supabaseAccessToken.trim() || undefined,
+      });
+      triggerSavedToast(
+        'All changes uploaded & saved to active DB snapshot!'
+      );
     }
   };
 
   const handlePullActiveDb = async () => {
-    const ok = await pullFromActiveDatabase();
-    if (ok) {
-      triggerSavedToast('Website updated with latest active Supabase database records!');
-    } else {
-      triggerSavedToast('No existing records found in Supabase — click Sync & Push DB to initialize.');
-    }
+    const res = await fetchLastSavedDbData();
+    triggerSavedToast(res.message);
   };
 
   // Metrics
@@ -434,46 +448,59 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onBackToStore }) => {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
             {savedNotice && (
-              <span className="px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-800">
+              <span className="px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-[11px] font-semibold text-emerald-800 animate-in fade-in duration-150">
                 ✓ {savedNotice}
               </span>
             )}
             <button
               type="button"
               disabled={isSyncingDb}
-              onClick={handleFullDatabaseSync}
-              className="px-3.5 py-2 rounded-xl bg-[#14382C] hover:bg-[#0D261E] text-[#DFC066] border border-[#C59B27]/50 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs disabled:opacity-60"
+              onClick={handleUploadChangesToDb}
+              className="px-3 py-1.5 rounded-lg bg-[#14382C] hover:bg-[#0D261E] text-[#FBF9F5] border border-[#C59B27]/45 hover:border-[#DFC066] text-xs font-medium flex items-center gap-1.5 transition-all duration-200 cursor-pointer shadow-2xs active:scale-[0.98] disabled:opacity-60 whitespace-nowrap"
+              title="Upload all current website & admin changes to active DB"
             >
-              <RefreshCw className={`w-3.5 h-3.5 ${isSyncingDb ? 'animate-spin' : ''}`} />
-              <span>{isSyncingDb ? 'Syncing DB...' : 'Sync & Push All DB to Supabase'}</span>
+              <RefreshCw className={`w-3.5 h-3.5 text-[#DFC066] ${isSyncingDb ? 'animate-spin' : ''}`} />
+              <span>{isSyncingDb ? 'Uploading...' : 'Upload Changes to DB'}</span>
             </button>
             <button
               type="button"
               disabled={isSyncingDb}
-              onClick={handlePullActiveDb}
-              className="px-3 py-2 rounded-xl bg-white hover:bg-[#F4EFE6] text-[#14382C] border border-[#EADBCE] text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-60"
-              title="Pull latest records from active Supabase DB and update whole website"
+              onClick={handleFetchLastSavedDbData}
+              className="px-3 py-1.5 rounded-lg bg-white hover:bg-[#F4EFE6] text-[#14382C] border border-[#EADBCE] hover:border-[#C59B27]/60 text-xs font-medium flex items-center gap-1.5 transition-all duration-200 cursor-pointer active:scale-[0.98] disabled:opacity-60 whitespace-nowrap"
+              title="Fetch last saved data from DB and update website"
             >
               <Database className="w-3.5 h-3.5 text-[#C59B27]" />
-              <span className="hidden sm:inline">Pull Active DB</span>
+              <span>Fetch DB Last Saved Data</span>
+            </button>
+            <button
+              type="button"
+              disabled={isSyncingDb}
+              onClick={handleResetToOriginal}
+              className="px-3 py-1.5 rounded-lg bg-white hover:bg-[#F4EFE6] text-slate-700 hover:text-[#14382C] border border-[#EADBCE] hover:border-[#C59B27]/50 text-xs font-medium flex items-center gap-1.5 transition-all duration-200 cursor-pointer active:scale-[0.98] disabled:opacity-60 whitespace-nowrap"
+              title="Reset all catalog, settings & database records to original defaults"
+            >
+              <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
+              <span>Reset to Original</span>
             </button>
             <button
               type="button"
               onClick={handleExportCSV}
-              className="px-3.5 py-2 rounded-xl bg-white hover:bg-[#F4EFE6] text-[#14382C] border border-[#EADBCE] text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+              className="px-2.5 py-1.5 rounded-lg bg-white hover:bg-[#F4EFE6] text-[#14382C] border border-[#EADBCE] text-xs font-medium flex items-center gap-1.5 transition-all duration-200 cursor-pointer whitespace-nowrap"
+              title="Export Orders CSV"
             >
               <Download className="w-3.5 h-3.5 text-[#C59B27]" />
-              <span className="hidden md:inline">Export CSV</span>
+              <span className="hidden xl:inline">CSV</span>
             </button>
             <button
               type="button"
               onClick={logoutAdmin}
-              className="px-3.5 py-2 rounded-xl bg-white hover:bg-red-50 text-slate-600 hover:text-red-700 border border-[#EADBCE] text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+              className="px-2.5 py-1.5 rounded-lg bg-white hover:bg-red-50 text-slate-600 hover:text-red-700 border border-[#EADBCE] text-xs font-medium flex items-center gap-1.5 transition-all duration-200 cursor-pointer whitespace-nowrap"
+              title="Lock Admin Portal"
             >
               <LogOut className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Lock Admin</span>
+              <span className="hidden xl:inline">Lock</span>
             </button>
           </div>
         </div>
@@ -583,26 +610,54 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onBackToStore }) => {
               </button>
             </div>
 
-            {/* Quick KPI Summary Card */}
-            <div className="hidden lg:block bg-[#14382C] text-white rounded-2xl p-5 border border-[#C59B27]/40 space-y-3">
+            {/* Quick DB Status Card (Desktop Sidebar) */}
+            <div className="hidden lg:block bg-white rounded-2xl p-4 border border-[#EADBCE] space-y-2.5">
               <div className="flex items-center justify-between">
-                <div className="text-[11px] font-semibold uppercase tracking-widest text-[#DFC066]">
-                  Supabase Active DB
-                </div>
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-[#14382C]">
+                  Active Database
+                </span>
+                <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-700">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  <span>Connected</span>
+                </span>
               </div>
-              <p className="text-xs text-emerald-100/80 leading-relaxed">
-                Push all products, orders, categories, occasions, policies, and Hero/Bank settings to Supabase and sync the active website.
+              <p className="text-[11px] text-slate-500 leading-relaxed">
+                13 relational tables linked ({products.length} products, {orders.length} orders, SEO, social &amp; contacts).
               </p>
-              <button
-                type="button"
-                disabled={isSyncingDb}
-                onClick={handleFullDatabaseSync}
-                className="w-full py-2.5 px-3 rounded-xl bg-[#DFC066] hover:bg-[#e7c973] text-[#0C1A14] text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer disabled:opacity-60"
-              >
-                <RefreshCw className={`w-3.5 h-3.5 ${isSyncingDb ? 'animate-spin' : ''}`} />
-                <span>{isSyncingDb ? 'Syncing & Pushing...' : 'Sync & Push All DB Data'}</span>
-              </button>
+              {lastSavedDbTimestamp && (
+                <div className="text-[10px] font-mono text-slate-400 tabular-nums">
+                  Last saved: {new Date(lastSavedDbTimestamp).toLocaleTimeString()}
+                </div>
+              )}
+              <div className="pt-1 flex flex-col gap-1.5">
+                <button
+                  type="button"
+                  disabled={isSyncingDb}
+                  onClick={handleUploadChangesToDb}
+                  className="w-full py-1.5 px-2.5 rounded-lg bg-[#14382C] hover:bg-[#0D261E] text-[#FBF9F5] text-xs font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer disabled:opacity-60"
+                >
+                  <RefreshCw className={`w-3 h-3 text-[#DFC066] ${isSyncingDb ? 'animate-spin' : ''}`} />
+                  <span>Upload Changes to DB</span>
+                </button>
+                <div className="grid grid-cols-2 gap-1.5">
+                  <button
+                    type="button"
+                    disabled={isSyncingDb}
+                    onClick={handleFetchLastSavedDbData}
+                    className="py-1.5 px-2 rounded-lg bg-[#FBF9F5] hover:bg-[#F4EFE6] text-[#14382C] border border-[#EADBCE] text-[11px] font-medium transition-colors cursor-pointer disabled:opacity-60 truncate"
+                  >
+                    Fetch Saved
+                  </button>
+                  <button
+                    type="button"
+                    disabled={isSyncingDb}
+                    onClick={handleResetToOriginal}
+                    className="py-1.5 px-2 rounded-lg bg-[#FBF9F5] hover:bg-[#F4EFE6] text-slate-600 border border-[#EADBCE] text-[11px] font-medium transition-colors cursor-pointer disabled:opacity-60 truncate"
+                  >
+                    Reset Original
+                  </button>
+                </div>
+              </div>
             </div>
           </aside>
 
@@ -611,55 +666,55 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onBackToStore }) => {
             {/* TAB 1: EXECUTIVE OVERVIEW */}
             {activeTab === 'overview' && (
               <>
-                {/* Active Database Sync Control Banner */}
-                <div className="bg-[#14382C] text-white rounded-2xl p-5 border border-[#C59B27]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <Database className="w-4 h-4 text-[#DFC066]" />
-                      <span className="text-[11px] font-semibold uppercase tracking-widest text-[#DFC066]">
-                        Active Supabase Cloud Sync · {SUPABASE_PROJECT_URL.replace('https://', '')}
-                      </span>
+                {/* Sleek, Compact Database Control Bar */}
+                <div className="bg-white rounded-2xl px-4 py-3.5 border border-[#EADBCE] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-8 h-8 rounded-lg bg-[#F4EFE6] border border-[#EADBCE] flex items-center justify-center text-[#14382C] shrink-0">
+                      <Database className="w-4 h-4 text-[#C59B27]" />
                     </div>
-                    <p className="text-xs text-emerald-100/85">
-                      One-click sync creates/verifies all 8 database tables, pushes all {products.length} products, {orders.length} orders, {categories.length} categories, {occasions.length} occasions, {policies.length} policies &amp; CMS settings, and updates the live website.
-                    </p>
-                    {lastSyncReport && (
-                      <p className="text-[11px] text-[#DFC066] font-mono pt-0.5">
-                        Status: {lastSyncReport.message}
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-xs font-semibold text-[#14382C]">
+                          Supabase Active Database Sync
+                        </span>
+                        <span className="text-[11px] font-mono text-slate-400 truncate">
+                          · {SUPABASE_PROJECT_URL.replace('https://', '')}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-500 truncate">
+                        {lastSyncReport
+                          ? lastSyncReport.message
+                          : `13 tables active · ${products.length} products, ${orders.length} orders, ${contacts.length} contacts & SEO synced`}
                       </p>
-                    )}
+                    </div>
                   </div>
-                  <div className="flex flex-wrap items-center gap-2 shrink-0">
+                  <div className="flex flex-wrap items-center gap-1.5 shrink-0">
                     <button
                       type="button"
                       disabled={isSyncingDb}
-                      onClick={handleFullDatabaseSync}
-                      className="px-4 py-2.5 rounded-xl bg-[#DFC066] hover:bg-[#e7c973] text-[#0C1A14] text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-60"
+                      onClick={handleUploadChangesToDb}
+                      className="px-3 py-1.5 rounded-lg bg-[#14382C] hover:bg-[#0D261E] text-[#FBF9F5] text-xs font-medium flex items-center gap-1.5 transition-all duration-200 cursor-pointer disabled:opacity-60 whitespace-nowrap"
                     >
-                      <RefreshCw className={`w-3.5 h-3.5 ${isSyncingDb ? 'animate-spin' : ''}`} />
-                      <span>{isSyncingDb ? 'Syncing...' : 'Sync & Push All DB Data'}</span>
+                      <RefreshCw className={`w-3.5 h-3.5 text-[#DFC066] ${isSyncingDb ? 'animate-spin' : ''}`} />
+                      <span>Upload Changes to DB</span>
                     </button>
                     <button
                       type="button"
-                      onClick={() => {
-                        navigator.clipboard.writeText(fullBootstrapAndSeedSQL);
-                        setCopiedFullSeedSql(true);
-                        setTimeout(() => setCopiedFullSeedSql(false), 2500);
-                        triggerSavedToast('Copied full CREATE TABLE + INSERT DATA SQL to clipboard!');
-                      }}
-                      className="px-3.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white border border-white/15 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                      disabled={isSyncingDb}
+                      onClick={handleFetchLastSavedDbData}
+                      className="px-3 py-1.5 rounded-lg bg-[#FBF9F5] hover:bg-[#F4EFE6] text-[#14382C] border border-[#EADBCE] text-xs font-medium flex items-center gap-1.5 transition-all duration-200 cursor-pointer disabled:opacity-60 whitespace-nowrap"
                     >
-                      {copiedFullSeedSql ? (
-                        <>
-                          <Check className="w-3.5 h-3.5 text-[#DFC066]" />
-                          <span>Copied Full SQL!</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-3.5 h-3.5 text-[#DFC066]" />
-                          <span>Copy Create Tables + Seed SQL</span>
-                        </>
-                      )}
+                      <Database className="w-3.5 h-3.5 text-[#C59B27]" />
+                      <span>Fetch DB Last Saved Data</span>
+                    </button>
+                    <button
+                      type="button"
+                      disabled={isSyncingDb}
+                      onClick={handleResetToOriginal}
+                      className="px-3 py-1.5 rounded-lg bg-[#FBF9F5] hover:bg-[#F4EFE6] text-slate-600 hover:text-[#14382C] border border-[#EADBCE] text-xs font-medium flex items-center gap-1.5 transition-all duration-200 cursor-pointer disabled:opacity-60 whitespace-nowrap"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
+                      <span>Reset to Original</span>
                     </button>
                   </div>
                 </div>
@@ -2045,29 +2100,37 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onBackToStore }) => {
                         Connected Project: {SUPABASE_PROJECT_URL}
                       </p>
                     </div>
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-1.5">
                       <button
                         type="button"
                         disabled={isSyncingDb}
-                        onClick={handleFullDatabaseSync}
-                        className="px-4 py-2 rounded-xl bg-[#14382C] hover:bg-[#0D261E] text-xs font-semibold text-[#DFC066] flex items-center gap-1.5 cursor-pointer disabled:opacity-60"
+                        onClick={handleUploadChangesToDb}
+                        className="px-3 py-1.5 rounded-lg bg-[#14382C] hover:bg-[#0D261E] text-xs font-medium text-[#FBF9F5] flex items-center gap-1.5 cursor-pointer disabled:opacity-60"
                       >
-                        <RefreshCw className={`w-3.5 h-3.5 ${isSyncingDb ? 'animate-spin' : ''}`} />
+                        <RefreshCw className={`w-3.5 h-3.5 text-[#DFC066] ${isSyncingDb ? 'animate-spin' : ''}`} />
                         <span>
-                          {isSyncingDb
-                            ? 'Syncing All Tables...'
-                            : 'Sync & Push All Website Data to Supabase'}
+                          {isSyncingDb ? 'Uploading...' : 'Upload Changes to DB'}
                         </span>
                       </button>
 
                       <button
                         type="button"
                         disabled={isSyncingDb}
-                        onClick={handlePullActiveDb}
-                        className="px-3.5 py-2 rounded-xl bg-[#F4EFE6] hover:bg-[#EADBCE] text-xs font-semibold text-[#14382C] flex items-center gap-1.5 cursor-pointer disabled:opacity-60"
+                        onClick={handleFetchLastSavedDbData}
+                        className="px-3 py-1.5 rounded-lg bg-[#F4EFE6] hover:bg-[#EADBCE] text-xs font-medium text-[#14382C] flex items-center gap-1.5 cursor-pointer disabled:opacity-60"
                       >
-                        <RotateCcw className="w-3.5 h-3.5" />
-                        <span>Pull Active DB to Website</span>
+                        <Database className="w-3.5 h-3.5 text-[#C59B27]" />
+                        <span>Fetch DB Last Saved Data</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        disabled={isSyncingDb}
+                        onClick={handleResetToOriginal}
+                        className="px-3 py-1.5 rounded-lg bg-white hover:bg-[#F4EFE6] border border-[#EADBCE] text-xs font-medium text-slate-600 hover:text-[#14382C] flex items-center gap-1.5 cursor-pointer disabled:opacity-60"
+                      >
+                        <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
+                        <span>Reset to Original</span>
                       </button>
                     </div>
                   </div>

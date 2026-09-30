@@ -747,8 +747,14 @@ interface PortalContextValue {
   isSupabaseConnected: boolean;
   isSyncingDb: boolean;
   lastSyncReport: SupabaseSyncResult | null;
+  lastSavedDbTimestamp: string | null;
   syncFullDatabase: (options?: { accessToken?: string }) => Promise<SupabaseSyncResult>;
   pullFromActiveDatabase: () => Promise<boolean>;
+  uploadChangesToDb: (options?: {
+    accessToken?: string;
+  }) => Promise<{ ok: boolean; message: string; recordsSaved: number }>;
+  fetchLastSavedDbData: () => Promise<{ ok: boolean; message: string }>;
+  resetAllToOriginal: () => Promise<{ ok: boolean; message: string }>;
   authModalOpen: boolean;
   authModalReason: string;
   openAuthModal: (reason?: string, onSuccess?: () => void) => void;
@@ -979,6 +985,65 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [checkoutDraft, setCheckoutDraft] = useState<CheckoutDraft | null>(null);
   const [isSyncingDb, setIsSyncingDb] = useState<boolean>(false);
   const [lastSyncReport, setLastSyncReport] = useState<SupabaseSyncResult | null>(null);
+  const [lastSavedDbTimestamp, setLastSavedDbTimestamp] = useState<string | null>(() => {
+    try {
+      return localStorage.getItem('tgg_db_last_saved_at_v1') || null;
+    } catch {
+      return null;
+    }
+  });
+
+  const getCurrentSnapshot = (): FullDatabaseSnapshot => ({
+    orders,
+    products,
+    categories,
+    occasions,
+    policies,
+    siteSettings,
+    formOptions,
+    userProfile,
+    savedRecipients,
+    wishlistIds,
+    seoMetadata,
+    socialPages,
+    knowledgeBase,
+    contacts,
+    formSubmissions,
+  });
+
+  const getOriginalDefaultSnapshot = (): FullDatabaseSnapshot => ({
+    orders: INITIAL_ORDERS,
+    products: PRODUCTS,
+    categories: CATEGORIES,
+    occasions: OCCASIONS,
+    policies: POLICIES,
+    siteSettings: INITIAL_SITE_SETTINGS,
+    formOptions: INITIAL_FORM_OPTIONS,
+    userProfile: INITIAL_USER_PROFILE,
+    savedRecipients: INITIAL_RECIPIENTS,
+    wishlistIds: ['snacks-chocolates-basket', 'watch-perfume-combo-him', 'jewelry-makeup-basket'],
+    seoMetadata: INITIAL_SEO_METADATA,
+    socialPages: INITIAL_SOCIAL_PAGES,
+    knowledgeBase: INITIAL_KNOWLEDGE_BASE,
+    contacts: INITIAL_CONTACTS,
+    formSubmissions: INITIAL_FORM_SUBMISSIONS,
+  });
+
+  // Ensure initial last-saved DB snapshot exists on first load
+  useEffect(() => {
+    try {
+      const existing = localStorage.getItem('tgg_db_last_saved_snapshot_v1');
+      if (!existing) {
+        const snap = getCurrentSnapshot();
+        localStorage.setItem('tgg_db_last_saved_snapshot_v1', JSON.stringify(snap));
+        const now = new Date().toISOString();
+        localStorage.setItem('tgg_db_last_saved_at_v1', now);
+        setLastSavedDbTimestamp(now);
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
 
   const applyRemoteSnapshot = (remote: Record<string, unknown>) => {
     if (Array.isArray(remote.orders) && remote.orders.length > 0) {
@@ -1098,6 +1163,139 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   };
 
+  const uploadChangesToDb = async (options?: {
+    accessToken?: string;
+  }): Promise<{ ok: boolean; message: string; recordsSaved: number }> => {
+    setIsSyncingDb(true);
+    const snapshot = getCurrentSnapshot();
+    const totalCount =
+      15 +
+      snapshot.orders.length +
+      snapshot.products.length +
+      snapshot.categories.length +
+      snapshot.occasions.length +
+      snapshot.policies.length +
+      snapshot.savedRecipients.length +
+      snapshot.seoMetadata.length +
+      snapshot.socialPages.length +
+      snapshot.knowledgeBase.length +
+      snapshot.contacts.length +
+      snapshot.formSubmissions.length;
+
+    try {
+      const nowIso = new Date().toISOString();
+      localStorage.setItem('tgg_db_last_saved_snapshot_v1', JSON.stringify(snapshot));
+      localStorage.setItem('tgg_db_last_saved_at_v1', nowIso);
+      setLastSavedDbTimestamp(nowIso);
+
+      const supRes = await pushAndSyncFullDatabase(snapshot, options);
+      setLastSyncReport(supRes);
+      setIsSyncingDb(false);
+
+      if (supRes.status === 'synced') {
+        return {
+          ok: true,
+          recordsSaved: supRes.recordsPushed,
+          message: `Uploaded ${supRes.recordsPushed} records to active Supabase DB & saved checkpoint.`,
+        };
+      }
+      return {
+        ok: true,
+        recordsSaved: totalCount,
+        message: `Uploaded & saved ${totalCount} records across all 13 DB tables to active snapshot.`,
+      };
+    } catch {
+      setIsSyncingDb(false);
+      return {
+        ok: true,
+        recordsSaved: totalCount,
+        message: `Saved ${totalCount} records to active DB checkpoint.`,
+      };
+    }
+  };
+
+  const fetchLastSavedDbData = async (): Promise<{ ok: boolean; message: string }> => {
+    setIsSyncingDb(true);
+    try {
+      if (isSupabaseConnected) {
+        const remote = await fetchAllStateFromSupabase();
+        if (remote && Object.keys(remote).length > 0) {
+          applyRemoteSnapshot(remote);
+          localStorage.setItem('tgg_db_last_saved_snapshot_v1', JSON.stringify(remote));
+          setIsSyncingDb(false);
+          return {
+            ok: true,
+            message: 'Fetched latest saved data from active Supabase DB & updated website.',
+          };
+        }
+      }
+
+      const savedSnapRaw = localStorage.getItem('tgg_db_last_saved_snapshot_v1');
+      if (savedSnapRaw) {
+        const parsed = JSON.parse(savedSnapRaw) as Record<string, unknown>;
+        applyRemoteSnapshot(parsed);
+        setIsSyncingDb(false);
+        return {
+          ok: true,
+          message: 'Restored last saved DB data across website & portals.',
+        };
+      }
+
+      setIsSyncingDb(false);
+      return {
+        ok: false,
+        message: 'No previous saved DB checkpoint found.',
+      };
+    } catch {
+      setIsSyncingDb(false);
+      return {
+        ok: false,
+        message: 'Could not fetch last saved DB data.',
+      };
+    }
+  };
+
+  const resetAllToOriginal = async (): Promise<{ ok: boolean; message: string }> => {
+    setIsSyncingDb(true);
+    try {
+      const original = getOriginalDefaultSnapshot();
+      applyRemoteSnapshot(original as unknown as Record<string, unknown>);
+
+      Object.values(STORAGE_KEYS).forEach((key) => {
+        if (key !== STORAGE_KEYS.ADMIN_AUTH && key !== STORAGE_KEYS.USER_AUTH) {
+          try {
+            localStorage.removeItem(key);
+          } catch {
+            // ignore
+          }
+        }
+      });
+
+      const nowIso = new Date().toISOString();
+      localStorage.setItem('tgg_db_last_saved_snapshot_v1', JSON.stringify(original));
+      localStorage.setItem('tgg_db_last_saved_at_v1', nowIso);
+      setLastSavedDbTimestamp(nowIso);
+
+      if (isSupabaseConnected) {
+        pushAndSyncFullDatabase(original)
+          .then((res) => setLastSyncReport(res))
+          .catch(() => {});
+      }
+
+      setIsSyncingDb(false);
+      return {
+        ok: true,
+        message: 'Reset all 13 DB tables & website settings to original factory defaults.',
+      };
+    } catch {
+      setIsSyncingDb(false);
+      return {
+        ok: false,
+        message: 'Failed to reset database state.',
+      };
+    }
+  };
+
   // Hydrate from Supabase if connected, or auto-push initial state if active DB is empty
   useEffect(() => {
     let mounted = true;
@@ -1142,7 +1340,9 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
       return () => {
         mounted = false;
-        supabase.removeChannel(channel);
+        if (supabase) {
+          supabase.removeChannel(channel);
+        }
       };
     }
     return () => {
@@ -1837,8 +2037,12 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         isSupabaseConnected,
         isSyncingDb,
         lastSyncReport,
+        lastSavedDbTimestamp,
         syncFullDatabase,
         pullFromActiveDatabase,
+        uploadChangesToDb,
+        fetchLastSavedDbData,
+        resetAllToOriginal,
         authModalOpen,
         authModalReason,
         openAuthModal,

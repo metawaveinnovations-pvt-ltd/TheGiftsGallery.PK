@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { BrandIntro } from './components/BrandIntro';
@@ -33,9 +33,50 @@ export default function App() {
     isUserAuthenticated,
     openAuthModal,
     setCheckoutDraft,
+    seoMetadata,
   } = usePortal();
 
   const [activeView, setActiveView] = useState<AppViewMode>('storefront');
+
+  // Dynamically sync <head> SEO tags per active portal view from DB seoMetadata
+  useEffect(() => {
+    const viewPathMap: Record<AppViewMode, string> = {
+      storefront: '/',
+      checkout: '/checkout',
+      'user-portal': '/user-portal',
+      'admin-portal': '/admin-portal',
+    };
+    const targetPath = viewPathMap[activeView] || '/';
+    const matchedSeo =
+      seoMetadata.find((s) => s.pagePath === targetPath) ||
+      seoMetadata.find((s) => s.pagePath === '/') ||
+      seoMetadata[0];
+
+    if (matchedSeo && typeof document !== 'undefined') {
+      document.title = matchedSeo.pageTitle;
+      const setMeta = (selector: string, content: string) => {
+        const el = document.querySelector(selector);
+        if (el && content) el.setAttribute('content', content);
+      };
+      setMeta('meta[name="title"]', matchedSeo.pageTitle);
+      setMeta('meta[name="description"]', matchedSeo.metaDescription);
+      setMeta('meta[name="keywords"]', matchedSeo.metaKeywords);
+      setMeta('meta[property="og:title"]', matchedSeo.ogTitle || matchedSeo.pageTitle);
+      setMeta(
+        'meta[property="og:description"]',
+        matchedSeo.ogDescription || matchedSeo.metaDescription
+      );
+      setMeta('meta[name="twitter:title"]', matchedSeo.ogTitle || matchedSeo.pageTitle);
+      setMeta(
+        'meta[name="twitter:description"]',
+        matchedSeo.ogDescription || matchedSeo.metaDescription
+      );
+      const canonical = document.querySelector('link[rel="canonical"]');
+      if (canonical && matchedSeo.canonicalUrl) {
+        canonical.setAttribute('href', matchedSeo.canonicalUrl);
+      }
+    }
+  }, [activeView, seoMetadata]);
 
   const [selectedProductForOrder, setSelectedProductForOrder] = useState<{
     product: Product;
