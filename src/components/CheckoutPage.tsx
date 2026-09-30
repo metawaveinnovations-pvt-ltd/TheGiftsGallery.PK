@@ -128,10 +128,12 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
   const [cardNumber, setCardNumber] = useState<string>('4532 •••• •••• 4821');
   const [cardExpiry, setCardExpiry] = useState<string>('08/29');
   const [cardCvv, setCardCvv] = useState<string>('842');
-  const [transferMethod, setTransferMethod] = useState<'Raast / Bank' | 'EasyPaisa / JazzCash'>('Raast / Bank');
+  const [transferMethod, setTransferMethod] = useState<
+    'Raqami Islamic Digital Bank' | 'MCB Bank'
+  >('Raqami Islamic Digital Bank');
   const [transferReference, setTransferReference] = useState<string>('');
   const [codNote, setCodNote] = useState<string>('');
-  const [copiedBank, setCopiedBank] = useState<boolean>(false);
+  const [copiedField, setCopiedField] = useState<string>('');
 
   const [formError, setFormError] = useState<string>('');
   const [completedOrder, setCompletedOrder] = useState<PortalOrder | null>(null);
@@ -196,10 +198,10 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
     if (rec.notes) setSpecialRequests(rec.notes);
   };
 
-  const handleCopyAccount = (text: string) => {
+  const handleCopyAccount = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
-    setCopiedBank(true);
-    setTimeout(() => setCopiedBank(false), 2000);
+    setCopiedField(label);
+    setTimeout(() => setCopiedField(''), 2000);
   };
 
   const finalizeOrderExecution = () => {
@@ -452,13 +454,44 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
           </div>
         </div>
 
-        <div className="mb-8">
+        <div className="mb-6 min-[800px]:mb-8">
           <div className="text-xs font-semibold uppercase tracking-widest text-[#C59B27] mb-1">
             STEP-BY-STEP GIFT BOOKING &amp; CHECKOUT
           </div>
-          <h1 className="text-3xl sm:text-4xl font-serif font-bold text-[#14382C] tracking-tight">
+          <h1 className="text-2xl sm:text-4xl font-serif font-bold text-[#14382C] tracking-tight">
             Complete Your Gift Order &amp; Checkout
           </h1>
+
+          {/* Mobile App 3-Step Quick Jump Bar (< 1024px) */}
+          <div className="mt-4 flex lg:hidden items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+            <a
+              href="#checkout-step-1"
+              className="min-h-[38px] px-3.5 py-1.5 rounded-full bg-white border border-[#EADBCE] text-xs font-semibold text-[#14382C] inline-flex items-center gap-1.5 shrink-0"
+            >
+              <span className="w-4 h-4 rounded-full bg-[#14382C] text-[#DFC066] text-[10px] font-mono flex items-center justify-center">
+                1
+              </span>
+              <span>Order Details</span>
+            </a>
+            <a
+              href="#checkout-step-2"
+              className="min-h-[38px] px-3.5 py-1.5 rounded-full bg-white border border-[#EADBCE] text-xs font-semibold text-[#14382C] inline-flex items-center gap-1.5 shrink-0"
+            >
+              <span className="w-4 h-4 rounded-full bg-[#14382C] text-[#DFC066] text-[10px] font-mono flex items-center justify-center">
+                2
+              </span>
+              <span>Contact &amp; Address</span>
+            </a>
+            <a
+              href="#checkout-step-3"
+              className="min-h-[38px] px-3.5 py-1.5 rounded-full bg-white border border-[#EADBCE] text-xs font-semibold text-[#14382C] inline-flex items-center gap-1.5 shrink-0"
+            >
+              <span className="w-4 h-4 rounded-full bg-[#14382C] text-[#DFC066] text-[10px] font-mono flex items-center justify-center">
+                3
+              </span>
+              <span>Payment ({paymentMethodType})</span>
+            </a>
+          </div>
         </div>
 
         {formError && (
@@ -468,11 +501,11 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
           </div>
         )}
 
-        <form onSubmit={handlePlaceOrder} className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <form onSubmit={handlePlaceOrder} className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
           {/* Left 8 Columns: 1. Order Details, 2. Contact & Address Details, 3. Payment Details */}
-          <div className="lg:col-span-8 space-y-8">
+          <div className="lg:col-span-8 space-y-6 lg:space-y-8">
             {/* SECTION 1: ORDER DETAILS & CUSTOMIZATION */}
-            <div className="bg-white rounded-2xl p-6 sm:p-8 border border-[#EADBCE]">
+            <div id="checkout-step-1" className="bg-white rounded-2xl p-5 sm:p-8 border border-[#EADBCE] scroll-mt-24">
               <div className="flex items-center gap-2.5 pb-4 mb-6 border-b border-[#EADBCE]">
                 <span className="w-7 h-7 rounded-full bg-[#14382C] text-[#DFC066] font-serif font-bold text-xs flex items-center justify-center">
                   01
@@ -717,7 +750,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
             </div>
 
             {/* SECTION 2: CONTACT & DELIVERY ADDRESS DETAILS */}
-            <div className="bg-white rounded-2xl p-6 sm:p-8 border border-[#EADBCE]">
+            <div id="checkout-step-2" className="bg-white rounded-2xl p-5 sm:p-8 border border-[#EADBCE] scroll-mt-24">
               <div className="flex flex-wrap items-center justify-between gap-2 pb-4 mb-6 border-b border-[#EADBCE]">
                 <div className="flex items-center gap-2.5">
                   <span className="w-7 h-7 rounded-full bg-[#14382C] text-[#DFC066] font-serif font-bold text-xs flex items-center justify-center">
@@ -882,7 +915,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
             </div>
 
             {/* SECTION 3: PAYMENT DETAILS (CARD / COD / TRANSFER) */}
-            <div className="bg-white rounded-2xl p-6 sm:p-8 border border-[#EADBCE]">
+            <div id="checkout-step-3" className="bg-white rounded-2xl p-5 sm:p-8 border border-[#EADBCE] scroll-mt-24">
               <div className="flex items-center gap-2.5 pb-4 mb-6 border-b border-[#EADBCE]">
                 <span className="w-7 h-7 rounded-full bg-[#14382C] text-[#DFC066] font-serif font-bold text-xs flex items-center justify-center">
                   03
@@ -976,13 +1009,13 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                       Direct
                     </span>
                   </div>
-                  <div className="text-xs font-bold">Bank / Raast / Wallet</div>
+                  <div className="text-xs font-bold">Bank / Digital Wallet</div>
                   <div
                     className={`text-[11px] mt-0.5 ${
                       paymentMethodType === 'Transfer' ? 'text-emerald-100/80' : 'text-slate-500'
                     }`}
                   >
-                    Meezan, Raast, EasyPaisa
+                    Raqami Islamic · MCB Bank
                   </div>
                 </button>
               </div>
@@ -1086,80 +1119,198 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                 </div>
               )}
 
-              {/* Method C: Bank Transfer / Raast / EasyPaisa / JazzCash */}
-              {paymentMethodType === 'Transfer' && (
-                <div className="bg-[#FBF9F5] rounded-xl p-5 border border-[#EADBCE] space-y-4">
-                  <div className="flex flex-wrap gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setTransferMethod('Raast / Bank')}
-                      className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
-                        transferMethod === 'Raast / Bank'
-                          ? 'bg-[#14382C] text-white'
-                          : 'bg-white text-slate-700 border border-[#EADBCE]'
-                      }`}
-                    >
-                      Meezan Bank / Raast ID
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setTransferMethod('EasyPaisa / JazzCash')}
-                      className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
-                        transferMethod === 'EasyPaisa / JazzCash'
-                          ? 'bg-[#14382C] text-white'
-                          : 'bg-white text-slate-700 border border-[#EADBCE]'
-                      }`}
-                    >
-                      EasyPaisa / JazzCash
-                    </button>
-                  </div>
+              {/* Method C: Bank / Digital Wallet Transfer (Raqami Islamic Digital Bank & MCB Bank) */}
+              {paymentMethodType === 'Transfer' && (() => {
+                const activeBank =
+                  transferMethod === 'Raqami Islamic Digital Bank'
+                    ? siteSettings.raqamiAccount
+                    : siteSettings.mcbAccount;
 
-                  <div className="p-4 rounded-xl bg-white border border-[#EADBCE] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div className="text-xs text-slate-800 space-y-1">
-                      <div className="font-semibold text-[#14382C]">
-                        {transferMethod === 'Raast / Bank'
-                          ? siteSettings.bankTransferDetails
-                          : siteSettings.easypaisaJazzcashDetails}
-                      </div>
-                      <div className="text-[11px] text-slate-500">
-                        Transfer PKR {totalPayablePKR.toLocaleString()} and enter your reference below or share screenshot on WhatsApp.
+                return (
+                  <div className="bg-[#FBF9F5] rounded-xl p-5 border border-[#EADBCE] space-y-4">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="text-xs font-semibold text-[#14382C]">
+                        Select Bank / Digital Wallet Account:
+                      </span>
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setTransferMethod('Raqami Islamic Digital Bank')}
+                          className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                            transferMethod === 'Raqami Islamic Digital Bank'
+                              ? 'bg-[#14382C] text-white shadow-sm'
+                              : 'bg-white text-slate-700 border border-[#EADBCE] hover:border-[#C59B27]'
+                          }`}
+                        >
+                          Raqami Islamic Digital Bank
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setTransferMethod('MCB Bank')}
+                          className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                            transferMethod === 'MCB Bank'
+                              ? 'bg-[#14382C] text-white shadow-sm'
+                              : 'bg-white text-slate-700 border border-[#EADBCE] hover:border-[#C59B27]'
+                          }`}
+                        >
+                          MCB Bank
+                        </button>
                       </div>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleCopyAccount(siteSettings.whatsappNumber)
-                      }
-                      className="px-3 py-1.5 rounded-lg bg-[#F4EFE6] hover:bg-[#EADBCE] text-xs font-semibold text-[#14382C] inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
-                    >
-                      {copiedBank ? (
-                        <>
-                          <Check className="w-3.5 h-3.5 text-emerald-700" />
-                          <span>Copied!</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-3.5 h-3.5" />
-                          <span>Copy Account / Raast</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
 
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">
-                      Transaction ID / Reference Number (Optional — or send via WhatsApp)
-                    </label>
-                    <input
-                      type="text"
-                      value={transferReference}
-                      onChange={(e) => setTransferReference(e.target.value)}
-                      placeholder="e.g. TID #783920 or Last 4 Digits"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#EADBCE] text-sm font-mono text-slate-800 tabular-nums focus:outline-none focus:border-[#14382C]"
-                    />
+                    {/* Both Accounts Quick Overview / Active Account Card */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {[
+                        {
+                          key: 'Raqami Islamic Digital Bank' as const,
+                          tag: 'Raqami Account (Digital Wallet / Islamic Bank)',
+                          account: siteSettings.raqamiAccount,
+                        },
+                        {
+                          key: 'MCB Account' as const,
+                          selectKey: 'MCB Bank' as const,
+                          tag: 'MCB Bank Account',
+                          account: siteSettings.mcbAccount,
+                        },
+                      ].map((item) => {
+                        const targetMethod =
+                          item.key === 'Raqami Islamic Digital Bank'
+                            ? 'Raqami Islamic Digital Bank'
+                            : 'MCB Bank';
+                        const isSelected = transferMethod === targetMethod;
+
+                        return (
+                          <div
+                            key={item.tag}
+                            onClick={() => setTransferMethod(targetMethod)}
+                            className={`p-4 rounded-xl border transition-all cursor-pointer ${
+                              isSelected
+                                ? 'bg-white border-[#14382C] ring-1 ring-[#14382C] shadow-sm'
+                                : 'bg-white/70 border-[#EADBCE] hover:border-[#C59B27]'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between gap-2 mb-2 pb-2 border-b border-slate-100">
+                              <span className="text-[10px] font-bold uppercase tracking-wider text-[#C59B27]">
+                                {item.tag}
+                              </span>
+                              {isSelected && (
+                                <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-[#14382C] text-[#DFC066]">
+                                  Selected
+                                </span>
+                              )}
+                            </div>
+
+                            <div className="space-y-1.5 text-xs">
+                              <div className="flex items-center justify-between gap-2">
+                                <span className="text-slate-500">Bank Name:</span>
+                                <span className="font-semibold text-[#14382C] text-right">
+                                  {item.account.bankName}
+                                </span>
+                              </div>
+
+                              <div className="flex items-center justify-between gap-2">
+                                <span className="text-slate-500">Account Title:</span>
+                                <span className="font-bold text-slate-900 text-right">
+                                  {item.account.accountTitle}
+                                </span>
+                              </div>
+
+                              <div className="flex items-center justify-between gap-2 pt-1">
+                                <div>
+                                  <span className="text-slate-500 block text-[10px]">
+                                    Account Number:
+                                  </span>
+                                  <span className="font-mono font-bold text-slate-900 tabular-nums">
+                                    {item.account.accountNumber}
+                                  </span>
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleCopyAccount(
+                                      item.account.accountNumber,
+                                      `${targetMethod}-acc`
+                                    );
+                                  }}
+                                  className="px-2.5 py-1 rounded-lg bg-[#F4EFE6] hover:bg-[#EADBCE] text-[11px] font-semibold text-[#14382C] inline-flex items-center gap-1 shrink-0 cursor-pointer"
+                                >
+                                  {copiedField === `${targetMethod}-acc` ? (
+                                    <>
+                                      <Check className="w-3 h-3 text-emerald-700" />
+                                      <span>Copied</span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Copy className="w-3 h-3" />
+                                      <span>Copy Acc #</span>
+                                    </>
+                                  )}
+                                </button>
+                              </div>
+
+                              <div className="flex items-center justify-between gap-2 pt-1 border-t border-slate-100">
+                                <div className="min-w-0">
+                                  <span className="text-slate-500 block text-[10px]">IBAN:</span>
+                                  <span className="font-mono font-semibold text-[11px] text-slate-800 tabular-nums break-all">
+                                    {item.account.iban}
+                                  </span>
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleCopyAccount(
+                                      item.account.iban,
+                                      `${targetMethod}-iban`
+                                    );
+                                  }}
+                                  className="px-2.5 py-1 rounded-lg bg-[#F4EFE6] hover:bg-[#EADBCE] text-[11px] font-semibold text-[#14382C] inline-flex items-center gap-1 shrink-0 cursor-pointer"
+                                >
+                                  {copiedField === `${targetMethod}-iban` ? (
+                                    <>
+                                      <Check className="w-3 h-3 text-emerald-700" />
+                                      <span>Copied</span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Copy className="w-3 h-3" />
+                                      <span>Copy IBAN</span>
+                                    </>
+                                  )}
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    <div className="p-3.5 rounded-xl bg-white border border-[#EADBCE] text-xs text-slate-600 flex flex-wrap items-center justify-between gap-2">
+                      <span>
+                        Transfer{' '}
+                        <strong className="font-mono text-[#14382C]">
+                          PKR {totalPayablePKR.toLocaleString()}
+                        </strong>{' '}
+                        to <strong>{activeBank.bankName}</strong> ({activeBank.accountTitle}) and enter your reference below or share the screenshot on WhatsApp.
+                      </span>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1">
+                        Transaction ID / Reference Number (Optional — or send screenshot via WhatsApp)
+                      </label>
+                      <input
+                        type="text"
+                        value={transferReference}
+                        onChange={(e) => setTransferReference(e.target.value)}
+                        placeholder="e.g. TID #783920 or Last 4 Digits"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#EADBCE] text-sm font-mono text-slate-800 tabular-nums focus:outline-none focus:border-[#14382C]"
+                      />
+                    </div>
                   </div>
-                </div>
-              )}
+                );
+              })()}
             </div>
           </div>
 
@@ -1272,6 +1423,25 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Mobile App Sticky Checkout Confirmation Bar (< 800px) */}
+          <div className="min-[800px]:hidden fixed bottom-16 inset-x-0 z-30 bg-white/95 backdrop-blur-md border-t border-[#C59B27]/40 px-4 py-2.5 shadow-[0_-4px_16px_rgba(20,56,44,0.08)] flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 truncate">
+                {paymentMethodType} · {quantity} {quantity === 1 ? 'Gift' : 'Gifts'}
+              </div>
+              <div className="font-mono text-base font-bold text-[#14382C] tabular-nums">
+                PKR {totalPayablePKR.toLocaleString()}
+              </div>
+            </div>
+            <button
+              type="submit"
+              className="min-h-[44px] px-5 py-2.5 rounded-xl bg-[#14382C] hover:bg-[#0D261E] text-white font-semibold text-xs tracking-wide flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-transform cursor-pointer shrink-0"
+            >
+              <Gift className="w-3.5 h-3.5 text-[#DFC066]" />
+              <span>{isUserAuthenticated ? 'Place Order' : 'Sign In & Order'}</span>
+            </button>
           </div>
         </form>
       </div>

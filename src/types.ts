@@ -171,6 +171,13 @@ export interface FormCustomizeOptions {
   packagingAddons: PackagingAddon[];
 }
 
+export interface BankAccountInfo {
+  bankName: string;
+  accountTitle: string;
+  accountNumber: string;
+  iban: string;
+}
+
 export interface SiteSettings {
   announcementText: string;
   noticePeriodText: string;
@@ -192,6 +199,8 @@ export interface SiteSettings {
   whatsappUrl: string;
   instagramHandle: string;
   instagramUrl: string;
+  raqamiAccount: BankAccountInfo;
+  mcbAccount: BankAccountInfo;
   bankTransferDetails: string;
   easypaisaJazzcashDetails: string;
   standardDeliveryFeePKR: number;

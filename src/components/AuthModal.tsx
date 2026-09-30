@@ -87,11 +87,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onAdminLoginSuccess }) => 
       role="dialog"
       aria-modal="true"
       aria-labelledby="auth-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
       onClick={closeAuthModal}
     >
       <div
-        className="bg-[#FBF9F5] rounded-2xl max-w-md w-full border border-[#C59B27]/40 shadow-2xl overflow-hidden relative"
+        className="bg-[#FBF9F5] rounded-t-3xl sm:rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto border-t sm:border border-[#C59B27]/40 shadow-2xl relative pb-[max(1rem,env(safe-area-inset-bottom))] animate-in slide-in-from-bottom-4 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top Close Button */}
@@ -99,20 +99,22 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onAdminLoginSuccess }) => 
           type="button"
           onClick={closeAuthModal}
           aria-label="Close sign in modal"
-          className="absolute top-4 right-4 p-2 rounded-full bg-white/80 text-slate-600 hover:text-slate-900 hover:bg-white border border-[#EADBCE] transition-colors cursor-pointer z-10"
+          className="absolute top-3.5 right-3.5 min-h-[40px] min-w-[40px] flex items-center justify-center rounded-full bg-white/90 text-slate-700 hover:text-slate-900 hover:bg-white border border-[#EADBCE] transition-colors cursor-pointer z-10"
         >
           <X className="w-4 h-4" />
         </button>
 
         {/* Modal Header */}
-        <div className="bg-[#14382C] text-white px-6 pt-7 pb-6 text-center border-b border-[#C59B27]/30">
-          <div className="inline-flex p-1.5 rounded-xl bg-white/95 border border-[#C59B27]/50 mb-3">
-            <Logo variant="mark" size={44} />
+        <div className="bg-[#14382C] text-white px-6 pt-4 sm:pt-7 pb-5 sm:pb-6 text-center border-b border-[#C59B27]/30">
+          {/* Mobile Swipe Grab Handle */}
+          <div className="w-10 h-1.5 bg-white/30 rounded-full mx-auto mb-3 sm:hidden" />
+          <div className="inline-flex p-1.5 rounded-xl bg-white/95 border border-[#C59B27]/50 mb-2.5 sm:mb-3">
+            <Logo variant="mark" size={42} />
           </div>
-          <h2 id="auth-modal-title" className="font-serif text-2xl font-bold tracking-tight">
+          <h2 id="auth-modal-title" className="font-serif text-xl sm:text-2xl font-bold tracking-tight">
             {tab === 'signin' ? 'Welcome Back to TGG' : 'Create Your Gifting Account'}
           </h2>
-          <p className="text-xs text-emerald-100/80 mt-1.5 max-w-xs mx-auto leading-relaxed">
+          <p className="text-xs text-emerald-100/80 mt-1 max-w-xs mx-auto leading-relaxed">
             {authModalReason}
           </p>
         </div>

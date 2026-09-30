@@ -12,19 +12,19 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick }) => {
   const { siteSettings } = usePortal();
 
   return (
-    <section id="home" className="relative overflow-hidden bg-gradient-to-b from-[#FBF9F5] via-[#F6F1E7] to-[#FBF9F5] py-12 md:py-20 lg:py-24 border-b border-[#EADBCE]/60">
+    <section id="home" className="relative overflow-hidden bg-gradient-to-b from-[#FBF9F5] via-[#F6F1E7] to-[#FBF9F5] py-8 min-[800px]:py-20 lg:py-24 border-b border-[#EADBCE]/60">
       {/* Subtle background ambient accents */}
       <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#C59B27]/5 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-10 left-10 w-80 h-80 bg-[#14382C]/5 rounded-full blur-3xl pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-7 lg:gap-8 items-center">
           
           {/* Left Column: Editorial Headline & Actions (7 cols) */}
           <div className="lg:col-span-7 flex flex-col items-start text-left">
             
             {/* Small eyebrow: Clickable Brand & Instagram */}
-            <div className="inline-flex flex-wrap items-center gap-2 mb-4 text-xs font-semibold tracking-widest uppercase text-[#14382C] border-b border-[#C59B27]/60 pb-1">
+            <div className="inline-flex flex-wrap items-center gap-2 mb-3 min-[800px]:mb-4 text-[11px] min-[800px]:text-xs font-semibold tracking-widest uppercase text-[#14382C] border-b border-[#C59B27]/60 pb-1">
               <a
                 href="#home"
                 className="inline-flex items-center gap-1.5 hover:text-[#C59B27] transition-colors"
@@ -47,7 +47,7 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick }) => {
             </div>
 
             {/* Main Heading */}
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif font-bold text-[#14382C] leading-[1.1] tracking-tight mb-6">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-bold text-[#14382C] leading-[1.08] tracking-tight mb-3.5 min-[800px]:mb-6">
               {siteSettings.heroHeadlinePrefix}{' '}
               <span className="italic font-normal text-[#C59B27]">
                 {siteSettings.heroHeadlineHighlight}
@@ -55,17 +55,17 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick }) => {
             </h1>
 
             {/* Supporting Copy */}
-            <p className="text-lg sm:text-xl text-slate-600 font-normal leading-relaxed max-w-xl mb-8">
+            <p className="text-sm sm:text-lg min-[800px]:text-xl text-slate-600 font-normal leading-relaxed max-w-xl mb-5 min-[800px]:mb-8">
               {siteSettings.heroSubtitle}
             </p>
 
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full sm:w-auto mb-8 sm:mb-10">
+            {/* CTA Buttons: Compact 2-col thumb row on <800px, generous pills on desktop */}
+            <div className="grid grid-cols-2 sm:flex sm:flex-row items-center gap-2.5 sm:gap-4 w-full sm:w-auto mb-6 min-[800px]:mb-10">
               <button
                 onClick={onExploreClick}
-                className="w-full sm:w-auto min-h-[48px] inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-full text-sm font-semibold tracking-wide text-white bg-[#14382C] hover:bg-[#0D261E] shadow-md hover:shadow-lg transition-all duration-200 border border-[#C59B27]/50 active:scale-[0.98] cursor-pointer"
+                className="w-full sm:w-auto min-h-[46px] sm:min-h-[48px] inline-flex items-center justify-center gap-2 px-4 sm:px-7 py-3 sm:py-3.5 rounded-2xl sm:rounded-full text-xs sm:text-sm font-semibold tracking-wide text-white bg-[#14382C] hover:bg-[#0D261E] shadow-md hover:shadow-lg transition-all duration-200 border border-[#C59B27]/50 active:scale-[0.98] cursor-pointer"
               >
-                <Gift className="w-4 h-4 text-[#DFC066]" />
+                <Gift className="w-4 h-4 text-[#DFC066] shrink-0" />
                 <span>Explore Gifts</span>
               </button>
 
@@ -73,26 +73,26 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick }) => {
                 href={siteSettings.whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto min-h-[48px] inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-full text-sm font-semibold tracking-wide text-[#14382C] bg-[#F4EFE6] hover:bg-[#EADBCE] border border-[#C59B27]/50 transition-all duration-200 shadow-sm hover:shadow active:scale-[0.98]"
+                className="w-full sm:w-auto min-h-[46px] sm:min-h-[48px] inline-flex items-center justify-center gap-2 px-4 sm:px-7 py-3 sm:py-3.5 rounded-2xl sm:rounded-full text-xs sm:text-sm font-semibold tracking-wide text-[#14382C] bg-[#F4EFE6] hover:bg-[#EADBCE] border border-[#C59B27]/50 transition-all duration-200 shadow-sm hover:shadow active:scale-[0.98]"
               >
-                <MessageCircle className="w-4 h-4 text-[#14382C]" />
-                <span>Order on WhatsApp</span>
+                <MessageCircle className="w-4 h-4 text-[#14382C] shrink-0" />
+                <span>WhatsApp Order</span>
               </a>
             </div>
 
-            {/* Trust Markers */}
-            <div className="pt-6 border-t border-[#EADBCE] w-full grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-4 text-slate-600">
-              <div className="flex items-center gap-2">
-                <Truck className="w-4 h-4 text-[#C59B27] shrink-0" />
-                <span className="text-xs font-medium">{siteSettings.heroTrustBadge1}</span>
+            {/* Trust Markers: Swipeable horizontal chip strip on <800px, 3-col grid on >=800px */}
+            <div className="pt-4 min-[800px]:pt-6 border-t border-[#EADBCE] w-full flex overflow-x-auto no-scrollbar gap-2 min-[800px]:grid min-[800px]:grid-cols-3 min-[800px]:gap-4 text-slate-600">
+              <div className="flex items-center gap-1.5 px-3 py-1.5 min-[800px]:p-0 rounded-full bg-white/80 min-[800px]:bg-transparent border border-[#EADBCE] min-[800px]:border-0 shrink-0">
+                <Truck className="w-3.5 h-3.5 min-[800px]:w-4 min-[800px]:h-4 text-[#C59B27] shrink-0" />
+                <span className="text-[11px] min-[800px]:text-xs font-medium whitespace-nowrap">{siteSettings.heroTrustBadge1}</span>
               </div>
-              <div className="flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-[#C59B27] shrink-0" />
-                <span className="text-xs font-medium">{siteSettings.heroTrustBadge2}</span>
+              <div className="flex items-center gap-1.5 px-3 py-1.5 min-[800px]:p-0 rounded-full bg-white/80 min-[800px]:bg-transparent border border-[#EADBCE] min-[800px]:border-0 shrink-0">
+                <ShieldCheck className="w-3.5 h-3.5 min-[800px]:w-4 min-[800px]:h-4 text-[#C59B27] shrink-0" />
+                <span className="text-[11px] min-[800px]:text-xs font-medium whitespace-nowrap">{siteSettings.heroTrustBadge2}</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Heart className="w-4 h-4 text-[#C59B27] shrink-0" />
-                <span className="text-xs font-medium">{siteSettings.heroTrustBadge3}</span>
+              <div className="flex items-center gap-1.5 px-3 py-1.5 min-[800px]:p-0 rounded-full bg-white/80 min-[800px]:bg-transparent border border-[#EADBCE] min-[800px]:border-0 shrink-0">
+                <Heart className="w-3.5 h-3.5 min-[800px]:w-4 min-[800px]:h-4 text-[#C59B27] shrink-0" />
+                <span className="text-[11px] min-[800px]:text-xs font-medium whitespace-nowrap">{siteSettings.heroTrustBadge3}</span>
               </div>
             </div>
 

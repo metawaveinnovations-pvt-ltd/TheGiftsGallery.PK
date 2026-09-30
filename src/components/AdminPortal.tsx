@@ -357,95 +357,95 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onBackToStore }) => {
           </div>
         </div>
 
-        {/* Workspace Grid: Sidebar (3 cols) + Main Content (9 cols) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Workspace Grid: Horizontal App Tab Bar (< 1024px) + Sidebar (3 cols) + Main Content (9 cols) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8">
           {/* Sidebar Navigation */}
           <aside className="lg:col-span-3 space-y-4">
-            <div className="bg-white rounded-2xl p-3.5 border border-[#EADBCE] space-y-1">
+            <div className="bg-white rounded-2xl p-1.5 sm:p-3 border border-[#EADBCE] flex lg:flex-col overflow-x-auto no-scrollbar gap-1.5 lg:gap-1">
               <button
                 type="button"
                 onClick={() => setActiveTab('overview')}
-                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
+                className={`min-h-[42px] shrink-0 lg:w-full flex items-center justify-between gap-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap ${
                   activeTab === 'overview'
-                    ? 'bg-[#14382C] text-white'
+                    ? 'bg-[#14382C] text-white shadow-xs'
                     : 'text-slate-700 hover:bg-[#F4EFE6]'
                 }`}
               >
-                <span className="flex items-center gap-2.5">
-                  <LayoutDashboard className="w-4 h-4" />
-                  <span>Executive Overview</span>
+                <span className="flex items-center gap-2">
+                  <LayoutDashboard className="w-4 h-4 shrink-0" />
+                  <span>Overview</span>
                 </span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveTab('orders')}
-                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
+                className={`min-h-[42px] shrink-0 lg:w-full flex items-center justify-between gap-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap ${
                   activeTab === 'orders'
-                    ? 'bg-[#14382C] text-white'
+                    ? 'bg-[#14382C] text-white shadow-xs'
                     : 'text-slate-700 hover:bg-[#F4EFE6]'
                 }`}
               >
-                <span className="flex items-center gap-2.5">
-                  <ClipboardList className="w-4 h-4" />
+                <span className="flex items-center gap-2">
+                  <ClipboardList className="w-4 h-4 shrink-0" />
                   <span>Orders &amp; Payments</span>
                 </span>
                 <span className="font-mono text-[11px] opacity-80 tabular-nums">
-                  {orders.length}
+                  ({orders.length})
                 </span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveTab('products')}
-                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
+                className={`min-h-[42px] shrink-0 lg:w-full flex items-center justify-between gap-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap ${
                   activeTab === 'products'
-                    ? 'bg-[#14382C] text-white'
+                    ? 'bg-[#14382C] text-white shadow-xs'
                     : 'text-slate-700 hover:bg-[#F4EFE6]'
                 }`}
               >
-                <span className="flex items-center gap-2.5">
-                  <Package className="w-4 h-4" />
-                  <span>Products &amp; Catalog</span>
+                <span className="flex items-center gap-2">
+                  <Package className="w-4 h-4 shrink-0" />
+                  <span>Catalog</span>
                 </span>
                 <span className="font-mono text-[11px] opacity-80 tabular-nums">
-                  {products.length}
+                  ({products.length})
                 </span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveTab('website-cms')}
-                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
+                className={`min-h-[42px] shrink-0 lg:w-full flex items-center justify-between gap-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap ${
                   activeTab === 'website-cms'
-                    ? 'bg-[#14382C] text-white'
+                    ? 'bg-[#14382C] text-white shadow-xs'
                     : 'text-slate-700 hover:bg-[#F4EFE6]'
                 }`}
               >
-                <span className="flex items-center gap-2.5">
-                  <Globe className="w-4 h-4" />
-                  <span>Hero &amp; Website CMS</span>
+                <span className="flex items-center gap-2">
+                  <Globe className="w-4 h-4 shrink-0" />
+                  <span>Website CMS</span>
                 </span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveTab('customize-options')}
-                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
+                className={`min-h-[42px] shrink-0 lg:w-full flex items-center justify-between gap-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap ${
                   activeTab === 'customize-options'
-                    ? 'bg-[#14382C] text-white'
+                    ? 'bg-[#14382C] text-white shadow-xs'
                     : 'text-slate-700 hover:bg-[#F4EFE6]'
                 }`}
               >
-                <span className="flex items-center gap-2.5">
-                  <Sliders className="w-4 h-4" />
-                  <span>Form &amp; Add-On Options</span>
+                <span className="flex items-center gap-2">
+                  <Sliders className="w-4 h-4 shrink-0" />
+                  <span>Form &amp; SQL</span>
                 </span>
               </button>
             </div>
 
             {/* Quick KPI Summary Card */}
-            <div className="bg-[#14382C] text-white rounded-2xl p-5 border border-[#C59B27]/40 space-y-3">
+            <div className="hidden lg:block bg-[#14382C] text-white rounded-2xl p-5 border border-[#C59B27]/40 space-y-3">
               <div className="text-[11px] font-semibold uppercase tracking-widest text-[#DFC066]">
                 Database Sync Active
               </div>
@@ -1343,34 +1343,167 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onBackToStore }) => {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-xs font-semibold text-slate-700 mb-1">
-                          Bank Transfer / Raast Account Details
-                        </label>
-                        <input
-                          type="text"
-                          value={siteSettings.bankTransferDetails}
-                          onChange={(e) =>
-                            updateSiteSettings({ bankTransferDetails: e.target.value })
-                          }
-                          className="w-full px-3.5 py-2 rounded-xl bg-[#FBF9F5] border border-[#EADBCE] text-xs"
-                        />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Raqami Account Editor */}
+                      <div className="p-4 rounded-xl bg-[#FBF9F5] border border-[#EADBCE] space-y-2.5">
+                        <div className="text-xs font-bold uppercase tracking-wider text-[#14382C]">
+                          Raqami Account (Digital Bank / Wallet)
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">
+                            Bank Name
+                          </label>
+                          <input
+                            type="text"
+                            value={siteSettings.raqamiAccount.bankName}
+                            onChange={(e) =>
+                              updateSiteSettings({
+                                raqamiAccount: {
+                                  ...siteSettings.raqamiAccount,
+                                  bankName: e.target.value,
+                                },
+                              })
+                            }
+                            className="w-full px-3 py-1.5 rounded-lg bg-white border border-[#EADBCE] text-xs"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">
+                            Account Title
+                          </label>
+                          <input
+                            type="text"
+                            value={siteSettings.raqamiAccount.accountTitle}
+                            onChange={(e) =>
+                              updateSiteSettings({
+                                raqamiAccount: {
+                                  ...siteSettings.raqamiAccount,
+                                  accountTitle: e.target.value,
+                                },
+                              })
+                            }
+                            className="w-full px-3 py-1.5 rounded-lg bg-white border border-[#EADBCE] text-xs"
+                          />
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          <div>
+                            <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">
+                              Account Number
+                            </label>
+                            <input
+                              type="text"
+                              value={siteSettings.raqamiAccount.accountNumber}
+                              onChange={(e) =>
+                                updateSiteSettings({
+                                  raqamiAccount: {
+                                    ...siteSettings.raqamiAccount,
+                                    accountNumber: e.target.value,
+                                  },
+                                })
+                              }
+                              className="w-full px-3 py-1.5 rounded-lg bg-white border border-[#EADBCE] text-xs font-mono"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">
+                              IBAN
+                            </label>
+                            <input
+                              type="text"
+                              value={siteSettings.raqamiAccount.iban}
+                              onChange={(e) =>
+                                updateSiteSettings({
+                                  raqamiAccount: {
+                                    ...siteSettings.raqamiAccount,
+                                    iban: e.target.value,
+                                  },
+                                })
+                              }
+                              className="w-full px-3 py-1.5 rounded-lg bg-white border border-[#EADBCE] text-xs font-mono"
+                            />
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <label className="block text-xs font-semibold text-slate-700 mb-1">
-                          EasyPaisa / JazzCash Account Details
-                        </label>
-                        <input
-                          type="text"
-                          value={siteSettings.easypaisaJazzcashDetails}
-                          onChange={(e) =>
-                            updateSiteSettings({
-                              easypaisaJazzcashDetails: e.target.value,
-                            })
-                          }
-                          className="w-full px-3.5 py-2 rounded-xl bg-[#FBF9F5] border border-[#EADBCE] text-xs"
-                        />
+
+                      {/* MCB Account Editor */}
+                      <div className="p-4 rounded-xl bg-[#FBF9F5] border border-[#EADBCE] space-y-2.5">
+                        <div className="text-xs font-bold uppercase tracking-wider text-[#14382C]">
+                          MCB Account (Bank Transfer)
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">
+                            Bank Name
+                          </label>
+                          <input
+                            type="text"
+                            value={siteSettings.mcbAccount.bankName}
+                            onChange={(e) =>
+                              updateSiteSettings({
+                                mcbAccount: {
+                                  ...siteSettings.mcbAccount,
+                                  bankName: e.target.value,
+                                },
+                              })
+                            }
+                            className="w-full px-3 py-1.5 rounded-lg bg-white border border-[#EADBCE] text-xs"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">
+                            Account Title
+                          </label>
+                          <input
+                            type="text"
+                            value={siteSettings.mcbAccount.accountTitle}
+                            onChange={(e) =>
+                              updateSiteSettings({
+                                mcbAccount: {
+                                  ...siteSettings.mcbAccount,
+                                  accountTitle: e.target.value,
+                                },
+                              })
+                            }
+                            className="w-full px-3 py-1.5 rounded-lg bg-white border border-[#EADBCE] text-xs"
+                          />
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          <div>
+                            <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">
+                              Account Number
+                            </label>
+                            <input
+                              type="text"
+                              value={siteSettings.mcbAccount.accountNumber}
+                              onChange={(e) =>
+                                updateSiteSettings({
+                                  mcbAccount: {
+                                    ...siteSettings.mcbAccount,
+                                    accountNumber: e.target.value,
+                                  },
+                                })
+                              }
+                              className="w-full px-3 py-1.5 rounded-lg bg-white border border-[#EADBCE] text-xs font-mono"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">
+                              IBAN
+                            </label>
+                            <input
+                              type="text"
+                              value={siteSettings.mcbAccount.iban}
+                              onChange={(e) =>
+                                updateSiteSettings({
+                                  mcbAccount: {
+                                    ...siteSettings.mcbAccount,
+                                    iban: e.target.value,
+                                  },
+                                })
+                              }
+                              className="w-full px-3 py-1.5 rounded-lg bg-white border border-[#EADBCE] text-xs font-mono"
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>

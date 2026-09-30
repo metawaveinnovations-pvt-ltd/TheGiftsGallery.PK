@@ -110,7 +110,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FBF9F5] text-[#1C2826] selection:bg-[#14382C] selection:text-[#FBF9F5] pb-16 md:pb-0">
+    <div className="min-h-screen flex flex-col bg-[#FBF9F5] text-[#1C2826] selection:bg-[#14382C] selection:text-[#FBF9F5] pb-20 min-[800px]:pb-0">
       {/* PWA Home Screen Installation Prompt (Mobile / Tablet / Desktop) */}
       <PWAInstallBanner />
 
@@ -199,8 +199,10 @@ export default function App() {
       {/* 14. Footer */}
       <Footer onNavigateView={handleNavigateView} />
 
-      {/* Native App-Style Mobile Bottom Navigation Dock */}
+      {/* Native App-Style Mobile Bottom Navigation Dock (< 800px) */}
       <MobileAppNavBar
+        activeView={activeView}
+        onNavigateView={handleNavigateView}
         onOrderClick={scrollToOrder}
         hasSelectedProduct={!!selectedProductForOrder}
       />

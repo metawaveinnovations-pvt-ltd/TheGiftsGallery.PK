@@ -237,83 +237,83 @@ export const UserPortal: React.FC<UserPortalProps> = ({
           </div>
         </div>
 
-        {/* Workspace Layout: Sidebar (Desktop) + Content Viewport */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Left Navigation Sidebar (3 cols) */}
+        {/* Workspace Layout: Horizontal App Tab Bar (< 1024px) + Sidebar (Desktop) + Content Viewport */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8">
+          {/* Left Navigation Sidebar (3 cols on Desktop, Horizontal Scrollable App Tabs on Mobile/Tablet) */}
           <aside className="lg:col-span-3 space-y-4">
-            <div className="bg-white rounded-2xl p-4 border border-[#EADBCE] space-y-1">
+            <div className="bg-white rounded-2xl p-1.5 sm:p-3 lg:p-4 border border-[#EADBCE] flex lg:flex-col overflow-x-auto no-scrollbar gap-1.5 lg:gap-1">
               <button
                 type="button"
                 onClick={() => setActiveTab('orders')}
-                className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
+                className={`min-h-[42px] shrink-0 lg:w-full flex items-center justify-between gap-2 px-3.5 py-2.5 lg:py-3 rounded-xl text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap ${
                   activeTab === 'orders'
-                    ? 'bg-[#14382C] text-white'
+                    ? 'bg-[#14382C] text-white shadow-xs'
                     : 'text-slate-700 hover:bg-[#F4EFE6]'
                 }`}
               >
-                <span className="flex items-center gap-2.5">
-                  <Package className="w-4 h-4" />
+                <span className="flex items-center gap-2">
+                  <Package className="w-4 h-4 shrink-0" />
                   <span>Orders &amp; Tracking</span>
                 </span>
                 <span className="font-mono text-[11px] opacity-80 tabular-nums">
-                  {orders.length}
+                  ({orders.length})
                 </span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveTab('recipients')}
-                className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
+                className={`min-h-[42px] shrink-0 lg:w-full flex items-center justify-between gap-2 px-3.5 py-2.5 lg:py-3 rounded-xl text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap ${
                   activeTab === 'recipients'
-                    ? 'bg-[#14382C] text-white'
+                    ? 'bg-[#14382C] text-white shadow-xs'
                     : 'text-slate-700 hover:bg-[#F4EFE6]'
                 }`}
               >
-                <span className="flex items-center gap-2.5">
-                  <CalendarHeart className="w-4 h-4" />
+                <span className="flex items-center gap-2">
+                  <CalendarHeart className="w-4 h-4 shrink-0" />
                   <span>Saved Recipients</span>
                 </span>
                 <span className="font-mono text-[11px] opacity-80 tabular-nums">
-                  {savedRecipients.length}
+                  ({savedRecipients.length})
                 </span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveTab('wishlist')}
-                className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
+                className={`min-h-[42px] shrink-0 lg:w-full flex items-center justify-between gap-2 px-3.5 py-2.5 lg:py-3 rounded-xl text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap ${
                   activeTab === 'wishlist'
-                    ? 'bg-[#14382C] text-white'
+                    ? 'bg-[#14382C] text-white shadow-xs'
                     : 'text-slate-700 hover:bg-[#F4EFE6]'
                 }`}
               >
-                <span className="flex items-center gap-2.5">
-                  <Heart className="w-4 h-4" />
-                  <span>Saved Wishlist</span>
+                <span className="flex items-center gap-2">
+                  <Heart className="w-4 h-4 shrink-0" />
+                  <span>Wishlist</span>
                 </span>
                 <span className="font-mono text-[11px] opacity-80 tabular-nums">
-                  {wishlistedProducts.length}
+                  ({wishlistedProducts.length})
                 </span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveTab('profile')}
-                className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
+                className={`min-h-[42px] shrink-0 lg:w-full flex items-center justify-between gap-2 px-3.5 py-2.5 lg:py-3 rounded-xl text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap ${
                   activeTab === 'profile'
-                    ? 'bg-[#14382C] text-white'
+                    ? 'bg-[#14382C] text-white shadow-xs'
                     : 'text-slate-700 hover:bg-[#F4EFE6]'
                 }`}
               >
-                <span className="flex items-center gap-2.5">
-                  <User className="w-4 h-4" />
+                <span className="flex items-center gap-2">
+                  <User className="w-4 h-4 shrink-0" />
                   <span>Profile &amp; Address</span>
                 </span>
               </button>
             </div>
 
-            {/* Direct Concierge Help Box */}
-            <div className="bg-[#14382C] text-white rounded-2xl p-5 border border-[#C59B27]/40 space-y-3">
+            {/* Direct Concierge Help Box (Desktop Sidebar) */}
+            <div className="hidden lg:block bg-[#14382C] text-white rounded-2xl p-5 border border-[#C59B27]/40 space-y-3">
               <div className="text-[11px] font-semibold uppercase tracking-widest text-[#DFC066]">
                 VIP Gifting Concierge
               </div>

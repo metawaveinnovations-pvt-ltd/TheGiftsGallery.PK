@@ -36,7 +36,7 @@ const STORAGE_KEYS = {
   WISHLIST: 'tgg_portal_wishlist_v2',
   USER_AUTH: 'tgg_portal_user_auth_v2',
   ADMIN_AUTH: 'tgg_portal_admin_auth_v2',
-  SITE_SETTINGS: 'tgg_portal_site_settings_v2',
+  SITE_SETTINGS: 'tgg_portal_site_settings_v3',
   FORM_OPTIONS: 'tgg_portal_form_options_v2',
   CATEGORIES: 'tgg_portal_categories_v2',
   OCCASIONS: 'tgg_portal_occasions_v2',
@@ -66,10 +66,22 @@ export const INITIAL_SITE_SETTINGS: SiteSettings = {
   whatsappUrl: BRAND_INFO.whatsappUrl,
   instagramHandle: BRAND_INFO.instagramHandle,
   instagramUrl: BRAND_INFO.instagramUrl,
+  raqamiAccount: {
+    bankName: 'Raqami Islamic Digital Bank',
+    accountTitle: 'Ali Hassan',
+    accountNumber: '025335144063',
+    iban: 'PK91RQMI0000025335144063',
+  },
+  mcbAccount: {
+    bankName: 'MCB Bank',
+    accountTitle: 'ALI HASSAN',
+    accountNumber: '1481617251004009',
+    iban: 'PK87MUCB1481617251004009',
+  },
   bankTransferDetails:
-    'Meezan Bank · Account Title: The Gift Gallery · Account / Raast ID: 03390088458',
+    'Raqami Islamic Digital Bank · Title: Ali Hassan · Acc: 025335144063 · IBAN: PK91RQMI0000025335144063',
   easypaisaJazzcashDetails:
-    'EasyPaisa / JazzCash Wallet: 0339-0088458 (Title: The Gift Gallery PK)',
+    'MCB Bank · Title: ALI HASSAN · Acc: 1481617251004009 · IBAN: PK87MUCB1481617251004009',
   standardDeliveryFeePKR: 350,
   freeDeliveryThresholdPKR: 10000,
   midnightDeliveryFeePKR: 600,
