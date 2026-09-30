@@ -208,5 +208,90 @@ export interface SiteSettings {
   midnightDeliveryFeePKR: number;
 }
 
+export interface SeoPageMetadata {
+  id: string;
+  pagePath: string;
+  pageName: string;
+  pageTitle: string;
+  metaDescription: string;
+  metaKeywords: string;
+  canonicalUrl: string;
+  ogTitle: string;
+  ogDescription: string;
+  ogImage: string;
+  twitterCard: string;
+  twitterSite: string;
+  googleVerification: string;
+  geoRegion: string;
+  geoPlacename: string;
+  popularSearchTags: string;
+  schemaOrgType: string;
+}
+
+export interface SocialPageOrPost {
+  id: string;
+  platform: 'Instagram' | 'WhatsApp' | 'Partner' | 'Facebook' | 'TikTok';
+  entryType: 'official_channel' | 'instagram_post';
+  handle: string;
+  url: string;
+  imageUrl?: string;
+  caption: string;
+  likesCount?: string;
+  isActive: boolean;
+}
+
+export interface KnowledgeBaseEntry {
+  id: string;
+  sectionType: 'faq' | 'how_it_works' | 'delivery_pillar' | 'brand_info';
+  stepOrOrder: string;
+  categoryTag: string;
+  titleOrQuestion: string;
+  contentOrAnswer: string;
+  keywords: string[];
+  iconName: string;
+}
+
+export interface ContactDirectoryEntry {
+  id: string;
+  contactType: 'brand_official' | 'bank_settlement' | 'tech_partner' | 'customer' | 'recipient';
+  fullName: string;
+  whatsappNumber: string;
+  email: string;
+  instagramHandle: string;
+  city: string;
+  address: string;
+  roleOrRelationship: string;
+  notes: string;
+  linkedOrderId?: string;
+  updatedAt: string;
+}
+
+export interface FormSubmissionRecord {
+  id: string;
+  submissionType:
+    | 'custom_order_form'
+    | 'checkout_booking'
+    | 'whatsapp_concierge'
+    | 'account_signup';
+  linkedOrderId?: string;
+  linkedProductId?: string;
+  linkedContactId?: string;
+  fullName: string;
+  whatsappNumber: string;
+  email?: string;
+  instagramHandle?: string;
+  city: string;
+  deliveryAddress: string;
+  giftType: string;
+  giftFor: string;
+  budgetRange: string;
+  deliveryDate: string;
+  deliveryTime: string;
+  recipientName: string;
+  personalMessage: string;
+  specialRequests: string;
+  createdAt: string;
+}
+
 export type AppViewMode = 'storefront' | 'checkout' | 'user-portal' | 'admin-portal';
 

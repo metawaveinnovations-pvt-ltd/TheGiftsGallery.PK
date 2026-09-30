@@ -1,7 +1,12 @@
 import React, { useState, useMemo } from 'react';
 import { usePortal } from '../context/PortalContext';
 import { OrderStatus, PaymentStatus, PortalOrder, Product } from '../types';
-import { SUPABASE_SQL_SCHEMA } from '../lib/supabase';
+import {
+  SUPABASE_SQL_SCHEMA,
+  SUPABASE_PROJECT_URL,
+  SUPABASE_SQL_EDITOR_URL,
+  generateFullSupabaseBootstrapSQL,
+} from '../lib/supabase';
 import { OptimizedImage } from './OptimizedImage';
 import {
   LayoutDashboard,
@@ -24,6 +29,8 @@ import {
   Lock,
   Database,
   Sparkles,
+  ExternalLink,
+  RefreshCw,
 } from 'lucide-react';
 
 interface AdminPortalProps {
@@ -52,9 +59,24 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onBackToStore }) => {
   const {
     orders,
     products,
+    categories,
+    occasions,
+    policies,
     siteSettings,
     formOptions,
+    userProfile,
+    savedRecipients,
+    wishlistIds,
+    seoMetadata,
+    socialPages,
+    knowledgeBase,
+    contacts,
+    formSubmissions,
     isAdminAuthenticated,
+    isSyncingDb,
+    lastSyncReport,
+    syncFullDatabase,
+    pullFromActiveDatabase,
     loginAdmin,
     logoutAdmin,
     updateOrderStatus,
@@ -68,13 +90,22 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onBackToStore }) => {
     resetSiteSettings,
     updateFormOptions,
     resetFormOptions,
+    updateSeoMetadata,
+    updateSocialPages,
+    updateKnowledgeBase,
+    updateContacts,
   } = usePortal();
 
   const [passcodeInput, setPasscodeInput] = useState('');
   const [authError, setAuthError] = useState('');
 
   const [activeTab, setActiveTab] = useState<
-    'overview' | 'orders' | 'products' | 'website-cms' | 'customize-options'
+    | 'overview'
+    | 'orders'
+    | 'products'
+    | 'website-cms'
+    | 'customize-options'
+    | 'seo-knowledge-db'
   >('overview');
 
   // Orders Filter & Inspector State
@@ -107,10 +138,81 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onBackToStore }) => {
 
   const [savedNotice, setSavedNotice] = useState('');
   const [copiedSql, setCopiedSql] = useState(false);
+  const [copiedFullSeedSql, setCopiedFullSeedSql] = useState(false);
+  const [supabaseAccessToken, setSupabaseAccessToken] = useState('');
+  const [sqlPreviewMode, setSqlPreviewMode] = useState<'full-seed' | 'schema-only'>('full-seed');
 
   const triggerSavedToast = (msg: string) => {
     setSavedNotice(msg);
-    setTimeout(() => setSavedNotice(''), 2500);
+    setTimeout(() => setSavedNotice(''), 3500);
+  };
+
+  const fullBootstrapAndSeedSQL = useMemo(
+    () =>
+      generateFullSupabaseBootstrapSQL({
+        orders,
+        products,
+        categories,
+        occasions,
+        policies,
+        siteSettings,
+        formOptions,
+        userProfile,
+        savedRecipients,
+        wishlistIds,
+        seoMetadata,
+        socialPages,
+        knowledgeBase,
+        contacts,
+        formSubmissions,
+      }),
+    [
+      orders,
+      products,
+      categories,
+      occasions,
+      policies,
+      siteSettings,
+      formOptions,
+      userProfile,
+      savedRecipients,
+      wishlistIds,
+      seoMetadata,
+      socialPages,
+      knowledgeBase,
+      contacts,
+      formSubmissions,
+    ]
+  );
+
+  const handleFullDatabaseSync = async () => {
+    const res = await syncFullDatabase({
+      accessToken: supabaseAccessToken.trim() || undefined,
+    });
+    if (res.status === 'synced') {
+      triggerSavedToast(
+        `Synced ${res.recordsPushed} records across ${res.tablesSynced.length} Supabase tables & updated website!`
+      );
+    } else if (res.status === 'schema_required') {
+      navigator.clipboard.writeText(fullBootstrapAndSeedSQL).catch(() => {});
+      setCopiedFullSeedSql(true);
+      setTimeout(() => setCopiedFullSeedSql(false), 3500);
+      setActiveTab('customize-options');
+      triggerSavedToast(
+        'Full CREATE TABLE + INSERT SQL copied! Run once in Supabase SQL Editor or enter Access Token below.'
+      );
+    } else {
+      triggerSavedToast(res.message);
+    }
+  };
+
+  const handlePullActiveDb = async () => {
+    const ok = await pullFromActiveDatabase();
+    if (ok) {
+      triggerSavedToast('Website updated with latest active Supabase database records!');
+    } else {
+      triggerSavedToast('No existing records found in Supabase — click Sync & Push DB to initialize.');
+    }
   };
 
   // Metrics
@@ -332,7 +434,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onBackToStore }) => {
             </div>
           </div>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex flex-wrap items-center gap-2">
             {savedNotice && (
               <span className="px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-800">
                 ✓ {savedNotice}
@@ -340,11 +442,30 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onBackToStore }) => {
             )}
             <button
               type="button"
+              disabled={isSyncingDb}
+              onClick={handleFullDatabaseSync}
+              className="px-3.5 py-2 rounded-xl bg-[#14382C] hover:bg-[#0D261E] text-[#DFC066] border border-[#C59B27]/50 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs disabled:opacity-60"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${isSyncingDb ? 'animate-spin' : ''}`} />
+              <span>{isSyncingDb ? 'Syncing DB...' : 'Sync & Push All DB to Supabase'}</span>
+            </button>
+            <button
+              type="button"
+              disabled={isSyncingDb}
+              onClick={handlePullActiveDb}
+              className="px-3 py-2 rounded-xl bg-white hover:bg-[#F4EFE6] text-[#14382C] border border-[#EADBCE] text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-60"
+              title="Pull latest records from active Supabase DB and update whole website"
+            >
+              <Database className="w-3.5 h-3.5 text-[#C59B27]" />
+              <span className="hidden sm:inline">Pull Active DB</span>
+            </button>
+            <button
+              type="button"
               onClick={handleExportCSV}
               className="px-3.5 py-2 rounded-xl bg-white hover:bg-[#F4EFE6] text-[#14382C] border border-[#EADBCE] text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
             >
               <Download className="w-3.5 h-3.5 text-[#C59B27]" />
-              <span>Export Orders CSV</span>
+              <span className="hidden md:inline">Export CSV</span>
             </button>
             <button
               type="button"
@@ -442,16 +563,46 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onBackToStore }) => {
                   <span>Form &amp; SQL</span>
                 </span>
               </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab('seo-knowledge-db')}
+                className={`min-h-[42px] shrink-0 lg:w-full flex items-center justify-between gap-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap ${
+                  activeTab === 'seo-knowledge-db'
+                    ? 'bg-[#14382C] text-white shadow-xs'
+                    : 'text-slate-700 hover:bg-[#F4EFE6]'
+                }`}
+              >
+                <span className="flex items-center gap-2">
+                  <Database className="w-4 h-4 shrink-0" />
+                  <span>SEO, Social &amp; DB Records</span>
+                </span>
+                <span className="font-mono text-[11px] opacity-80 tabular-nums">
+                  (13 Tbls)
+                </span>
+              </button>
             </div>
 
             {/* Quick KPI Summary Card */}
             <div className="hidden lg:block bg-[#14382C] text-white rounded-2xl p-5 border border-[#C59B27]/40 space-y-3">
-              <div className="text-[11px] font-semibold uppercase tracking-widest text-[#DFC066]">
-                Database Sync Active
+              <div className="flex items-center justify-between">
+                <div className="text-[11px] font-semibold uppercase tracking-widest text-[#DFC066]">
+                  Supabase Active DB
+                </div>
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               </div>
               <p className="text-xs text-emerald-100/80 leading-relaxed">
-                All edits to Hero copy, products, prices, form options, and order statuses update the live website immediately.
+                Push all products, orders, categories, occasions, policies, and Hero/Bank settings to Supabase and sync the active website.
               </p>
+              <button
+                type="button"
+                disabled={isSyncingDb}
+                onClick={handleFullDatabaseSync}
+                className="w-full py-2.5 px-3 rounded-xl bg-[#DFC066] hover:bg-[#e7c973] text-[#0C1A14] text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer disabled:opacity-60"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${isSyncingDb ? 'animate-spin' : ''}`} />
+                <span>{isSyncingDb ? 'Syncing & Pushing...' : 'Sync & Push All DB Data'}</span>
+              </button>
             </div>
           </aside>
 
@@ -460,6 +611,59 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onBackToStore }) => {
             {/* TAB 1: EXECUTIVE OVERVIEW */}
             {activeTab === 'overview' && (
               <>
+                {/* Active Database Sync Control Banner */}
+                <div className="bg-[#14382C] text-white rounded-2xl p-5 border border-[#C59B27]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Database className="w-4 h-4 text-[#DFC066]" />
+                      <span className="text-[11px] font-semibold uppercase tracking-widest text-[#DFC066]">
+                        Active Supabase Cloud Sync · {SUPABASE_PROJECT_URL.replace('https://', '')}
+                      </span>
+                    </div>
+                    <p className="text-xs text-emerald-100/85">
+                      One-click sync creates/verifies all 8 database tables, pushes all {products.length} products, {orders.length} orders, {categories.length} categories, {occasions.length} occasions, {policies.length} policies &amp; CMS settings, and updates the live website.
+                    </p>
+                    {lastSyncReport && (
+                      <p className="text-[11px] text-[#DFC066] font-mono pt-0.5">
+                        Status: {lastSyncReport.message}
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 shrink-0">
+                    <button
+                      type="button"
+                      disabled={isSyncingDb}
+                      onClick={handleFullDatabaseSync}
+                      className="px-4 py-2.5 rounded-xl bg-[#DFC066] hover:bg-[#e7c973] text-[#0C1A14] text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-60"
+                    >
+                      <RefreshCw className={`w-3.5 h-3.5 ${isSyncingDb ? 'animate-spin' : ''}`} />
+                      <span>{isSyncingDb ? 'Syncing...' : 'Sync & Push All DB Data'}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard.writeText(fullBootstrapAndSeedSQL);
+                        setCopiedFullSeedSql(true);
+                        setTimeout(() => setCopiedFullSeedSql(false), 2500);
+                        triggerSavedToast('Copied full CREATE TABLE + INSERT DATA SQL to clipboard!');
+                      }}
+                      className="px-3.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white border border-white/15 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      {copiedFullSeedSql ? (
+                        <>
+                          <Check className="w-3.5 h-3.5 text-[#DFC066]" />
+                          <span>Copied Full SQL!</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-3.5 h-3.5 text-[#DFC066]" />
+                          <span>Copy Create Tables + Seed SQL</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   <div className="bg-white rounded-2xl p-5 border border-[#EADBCE]">
                     <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
@@ -1827,40 +2031,547 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onBackToStore }) => {
                   </div>
                 </div>
 
-                {/* Supabase SQL Schema Reference Card */}
-                <div className="bg-white rounded-2xl p-6 border border-[#EADBCE] space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Database className="w-4 h-4 text-[#14382C]" />
-                      <h3 className="text-sm font-serif font-bold text-[#14382C]">
-                        Supabase PostgreSQL Schema &amp; RLS Policies
-                      </h3>
+                {/* Supabase Full Database Sync, Table Creator & Seed Console */}
+                <div className="bg-white rounded-2xl p-6 border border-[#EADBCE] space-y-5">
+                  <div className="flex flex-wrap items-start justify-between gap-4">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <Database className="w-4 h-4 text-[#14382C]" />
+                        <h3 className="text-base font-serif font-bold text-[#14382C]">
+                          Supabase Active Database Sync, Table Creator &amp; Data Seeder
+                        </h3>
+                      </div>
+                      <p className="text-xs font-mono text-slate-500 mt-0.5">
+                        Connected Project: {SUPABASE_PROJECT_URL}
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button
+                        type="button"
+                        disabled={isSyncingDb}
+                        onClick={handleFullDatabaseSync}
+                        className="px-4 py-2 rounded-xl bg-[#14382C] hover:bg-[#0D261E] text-xs font-semibold text-[#DFC066] flex items-center gap-1.5 cursor-pointer disabled:opacity-60"
+                      >
+                        <RefreshCw className={`w-3.5 h-3.5 ${isSyncingDb ? 'animate-spin' : ''}`} />
+                        <span>
+                          {isSyncingDb
+                            ? 'Syncing All Tables...'
+                            : 'Sync & Push All Website Data to Supabase'}
+                        </span>
+                      </button>
+
+                      <button
+                        type="button"
+                        disabled={isSyncingDb}
+                        onClick={handlePullActiveDb}
+                        className="px-3.5 py-2 rounded-xl bg-[#F4EFE6] hover:bg-[#EADBCE] text-xs font-semibold text-[#14382C] flex items-center gap-1.5 cursor-pointer disabled:opacity-60"
+                      >
+                        <RotateCcw className="w-3.5 h-3.5" />
+                        <span>Pull Active DB to Website</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Table Inventory & Row Counts across all 13 Connected Tables */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                    {[
+                      { name: 'tgg_app_state', count: 15, label: 'Master CMS & Config Keys' },
+                      { name: 'tgg_products', count: products.length, label: 'Gift Catalog (FK -> Categories)' },
+                      { name: 'tgg_categories', count: categories.length, label: 'Store Categories' },
+                      { name: 'tgg_occasions', count: occasions.length, label: 'Gift Occasions' },
+                      { name: 'tgg_orders', count: orders.length, label: 'Orders (FK -> Products & Contacts)' },
+                      {
+                        name: 'tgg_form_submissions',
+                        count: formSubmissions.length,
+                        label: 'Form Submissions (FK -> Orders)',
+                      },
+                      {
+                        name: 'tgg_contacts',
+                        count: contacts.length,
+                        label: 'Brand, Banks, Partner & Customers',
+                      },
+                      {
+                        name: 'tgg_seo_metadata',
+                        count: seoMetadata.length,
+                        label: 'SEO, OpenGraph & JSON-LD Pages',
+                      },
+                      {
+                        name: 'tgg_social_pages',
+                        count: socialPages.length,
+                        label: 'Social Channels & IG Feed Posts',
+                      },
+                      {
+                        name: 'tgg_knowledge_base',
+                        count: knowledgeBase.length,
+                        label: 'FAQs, How It Works & Delivery Info',
+                      },
+                      { name: 'tgg_policies', count: policies.length, label: 'Storefront Policies' },
+                      {
+                        name: 'tgg_recipients',
+                        count: savedRecipients.length,
+                        label: 'Saved Recipients Address Book',
+                      },
+                      { name: 'todos', count: 3, label: 'Concierge Operational Checklist' },
+                    ].map((tbl) => (
+                      <div
+                        key={tbl.name}
+                        className="p-3 rounded-xl bg-[#FBF9F5] border border-[#EADBCE] flex flex-col justify-between"
+                      >
+                        <div className="flex items-center justify-between gap-1">
+                          <span className="font-mono text-[11px] font-bold text-[#14382C]">
+                            {tbl.name}
+                          </span>
+                          <span className="font-mono text-xs font-bold text-[#C59B27] tabular-nums">
+                            {tbl.count} rows
+                          </span>
+                        </div>
+                        <span className="text-[10px] text-slate-500 mt-1">{tbl.label}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Sync Report Status Banner */}
+                  {lastSyncReport && (
+                    <div
+                      className={`p-4 rounded-xl border text-xs space-y-2 ${
+                        lastSyncReport.status === 'synced'
+                          ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
+                          : 'bg-amber-50 border-amber-300 text-amber-950'
+                      }`}
+                    >
+                      <div className="font-bold flex items-center justify-between">
+                        <span>
+                          {lastSyncReport.status === 'synced'
+                            ? '✓ Active Database Synchronized'
+                            : '⚡ Initial Table Creation Required in Supabase'}
+                        </span>
+                        <span className="font-mono text-[11px] opacity-75">
+                          {new Date(lastSyncReport.lastSyncedAt).toLocaleTimeString()}
+                        </span>
+                      </div>
+                      <p className="leading-relaxed">{lastSyncReport.message}</p>
+                    </div>
+                  )}
+
+                  {/* Option A: Automatic API Table Creation via Personal Access Token */}
+                  <div className="p-4 rounded-xl bg-[#FBF9F5] border border-[#EADBCE] space-y-2.5">
+                    <div className="text-xs font-semibold text-[#14382C]">
+                      Automatic Table Creation &amp; Data Push (Optional Supabase Personal Access Token)
+                    </div>
+                    <p className="text-[11px] text-slate-600 leading-relaxed">
+                      To let the Admin Console automatically execute <code className="font-mono">CREATE TABLE</code> and seed all 8 tables via the Supabase Management API without opening the SQL Editor, paste a Supabase Personal Access Token (<code className="font-mono">sbp_...</code>) and click <strong>Sync &amp; Push All Website Data</strong>:
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <input
+                        type="password"
+                        value={supabaseAccessToken}
+                        onChange={(e) => setSupabaseAccessToken(e.target.value)}
+                        placeholder="Optional: sbp_xxxxxxxxxxxxxxxxxxxxxxxxxxxx (for 1-click auto DDL)"
+                        className="flex-1 px-3.5 py-2 rounded-xl bg-white border border-[#EADBCE] text-xs font-mono"
+                      />
+                      <button
+                        type="button"
+                        disabled={isSyncingDb}
+                        onClick={handleFullDatabaseSync}
+                        className="px-4 py-2 rounded-xl bg-[#14382C] text-white text-xs font-semibold cursor-pointer shrink-0 disabled:opacity-60"
+                      >
+                        Auto-Create Tables &amp; Push Data
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Option B: 1-Click Full CREATE TABLE + INSERT DATA SQL Script */}
+                  <div className="space-y-2.5">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => setSqlPreviewMode('full-seed')}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer ${
+                            sqlPreviewMode === 'full-seed'
+                              ? 'bg-[#14382C] text-white'
+                              : 'bg-[#F4EFE6] text-slate-700'
+                          }`}
+                        >
+                          Full CREATE TABLE + INSERT All Website Data SQL
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setSqlPreviewMode('schema-only')}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer ${
+                            sqlPreviewMode === 'schema-only'
+                              ? 'bg-[#14382C] text-white'
+                              : 'bg-[#F4EFE6] text-slate-700'
+                          }`}
+                        >
+                          CREATE TABLE Schema Only
+                        </button>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const sqlToCopy =
+                              sqlPreviewMode === 'full-seed'
+                                ? fullBootstrapAndSeedSQL
+                                : SUPABASE_SQL_SCHEMA;
+                            navigator.clipboard.writeText(sqlToCopy);
+                            setCopiedSql(true);
+                            setTimeout(() => setCopiedSql(false), 2500);
+                            triggerSavedToast(
+                              'Copied complete CREATE TABLE + INSERT DATA SQL script!'
+                            );
+                          }}
+                          className="px-3.5 py-1.5 rounded-lg bg-[#DFC066] hover:bg-[#e7c973] text-xs font-bold text-[#0C1A14] flex items-center gap-1.5 cursor-pointer"
+                        >
+                          {copiedSql ? (
+                            <>
+                              <Check className="w-3.5 h-3.5 text-emerald-900" />
+                              <span>Copied Complete SQL!</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3.5 h-3.5" />
+                              <span>Copy Full CREATE TABLE + INSERT SQL</span>
+                            </>
+                          )}
+                        </button>
+
+                        <a
+                          href={SUPABASE_SQL_EDITOR_URL}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-3.5 py-1.5 rounded-lg bg-[#F4EFE6] hover:bg-[#EADBCE] text-xs font-semibold text-[#14382C] flex items-center gap-1.5"
+                        >
+                          <span>Open Supabase SQL Editor</span>
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+                      </div>
+                    </div>
+
+                    <pre className="p-4 rounded-xl bg-[#0C1A14] text-emerald-100/90 font-mono text-[11px] overflow-x-auto max-h-64 leading-relaxed">
+                      {sqlPreviewMode === 'full-seed'
+                        ? fullBootstrapAndSeedSQL
+                        : SUPABASE_SQL_SCHEMA}
+                    </pre>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB 6: SEO, SOCIAL PAGES, KNOWLEDGE BASE, CONTACTS & FORM SUBMISSIONS */}
+            {activeTab === 'seo-knowledge-db' && (
+              <div className="space-y-6">
+                {/* 1. SEO Pages, OpenGraph & Schema.org Structured Data Manager */}
+                <div className="bg-white rounded-2xl p-6 border border-[#EADBCE] space-y-4">
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#EADBCE] pb-4">
+                    <div>
+                      <span className="text-[11px] font-semibold uppercase tracking-widest text-[#C59B27]">
+                        TABLE: public.tgg_seo_metadata ({seoMetadata.length} Pages)
+                      </span>
+                      <h2 className="text-lg font-serif font-bold text-[#14382C]">
+                        SEO Pages, OpenGraph, Twitter Cards &amp; Popular Search Keywords
+                      </h2>
                     </div>
                     <button
                       type="button"
-                      onClick={() => {
-                        navigator.clipboard.writeText(SUPABASE_SQL_SCHEMA);
-                        setCopiedSql(true);
-                        setTimeout(() => setCopiedSql(false), 2000);
-                      }}
-                      className="px-3 py-1.5 rounded-lg bg-[#F4EFE6] hover:bg-[#EADBCE] text-xs font-semibold text-[#14382C] flex items-center gap-1.5 cursor-pointer"
+                      onClick={handleFullDatabaseSync}
+                      className="px-3.5 py-2 rounded-xl bg-[#14382C] text-[#DFC066] text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
                     >
-                      {copiedSql ? (
-                        <>
-                          <Check className="w-3.5 h-3.5 text-emerald-700" />
-                          <span>Copied SQL!</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-3.5 h-3.5" />
-                          <span>Copy SQL Schema</span>
-                        </>
-                      )}
+                      <RefreshCw className={`w-3.5 h-3.5 ${isSyncingDb ? 'animate-spin' : ''}`} />
+                      <span>Sync SEO to Supabase</span>
                     </button>
                   </div>
-                  <pre className="p-4 rounded-xl bg-[#0C1A14] text-emerald-100/90 font-mono text-[11px] overflow-x-auto max-h-48 leading-relaxed">
-                    {SUPABASE_SQL_SCHEMA}
-                  </pre>
+
+                  <div className="space-y-4">
+                    {seoMetadata.map((seo, idx) => (
+                      <div
+                        key={seo.id}
+                        className="p-4 rounded-xl bg-[#FBF9F5] border border-[#EADBCE] space-y-3"
+                      >
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <span className="font-mono text-xs font-bold text-[#14382C]">
+                            {seo.pageName} ({seo.pagePath})
+                          </span>
+                          <span className="font-mono text-[11px] text-[#C59B27]">
+                            Schema.org: {seo.schemaOrgType}
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                              Page Title (&lt;title&gt; &amp; og:title)
+                            </label>
+                            <input
+                              type="text"
+                              value={seo.pageTitle}
+                              onChange={(e) => {
+                                const next = [...seoMetadata];
+                                next[idx] = {
+                                  ...seo,
+                                  pageTitle: e.target.value,
+                                  ogTitle: e.target.value,
+                                };
+                                updateSeoMetadata(next);
+                              }}
+                              className="w-full px-3 py-2 rounded-lg bg-white border border-[#EADBCE] text-xs"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                              Canonical URL &amp; GEO Region
+                            </label>
+                            <input
+                              type="text"
+                              value={seo.canonicalUrl}
+                              onChange={(e) => {
+                                const next = [...seoMetadata];
+                                next[idx] = { ...seo, canonicalUrl: e.target.value };
+                                updateSeoMetadata(next);
+                              }}
+                              className="w-full px-3 py-2 rounded-lg bg-white border border-[#EADBCE] text-xs font-mono"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                            Meta Description (&lt;meta name=&quot;description&quot;&gt;)
+                          </label>
+                          <textarea
+                            rows={2}
+                            value={seo.metaDescription}
+                            onChange={(e) => {
+                              const next = [...seoMetadata];
+                              next[idx] = {
+                                ...seo,
+                                metaDescription: e.target.value,
+                                ogDescription: e.target.value,
+                              };
+                              updateSeoMetadata(next);
+                            }}
+                            className="w-full px-3 py-2 rounded-lg bg-white border border-[#EADBCE] text-xs"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                            Footer Popular Search Breadcrumb Tags
+                          </label>
+                          <input
+                            type="text"
+                            value={seo.popularSearchTags}
+                            onChange={(e) => {
+                              const next = [...seoMetadata];
+                              next[idx] = { ...seo, popularSearchTags: e.target.value };
+                              updateSeoMetadata(next);
+                            }}
+                            className="w-full px-3 py-2 rounded-lg bg-white border border-[#EADBCE] text-xs"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 2. Social Media Channels & Instagram Feed Posts (public.tgg_social_pages) */}
+                <div className="bg-white rounded-2xl p-6 border border-[#EADBCE] space-y-4">
+                  <div className="border-b border-[#EADBCE] pb-3">
+                    <span className="text-[11px] font-semibold uppercase tracking-widest text-[#C59B27]">
+                      TABLE: public.tgg_social_pages ({socialPages.length} Records)
+                    </span>
+                    <h2 className="text-lg font-serif font-bold text-[#14382C]">
+                      Social Media Profiles &amp; Live Instagram Feed Posts
+                    </h2>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {socialPages.map((soc, idx) => (
+                      <div
+                        key={soc.id}
+                        className="p-4 rounded-xl bg-[#FBF9F5] border border-[#EADBCE] space-y-2"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold text-[#14382C]">
+                            {soc.platform} · {soc.entryType === 'official_channel' ? 'Official Channel' : 'Feed Post'}
+                          </span>
+                          <span className="font-mono text-[11px] text-[#C59B27]">
+                            {soc.likesCount}
+                          </span>
+                        </div>
+                        <input
+                          type="text"
+                          value={soc.handle}
+                          onChange={(e) => {
+                            const next = [...socialPages];
+                            next[idx] = { ...soc, handle: e.target.value };
+                            updateSocialPages(next);
+                          }}
+                          className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-[#EADBCE] text-xs font-semibold"
+                        />
+                        <input
+                          type="text"
+                          value={soc.caption}
+                          onChange={(e) => {
+                            const next = [...socialPages];
+                            next[idx] = { ...soc, caption: e.target.value };
+                            updateSocialPages(next);
+                          }}
+                          className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-[#EADBCE] text-xs"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 3. Info & Knowledge Base (public.tgg_knowledge_base) */}
+                <div className="bg-white rounded-2xl p-6 border border-[#EADBCE] space-y-4">
+                  <div className="border-b border-[#EADBCE] pb-3">
+                    <span className="text-[11px] font-semibold uppercase tracking-widest text-[#C59B27]">
+                      TABLE: public.tgg_knowledge_base ({knowledgeBase.length} Entries)
+                    </span>
+                    <h2 className="text-lg font-serif font-bold text-[#14382C]">
+                      Gifting Guide FAQs, How It Works Steps &amp; Delivery Service Pillars
+                    </h2>
+                  </div>
+
+                  <div className="space-y-2.5 max-h-96 overflow-y-auto pr-1">
+                    {knowledgeBase.map((kb, idx) => (
+                      <div
+                        key={kb.id}
+                        className="p-3.5 rounded-xl bg-[#FBF9F5] border border-[#EADBCE] space-y-2"
+                      >
+                        <div className="flex items-center justify-between text-[11px]">
+                          <span className="font-mono font-bold uppercase text-[#14382C]">
+                            [{kb.sectionType}] #{kb.stepOrOrder} · {kb.categoryTag}
+                          </span>
+                          <span className="font-mono text-slate-400">{kb.id}</span>
+                        </div>
+                        <input
+                          type="text"
+                          value={kb.titleOrQuestion}
+                          onChange={(e) => {
+                            const next = [...knowledgeBase];
+                            next[idx] = { ...kb, titleOrQuestion: e.target.value };
+                            updateKnowledgeBase(next);
+                          }}
+                          className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-[#EADBCE] text-xs font-bold text-[#14382C]"
+                        />
+                        <textarea
+                          rows={2}
+                          value={kb.contentOrAnswer}
+                          onChange={(e) => {
+                            const next = [...knowledgeBase];
+                            next[idx] = { ...kb, contentOrAnswer: e.target.value };
+                            updateKnowledgeBase(next);
+                          }}
+                          className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-[#EADBCE] text-xs text-slate-600"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 4. Contacts Directory (public.tgg_contacts) */}
+                <div className="bg-white rounded-2xl p-6 border border-[#EADBCE] space-y-4">
+                  <div className="border-b border-[#EADBCE] pb-3">
+                    <span className="text-[11px] font-semibold uppercase tracking-widest text-[#C59B27]">
+                      TABLE: public.tgg_contacts ({contacts.length} Contacts)
+                    </span>
+                    <h2 className="text-lg font-serif font-bold text-[#14382C]">
+                      Official Brand, Raqami &amp; MCB Bank Accounts, Tech Partner &amp; Customer Contacts
+                    </h2>
+                  </div>
+
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse text-xs">
+                      <thead>
+                        <tr className="border-b border-[#EADBCE] text-[11px] text-slate-500 uppercase">
+                          <th className="py-2.5 px-3">Type</th>
+                          <th className="py-2.5 px-3">Name / Title</th>
+                          <th className="py-2.5 px-3">WhatsApp / Contact</th>
+                          <th className="py-2.5 px-3">City / Account / IBAN</th>
+                          <th className="py-2.5 px-3">Role / Linked Order</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {contacts.map((ct) => (
+                          <tr key={ct.id} className="hover:bg-[#FBF9F5]">
+                            <td className="py-2.5 px-3 font-mono text-[11px] text-[#C59B27] font-semibold">
+                              {ct.contactType}
+                            </td>
+                            <td className="py-2.5 px-3 font-bold text-[#14382C]">{ct.fullName}</td>
+                            <td className="py-2.5 px-3 font-mono tabular-nums">{ct.whatsappNumber}</td>
+                            <td className="py-2.5 px-3 text-slate-600">{ct.address}</td>
+                            <td className="py-2.5 px-3 text-slate-500">
+                              {ct.roleOrRelationship}
+                              {ct.linkedOrderId ? ` (${ct.linkedOrderId})` : ''}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* 5. Form Submissions Log (public.tgg_form_submissions) */}
+                <div className="bg-white rounded-2xl p-6 border border-[#EADBCE] space-y-4">
+                  <div className="border-b border-[#EADBCE] pb-3">
+                    <span className="text-[11px] font-semibold uppercase tracking-widest text-[#C59B27]">
+                      TABLE: public.tgg_form_submissions ({formSubmissions.length} Submissions)
+                    </span>
+                    <h2 className="text-lg font-serif font-bold text-[#14382C]">
+                      Custom Order Form &amp; Checkout Submissions (Connected to Orders &amp; Products)
+                    </h2>
+                  </div>
+
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse text-xs">
+                      <thead>
+                        <tr className="border-b border-[#EADBCE] text-[11px] text-slate-500 uppercase">
+                          <th className="py-2.5 px-3">Submission ID</th>
+                          <th className="py-2.5 px-3">Type</th>
+                          <th className="py-2.5 px-3">Linked Order</th>
+                          <th className="py-2.5 px-3">Sender &amp; WhatsApp</th>
+                          <th className="py-2.5 px-3">Recipient &amp; City</th>
+                          <th className="py-2.5 px-3">Gift Type &amp; Budget</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {formSubmissions.map((sub) => (
+                          <tr key={sub.id} className="hover:bg-[#FBF9F5]">
+                            <td className="py-2.5 px-3 font-mono font-bold text-[#14382C] tabular-nums">
+                              {sub.id}
+                            </td>
+                            <td className="py-2.5 px-3 font-mono text-[11px] text-[#C59B27]">
+                              {sub.submissionType}
+                            </td>
+                            <td className="py-2.5 px-3 font-mono text-xs text-emerald-800 font-semibold tabular-nums">
+                              {sub.linkedOrderId || '—'}
+                            </td>
+                            <td className="py-2.5 px-3">
+                              <div className="font-semibold text-slate-900">{sub.fullName}</div>
+                              <div className="font-mono text-[11px] text-slate-500 tabular-nums">
+                                {sub.whatsappNumber}
+                              </div>
+                            </td>
+                            <td className="py-2.5 px-3">
+                              <div className="font-medium text-slate-800">{sub.recipientName}</div>
+                              <div className="text-[11px] text-slate-500">{sub.city}</div>
+                            </td>
+                            <td className="py-2.5 px-3">
+                              <div className="font-medium text-[#14382C]">{sub.giftType}</div>
+                              <div className="font-mono text-[11px] text-slate-500 tabular-nums">
+                                {sub.budgetRange}
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             )}

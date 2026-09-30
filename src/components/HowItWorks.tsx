@@ -4,7 +4,19 @@ import { Sparkles, MessageCircle } from 'lucide-react';
 import { usePortal } from '../context/PortalContext';
 
 export const HowItWorks: React.FC = () => {
-  const { siteSettings } = usePortal();
+  const { siteSettings, knowledgeBase } = usePortal();
+
+  const steps = React.useMemo(() => {
+    const fromDb = knowledgeBase.filter((k) => k.sectionType === 'how_it_works');
+    if (fromDb.length > 0) {
+      return fromDb.map((k) => ({
+        step: k.stepOrOrder,
+        title: k.titleOrQuestion,
+        description: k.contentOrAnswer,
+      }));
+    }
+    return HOW_IT_WORKS_STEPS;
+  }, [knowledgeBase]);
 
   return (
     <section id="how-it-works" className="py-10 min-[800px]:py-24 bg-[#FBF9F5] scroll-mt-20">
@@ -25,13 +37,13 @@ export const HowItWorks: React.FC = () => {
 
         {/* Steps Grid: 2x2 Compact App Grid on < 800px, 4-col on Desktop */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 lg:gap-8 relative">
-          {HOW_IT_WORKS_STEPS.map((item, index) => (
+          {steps.map((item, index) => (
             <div
               key={item.step}
               className="relative bg-white rounded-2xl p-4 sm:p-7 border border-[#EADBCE] shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between"
             >
               {/* Connector line for desktop */}
-              {index < HOW_IT_WORKS_STEPS.length - 1 && (
+              {index < steps.length - 1 && (
                 <div className="hidden lg:block absolute top-1/2 -right-4 w-8 h-[2px] bg-[#C59B27]/40 z-20" />
               )}
 

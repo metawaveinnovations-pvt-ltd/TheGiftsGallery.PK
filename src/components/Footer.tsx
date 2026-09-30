@@ -10,7 +10,9 @@ interface FooterProps {
 }
 
 export const Footer: React.FC<FooterProps> = ({ onNavigateView }) => {
-  const { siteSettings, isUserAuthenticated, openAuthModal } = usePortal();
+  const { siteSettings, seoMetadata, isUserAuthenticated, openAuthModal } = usePortal();
+
+  const primarySeo = seoMetadata.find((s) => s.pagePath === '/') || seoMetadata[0];
 
   const scrollToTop = () => {
     if (onNavigateView) onNavigateView('storefront');
@@ -187,32 +189,32 @@ export const Footer: React.FC<FooterProps> = ({ onNavigateView }) => {
               <div>
                 <span className="text-emerald-100/50 block text-[11px] mb-0.5">WhatsApp / Direct Orders:</span>
                 <a
-                  href={BRAND_INFO.whatsappUrl}
+                  href={siteSettings.whatsappUrl || BRAND_INFO.whatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="font-medium text-white hover:text-[#DFC066] flex items-center gap-1.5"
                 >
                   <MessageCircle className="w-4 h-4 text-[#DFC066]" />
-                  <span>{BRAND_INFO.whatsappNumber}</span>
+                  <span>{siteSettings.whatsappNumber || BRAND_INFO.whatsappNumber}</span>
                 </a>
               </div>
 
               <div>
                 <span className="text-emerald-100/50 block text-[11px] mb-0.5">Instagram Community:</span>
                 <a
-                  href={BRAND_INFO.instagramUrl}
+                  href={siteSettings.instagramUrl || BRAND_INFO.instagramUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="font-medium text-white hover:text-[#DFC066] flex items-center gap-1.5"
                 >
                   <Instagram className="w-4 h-4 text-[#DFC066]" />
-                  <span>{BRAND_INFO.instagramHandle}</span>
+                  <span>{siteSettings.instagramHandle || BRAND_INFO.instagramHandle}</span>
                 </a>
               </div>
 
               <div>
                 <span className="text-emerald-100/50 block text-[11px] mb-0.5">Standard Hours:</span>
-                <span className="text-white">1:00 PM – 10:00 PM (1–2 Days Prior Notice)</span>
+                <span className="text-white">1:00 PM – 10:00 PM ({siteSettings.noticePeriodText || '1–2 Days Prior Notice'})</span>
               </div>
             </div>
 
@@ -233,7 +235,8 @@ export const Footer: React.FC<FooterProps> = ({ onNavigateView }) => {
             Popular Searches &amp; Specialties
           </div>
           <p className="text-[11px] text-emerald-100/60 leading-relaxed">
-            Anniversary Gifts · Birthday Gifts · Gifts Shop Pakistan · Gifts Packaging · Snacks Basket · Makeup Basket · Luxury Watches · Genuine Leather Wallets · Designer Bracelets · Boutiques · Curated Hampers · Corporate Event Gifts · Karachi Gift Delivery · Lahore Gift Shop · Islamabad Midnight Delivery
+            {primarySeo?.popularSearchTags ||
+              'Anniversary Gifts · Birthday Gifts · Gifts Shop Pakistan · Gifts Packaging · Snacks Basket · Makeup Basket · Luxury Watches · Genuine Leather Wallets · Designer Bracelets · Boutiques · Curated Hampers · Corporate Event Gifts · Karachi Gift Delivery · Lahore Gift Shop · Islamabad Midnight Delivery'}
           </p>
         </div>
 

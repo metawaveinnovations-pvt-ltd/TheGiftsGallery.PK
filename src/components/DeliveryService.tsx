@@ -1,33 +1,53 @@
 import React from 'react';
 import { Truck, Sparkles, MessageCircle, Heart, ShieldCheck, MapPin } from 'lucide-react';
+import { usePortal } from '../context/PortalContext';
 
 interface DeliveryServiceProps {
   onOrderClick: () => void;
 }
 
+const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
+  Truck,
+  Sparkles,
+  MessageCircle,
+  Heart,
+};
+
 export const DeliveryService: React.FC<DeliveryServiceProps> = ({ onOrderClick }) => {
-  const servicePillars = [
-    {
-      icon: Truck,
-      title: 'Nationwide Delivery',
-      desc: 'Careful door-to-door delivery available across Pakistan including Karachi, Lahore, Islamabad, Rawalpindi, Faisalabad, Multan, and beyond.',
-    },
-    {
-      icon: Sparkles,
-      title: 'Carefully Prepared',
-      desc: 'Every gift is prepared with exquisite attention to detail — from silk ribbons and custom wax seals to pristine protective packaging.',
-    },
-    {
-      icon: MessageCircle,
-      title: 'Easy Ordering',
-      desc: 'Order conveniently directly through WhatsApp. Transparent communication, real photos before dispatch, and prompt support.',
-    },
-    {
-      icon: Heart,
-      title: 'Special Moments',
-      desc: 'We specialize in turning celebrations into lifelong memories. Optional midnight delivery arrangements available for milestone surprises.',
-    },
-  ];
+  const { knowledgeBase } = usePortal();
+
+  const servicePillars = React.useMemo(() => {
+    const fromDb = knowledgeBase.filter((k) => k.sectionType === 'delivery_pillar');
+    if (fromDb.length > 0) {
+      return fromDb.map((k) => ({
+        icon: ICON_MAP[k.iconName] || Truck,
+        title: k.titleOrQuestion,
+        desc: k.contentOrAnswer,
+      }));
+    }
+    return [
+      {
+        icon: Truck,
+        title: 'Nationwide Delivery',
+        desc: 'Careful door-to-door delivery available across Pakistan including Karachi, Lahore, Islamabad, Rawalpindi, Faisalabad, Multan, and beyond.',
+      },
+      {
+        icon: Sparkles,
+        title: 'Carefully Prepared',
+        desc: 'Every gift is prepared with exquisite attention to detail — from silk ribbons and custom wax seals to pristine protective packaging.',
+      },
+      {
+        icon: MessageCircle,
+        title: 'Easy Ordering',
+        desc: 'Order conveniently directly through WhatsApp. Transparent communication, real photos before dispatch, and prompt support.',
+      },
+      {
+        icon: Heart,
+        title: 'Special Moments',
+        desc: 'We specialize in turning celebrations into lifelong memories. Optional midnight delivery arrangements available for milestone surprises.',
+      },
+    ];
+  }, [knowledgeBase]);
 
   return (
     <section id="delivery" className="py-10 min-[800px]:py-24 bg-[#F5F0E6]/60 border-t border-[#EADBCE] scroll-mt-20">

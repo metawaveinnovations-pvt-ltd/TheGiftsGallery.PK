@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { ChevronDown, HelpCircle, Sparkles, Package, Gift, Clock, ShieldCheck, Heart } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { ChevronDown, HelpCircle, Sparkles } from 'lucide-react';
+import { usePortal } from '../context/PortalContext';
 
 interface FAQItem {
   id: string;
@@ -9,67 +10,27 @@ interface FAQItem {
   keywords: string[];
 }
 
-const FAQ_DATA: FAQItem[] = [
-  {
-    id: 'gifts-shop-pakistan',
-    category: 'Gifts Shop',
-    question: 'Where can I find the best boutique gifts shop in Pakistan for special events?',
-    answer: 'The Gift Gallery (@thegiftsgallery.pk) is your premier destination for curated gifting across Pakistan. We specialize in luxury gift boxes, anniversary gifts, birthday baskets, corporate events, and bespoke packaging delivered promptly to doorsteps in Karachi, Lahore, Islamabad, Rawalpindi, and nationwide.',
-    keywords: ['gifts shop', 'events', 'boutiques', 'Karachi', 'Lahore', 'Islamabad'],
-  },
-  {
-    id: 'anniversary-birthday-gifts',
-    category: 'Anniversary & Birthday',
-    question: 'What makes your Anniversary Gifts and Birthday Gifts unique?',
-    answer: 'Every anniversary and birthday gift is customized to your recipient’s tastes. Our anniversary packages feature preserved eternity roses, custom gold-foil vow cards, and luxury perfumes. Birthday surprise hampers include festive balloon arrangements, imported chocolates, and personalized keepsakes crafted with 1-2 days advance notice.',
-    keywords: ['anniversary gifts', 'birthday gifts', 'events'],
-  },
-  {
-    id: 'snacks-basket',
-    category: 'Baskets',
-    question: 'What is included in the signature Snacks Basket?',
-    answer: 'Our artisan wicker Snacks Basket is hand-dressed with rich forest green ribbon and signature TGG gold medallion. It comes loaded with premium imported chocolates (Ferrero Rocher, Cadbury Dairy Milk, KitKat, Snickers), Pringles, gourmet nuts, and customized savory treats tailored to your budget (PKR 1,500 – 5,000).',
-    keywords: ['snacks basket', 'baskets', 'birthday gifts'],
-  },
-  {
-    id: 'makeup-basket-accessories',
-    category: 'Makeup Basket & Accessories',
-    question: 'Can I order a custom Makeup Basket with bracelets and jewelry accessories?',
-    answer: 'Yes! Our Velvet Makeup Basket brings together curated beauty essentials, makeup brushes, designer charm bracelets, shimmering necklaces, and silk hair accessories nestled inside our signature emerald velvet presentation box.',
-    keywords: ['makeup basket', 'accessories', 'bracelets', 'boutiques', 'baskets'],
-  },
-  {
-    id: 'watches-wallets',
-    category: 'Watches & Wallets',
-    question: 'Do you offer executive gift sets for him with watches, wallets, and perfumes?',
-    answer: 'Yes. Our gentleman’s sets feature premium chronograph watches, hand-stitched genuine leather wallets, solid polished metal chains, and designer fragrances packaged in sleek matte black and emerald keepsake boxes.',
-    keywords: ['watches', 'wallets', 'accessories', 'special gifts for him'],
-  },
-  {
-    id: 'luxury-gifts-packaging',
-    category: 'Packaging',
-    question: 'What custom gifts packaging and magnetic box options do you provide?',
-    answer: 'We provide bespoke gifts packaging including heavy-duty magnetic closure boxes, gold-leaf hot stamped TGG monograms, double-faced satin and grosgrain ribbons, embossed paper tissue, and boutique shopping bags in emerald, champagne, and blush tones.',
-    keywords: ['gifts packaging', 'boutiques', 'magnetic boxes'],
-  },
-  {
-    id: 'delivery-midnight-events',
-    category: 'Delivery & Ordering',
-    question: 'How do I place an order, and do you support midnight surprise deliveries?',
-    answer: 'Ordering is seamless! Choose your gift or budget tier, share your recipient’s details on our form, and connect directly with our design team via WhatsApp (+92 339 0088458). We require 1–2 days prior notice. Special 12:00 AM midnight surprise deliveries for birthdays and anniversaries are available upon request.',
-    keywords: ['midnight delivery', 'events', 'ordering'],
-  },
-];
-
 export const GiftingGuideFAQ: React.FC = () => {
+  const { knowledgeBase, siteSettings } = usePortal();
   const [openId, setOpenId] = useState<string | null>('gifts-shop-pakistan');
   const [activeTab, setActiveTab] = useState<string>('All');
+
+  const faqItems: FAQItem[] = useMemo(() => {
+    const fromDb = knowledgeBase.filter((k) => k.sectionType === 'faq');
+    return fromDb.map((k) => ({
+      id: k.id,
+      category: k.categoryTag,
+      question: k.titleOrQuestion,
+      answer: k.contentOrAnswer,
+      keywords: k.keywords || [],
+    }));
+  }, [knowledgeBase]);
 
   const tabs = ['All', 'Anniversary & Birthday', 'Baskets', 'Makeup Basket & Accessories', 'Watches & Wallets', 'Packaging'];
 
   const filteredFaqs = activeTab === 'All'
-    ? FAQ_DATA
-    : FAQ_DATA.filter((f) => f.category === activeTab);
+    ? faqItems
+    : faqItems.filter((f) => f.category === activeTab);
 
   const toggleFAQ = (id: string) => {
     setOpenId((prev) => (prev === id ? null : id));

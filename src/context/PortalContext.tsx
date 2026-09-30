@@ -13,6 +13,11 @@ import {
   UserProfile,
   SiteSettings,
   FormCustomizeOptions,
+  SeoPageMetadata,
+  SocialPageOrPost,
+  KnowledgeBaseEntry,
+  ContactDirectoryEntry,
+  FormSubmissionRecord,
 } from '../types';
 import {
   PRODUCTS,
@@ -20,12 +25,17 @@ import {
   OCCASIONS,
   POLICIES,
   BRAND_INFO,
+  HOW_IT_WORKS_STEPS,
+  INSTAGRAM_POSTS,
 } from '../data/products';
 import {
   supabase,
   isSupabaseConnected,
   syncStateToSupabase,
   fetchAllStateFromSupabase,
+  pushAndSyncFullDatabase,
+  SupabaseSyncResult,
+  FullDatabaseSnapshot,
 } from '../lib/supabase';
 
 const STORAGE_KEYS = {
@@ -41,6 +51,11 @@ const STORAGE_KEYS = {
   CATEGORIES: 'tgg_portal_categories_v2',
   OCCASIONS: 'tgg_portal_occasions_v2',
   POLICIES: 'tgg_portal_policies_v2',
+  SEO_METADATA: 'tgg_portal_seo_metadata_v1',
+  SOCIAL_PAGES: 'tgg_portal_social_pages_v1',
+  KNOWLEDGE_BASE: 'tgg_portal_knowledge_base_v1',
+  CONTACTS: 'tgg_portal_contacts_v1',
+  FORM_SUBMISSIONS: 'tgg_portal_form_submissions_v1',
 };
 
 export const INITIAL_SITE_SETTINGS: SiteSettings = {
@@ -332,6 +347,375 @@ const INITIAL_ORDERS: PortalOrder[] = [
   },
 ];
 
+export const INITIAL_SEO_METADATA: SeoPageMetadata[] = [
+  {
+    id: 'seo-storefront',
+    pagePath: '/',
+    pageName: 'Main Storefront & Gift Catalog',
+    pageTitle: 'The Gift Gallery | Gifts Shop, Baskets, Anniversary & Birthday Gifts',
+    metaDescription:
+      "The Gift Gallery (TGG) — Pakistan's premier gifts shop for anniversary gifts, birthday gifts, bespoke gifts packaging, snacks basket, makeup basket, watches, wallets, bracelets, and boutique accessories. Nationwide delivery across Karachi, Lahore, Islamabad.",
+    metaKeywords:
+      'gifts packaging, anniversary gifts, gifts shop, birthday gifts, events gifts, accessories, bracelets, watches, wallets, boutiques, baskets, snacks basket, makeup basket, luxury gift hampers Pakistan, Karachi gifts delivery, Lahore gift shop, Islamabad gifts',
+    canonicalUrl: 'https://thegiftsgallery.pk',
+    ogTitle: 'The Gift Gallery | Gifts Shop, Baskets, Anniversary & Birthday Gifts',
+    ogDescription:
+      "Pakistan's boutique gifts shop for luxury gifts packaging, anniversary gifts, birthday hampers, snacks baskets, makeup baskets, watches, wallets, and bracelets.",
+    ogImage: 'https://thegiftsgallery.pk/tgg_logo.png',
+    twitterCard: 'summary_large_image',
+    twitterSite: '@thegiftsgallery.pk',
+    googleVerification: 'aaYmetIozPkRQC5SazY_NyVtgHuO0W2SD6nE0rQwAZc',
+    geoRegion: 'PK',
+    geoPlacename: 'Karachi, Lahore, Islamabad, Pakistan',
+    popularSearchTags:
+      'Anniversary Gifts · Birthday Gifts · Gifts Shop Pakistan · Gifts Packaging · Snacks Basket · Makeup Basket · Luxury Watches · Genuine Leather Wallets · Designer Bracelets · Boutiques · Curated Hampers · Corporate Event Gifts · Karachi Gift Delivery · Lahore Gift Shop · Islamabad Midnight Delivery',
+    schemaOrgType: 'GiftShop, Store, LocalBusiness, WebSite, ItemList, FAQPage',
+  },
+  {
+    id: 'seo-checkout',
+    pagePath: '/checkout',
+    pageName: 'Secure Gift Booking & Checkout',
+    pageTitle: 'Checkout & Payment | The Gift Gallery (TGG) Pakistan',
+    metaDescription:
+      'Complete your bespoke gift hamper booking with Card, Cash on Delivery (COD), or Instant Bank Transfer (Raqami Islamic Digital Bank & MCB Bank).',
+    metaKeywords:
+      'gift checkout Pakistan, send gifts Lahore Karachi Islamabad, Raqami bank transfer gift shop, MCB bank transfer gifts, COD gifts Pakistan',
+    canonicalUrl: 'https://thegiftsgallery.pk/checkout',
+    ogTitle: 'Secure Gift Booking & Checkout | The Gift Gallery',
+    ogDescription:
+      'Book customized birthday, anniversary, and luxury hampers across Pakistan with Card, COD, or Bank Transfer.',
+    ogImage: 'https://thegiftsgallery.pk/tgg_logo.png',
+    twitterCard: 'summary_large_image',
+    twitterSite: '@thegiftsgallery.pk',
+    googleVerification: 'aaYmetIozPkRQC5SazY_NyVtgHuO0W2SD6nE0rQwAZc',
+    geoRegion: 'PK',
+    geoPlacename: 'Pakistan',
+    popularSearchTags: 'Gift Checkout · Raast Transfer · COD Gifts Pakistan · Midnight Surprise Booking',
+    schemaOrgType: 'CheckoutPage',
+  },
+  {
+    id: 'seo-user-portal',
+    pagePath: '/portal',
+    pageName: 'Customer Gifting Portal & Order Tracker',
+    pageTitle: 'My Gifting Portal & Live Order Tracker | The Gift Gallery',
+    metaDescription:
+      'Track your handcrafted gift preparation in real time, manage saved recipients, and view your wishlist at The Gift Gallery.',
+    metaKeywords: 'track gift order Pakistan, The Gift Gallery customer portal, saved gift recipients',
+    canonicalUrl: 'https://thegiftsgallery.pk/portal',
+    ogTitle: 'My Gifting Portal | The Gift Gallery',
+    ogDescription: 'Live order tracking, recipient address book, and curated gift wishlist.',
+    ogImage: 'https://thegiftsgallery.pk/tgg_logo.png',
+    twitterCard: 'summary_large_image',
+    twitterSite: '@thegiftsgallery.pk',
+    googleVerification: 'aaYmetIozPkRQC5SazY_NyVtgHuO0W2SD6nE0rQwAZc',
+    geoRegion: 'PK',
+    geoPlacename: 'Pakistan',
+    popularSearchTags: 'Order Tracking · Gift Concierge · Saved Recipients',
+    schemaOrgType: 'ProfilePage',
+  },
+];
+
+export const INITIAL_SOCIAL_PAGES: SocialPageOrPost[] = [
+  {
+    id: 'social-channel-instagram',
+    platform: 'Instagram',
+    entryType: 'official_channel',
+    handle: '@thegiftsgallery.pk',
+    url: 'https://www.instagram.com/thegiftsgallery.pk/',
+    imageUrl: '/tgg_logo.png',
+    caption: 'Official Instagram Community — Daily hamper reels, unboxings & client surprises.',
+    likesCount: '14.8K Followers',
+    isActive: true,
+  },
+  {
+    id: 'social-channel-whatsapp',
+    platform: 'WhatsApp',
+    entryType: 'official_channel',
+    handle: '+92 339 0088458',
+    url: 'https://wa.me/923390088458',
+    imageUrl: '/tgg_logo.png',
+    caption: '24/7 Bespoke Gift Concierge & Direct WhatsApp Order Desk (1:00 PM – 10:00 PM).',
+    likesCount: 'Direct Concierge',
+    isActive: true,
+  },
+  {
+    id: 'social-channel-partner',
+    platform: 'Partner',
+    entryType: 'official_channel',
+    handle: 'MetaWave Innovations LTD',
+    url: 'https://metawaveinnovations.com/',
+    imageUrl: '/tgg_logo.png',
+    caption: 'Official Technology Partner & Digital Commerce Management for The Gifts Gallery.',
+    likesCount: 'Tech Partner',
+    isActive: true,
+  },
+  ...INSTAGRAM_POSTS.map((p) => ({
+    id: `social-${p.id}`,
+    platform: 'Instagram' as const,
+    entryType: 'instagram_post' as const,
+    handle: '@thegiftsgallery.pk',
+    url: 'https://www.instagram.com/thegiftsgallery.pk/',
+    imageUrl: p.image,
+    caption: p.caption,
+    likesCount: p.likes,
+    isActive: true,
+  })),
+];
+
+export const INITIAL_KNOWLEDGE_BASE: KnowledgeBaseEntry[] = [
+  ...HOW_IT_WORKS_STEPS.map((s) => ({
+    id: `kb-step-${s.step}`,
+    sectionType: 'how_it_works' as const,
+    stepOrOrder: s.step,
+    categoryTag: 'How It Works',
+    titleOrQuestion: s.title,
+    contentOrAnswer: s.description,
+    keywords: ['process', s.title.toLowerCase(), 'custom gifting'],
+    iconName: 'Sparkles',
+  })),
+  {
+    id: 'kb-delivery-1',
+    sectionType: 'delivery_pillar',
+    stepOrOrder: '01',
+    categoryTag: 'Delivery & Service',
+    titleOrQuestion: 'Nationwide Delivery',
+    contentOrAnswer:
+      'Careful door-to-door delivery available across Pakistan including Karachi, Lahore, Islamabad, Rawalpindi, Faisalabad, Multan, and beyond.',
+    keywords: ['Karachi', 'Lahore', 'Islamabad', 'Pakistan'],
+    iconName: 'Truck',
+  },
+  {
+    id: 'kb-delivery-2',
+    sectionType: 'delivery_pillar',
+    stepOrOrder: '02',
+    categoryTag: 'Delivery & Service',
+    titleOrQuestion: 'Carefully Prepared',
+    contentOrAnswer:
+      'Every gift is prepared with exquisite attention to detail — from silk ribbons and custom wax seals to pristine protective packaging.',
+    keywords: ['packaging', 'silk ribbons', 'wax seals'],
+    iconName: 'Sparkles',
+  },
+  {
+    id: 'kb-delivery-3',
+    sectionType: 'delivery_pillar',
+    stepOrOrder: '03',
+    categoryTag: 'Delivery & Service',
+    titleOrQuestion: 'Easy Ordering',
+    contentOrAnswer:
+      'Order conveniently directly through our website or WhatsApp. Transparent communication, real photos before dispatch, and prompt support.',
+    keywords: ['WhatsApp', 'dispatch photo', 'concierge'],
+    iconName: 'MessageCircle',
+  },
+  {
+    id: 'kb-delivery-4',
+    sectionType: 'delivery_pillar',
+    stepOrOrder: '04',
+    categoryTag: 'Delivery & Service',
+    titleOrQuestion: 'Special Moments',
+    contentOrAnswer:
+      'We specialize in turning celebrations into lifelong memories. Optional 12:00 AM midnight delivery arrangements available for milestone surprises.',
+    keywords: ['midnight delivery', 'birthday surprise', 'anniversary'],
+    iconName: 'Heart',
+  },
+  {
+    id: 'gifts-shop-pakistan',
+    sectionType: 'faq',
+    stepOrOrder: '01',
+    categoryTag: 'Gifts Shop',
+    titleOrQuestion: 'Where can I find the best boutique gifts shop in Pakistan for special events?',
+    contentOrAnswer:
+      'The Gift Gallery (@thegiftsgallery.pk) is your premier destination for curated gifting across Pakistan. We specialize in luxury gift boxes, anniversary gifts, birthday baskets, corporate events, and bespoke packaging delivered promptly to doorsteps in Karachi, Lahore, Islamabad, Rawalpindi, and nationwide.',
+    keywords: ['gifts shop', 'events', 'boutiques', 'Karachi', 'Lahore', 'Islamabad'],
+    iconName: 'HelpCircle',
+  },
+  {
+    id: 'anniversary-birthday-gifts',
+    sectionType: 'faq',
+    stepOrOrder: '02',
+    categoryTag: 'Anniversary & Birthday',
+    titleOrQuestion: 'What makes your Anniversary Gifts and Birthday Gifts unique?',
+    contentOrAnswer:
+      'Every anniversary and birthday gift is customized to your recipient’s tastes. Our anniversary packages feature preserved eternity roses, custom gold-foil vow cards, and luxury perfumes. Birthday surprise hampers include festive balloon arrangements, imported chocolates, and personalized keepsakes crafted with 1-2 days advance notice.',
+    keywords: ['anniversary gifts', 'birthday gifts', 'events'],
+    iconName: 'Gift',
+  },
+  {
+    id: 'snacks-basket',
+    sectionType: 'faq',
+    stepOrOrder: '03',
+    categoryTag: 'Baskets',
+    titleOrQuestion: 'What is included in the signature Snacks Basket?',
+    contentOrAnswer:
+      'Our artisan wicker Snacks Basket is hand-dressed with rich forest green ribbon and signature TGG gold medallion. It comes loaded with premium imported chocolates (Ferrero Rocher, Cadbury Dairy Milk, KitKat, Snickers), Pringles, gourmet nuts, and customized savory treats tailored to your budget (PKR 1,500 – 5,000).',
+    keywords: ['snacks basket', 'baskets', 'birthday gifts'],
+    iconName: 'Package',
+  },
+  {
+    id: 'makeup-basket-accessories',
+    sectionType: 'faq',
+    stepOrOrder: '04',
+    categoryTag: 'Makeup Basket & Accessories',
+    titleOrQuestion: 'Can I order a custom Makeup Basket with bracelets and jewelry accessories?',
+    contentOrAnswer:
+      'Yes! Our Velvet Makeup Basket brings together curated beauty essentials, makeup brushes, designer charm bracelets, shimmering necklaces, and silk hair accessories nestled inside our signature emerald velvet presentation box.',
+    keywords: ['makeup basket', 'accessories', 'bracelets', 'boutiques', 'baskets'],
+    iconName: 'Sparkles',
+  },
+  {
+    id: 'watches-wallets',
+    sectionType: 'faq',
+    stepOrOrder: '05',
+    categoryTag: 'Watches & Wallets',
+    titleOrQuestion: 'Do you offer executive gift sets for him with watches, wallets, and perfumes?',
+    contentOrAnswer:
+      'Yes. Our gentleman’s sets feature premium chronograph watches, hand-stitched genuine leather wallets, solid polished metal chains, and designer fragrances packaged in sleek matte black and emerald keepsake boxes.',
+    keywords: ['watches', 'wallets', 'accessories', 'special gifts for him'],
+    iconName: 'ShieldCheck',
+  },
+  {
+    id: 'luxury-gifts-packaging',
+    sectionType: 'faq',
+    stepOrOrder: '06',
+    categoryTag: 'Packaging',
+    titleOrQuestion: 'What custom gifts packaging and magnetic box options do you provide?',
+    contentOrAnswer:
+      'We provide bespoke gifts packaging including heavy-duty magnetic closure boxes, gold-leaf hot stamped TGG monograms, double-faced satin and grosgrain ribbons, embossed paper tissue, and boutique shopping bags in emerald, champagne, and blush tones.',
+    keywords: ['gifts packaging', 'boutiques', 'magnetic boxes'],
+    iconName: 'Package',
+  },
+  {
+    id: 'delivery-midnight-events',
+    sectionType: 'faq',
+    stepOrOrder: '07',
+    categoryTag: 'Delivery & Ordering',
+    titleOrQuestion: 'How do I place an order, and do you support midnight surprise deliveries?',
+    contentOrAnswer:
+      'Ordering is seamless! Choose your gift or budget tier, share your recipient’s details on our form, and connect directly with our design team via WhatsApp (+92 339 0088458). We require 1–2 days prior notice. Special 12:00 AM midnight surprise deliveries for birthdays and anniversaries are available upon request.',
+    keywords: ['midnight delivery', 'events', 'ordering'],
+    iconName: 'Clock',
+  },
+];
+
+export const INITIAL_CONTACTS: ContactDirectoryEntry[] = [
+  {
+    id: 'contact-brand-tgg',
+    contactType: 'brand_official',
+    fullName: 'The Gift Gallery (TGG) Concierge Desk',
+    whatsappNumber: '+92 339 0088458',
+    email: 'concierge@thegiftsgallery.pk',
+    instagramHandle: '@thegiftsgallery.pk',
+    city: 'Lahore · Karachi · Islamabad',
+    address: 'Nationwide Doorstep Delivery Across Pakistan',
+    roleOrRelationship: 'Official Storefront & WhatsApp Concierge',
+    notes: 'Operating Hours: 1:00 PM – 10:00 PM PKT (1–2 Days Prior Notice).',
+    updatedAt: '2026-09-29T10:00:00Z',
+  },
+  {
+    id: 'contact-bank-raqami',
+    contactType: 'bank_settlement',
+    fullName: 'Ali Hassan (Raqami Islamic Digital Bank)',
+    whatsappNumber: '+92 339 0088458',
+    email: 'settlements@thegiftsgallery.pk',
+    instagramHandle: '@thegiftsgallery.pk',
+    city: 'Pakistan',
+    address: 'Account: 025335144063 · IBAN: PK91RQMI0000025335144063',
+    roleOrRelationship: 'Primary Bank / Raast Settlement Account',
+    notes: 'Raqami Islamic Digital Bank · Title: Ali Hassan · Acc: 025335144063',
+    updatedAt: '2026-09-29T10:00:00Z',
+  },
+  {
+    id: 'contact-bank-mcb',
+    contactType: 'bank_settlement',
+    fullName: 'ALI HASSAN (MCB Bank)',
+    whatsappNumber: '+92 339 0088458',
+    email: 'settlements@thegiftsgallery.pk',
+    instagramHandle: '@thegiftsgallery.pk',
+    city: 'Pakistan',
+    address: 'Account: 1481617251004009 · IBAN: PK87MUCB1481617251004009',
+    roleOrRelationship: 'Secondary Bank / IBFT Settlement Account',
+    notes: 'MCB Bank · Title: ALI HASSAN · Acc: 1481617251004009',
+    updatedAt: '2026-09-29T10:00:00Z',
+  },
+  {
+    id: 'contact-partner-metawave',
+    contactType: 'tech_partner',
+    fullName: 'MetaWave Innovations LTD',
+    whatsappNumber: '+92 339 0088458',
+    email: 'metawave.innovations@gmail.com',
+    instagramHandle: '@metawaveinnovations',
+    city: 'Global / Pakistan',
+    address: 'https://metawaveinnovations.com/',
+    roleOrRelationship: 'Official Technology Partner & Digital Management',
+    notes: 'Co-Branded Architecture, Cloud Sync & Enterprise Portal Management.',
+    updatedAt: '2026-09-29T10:00:00Z',
+  },
+  {
+    id: 'contact-cust-ayesha',
+    contactType: 'customer',
+    fullName: 'Ayesha Khan',
+    whatsappNumber: '0300 4589210',
+    email: 'ayesha.khan@example.com',
+    instagramHandle: '@ayeshakhan.pk',
+    city: 'Lahore',
+    address: 'House 42-B, Street 8, Phase 5 DHA, Lahore',
+    roleOrRelationship: 'VIP Customer',
+    notes: 'Booked Executive Watch & Perfume Box and Velvet Jewelry Basket.',
+    linkedOrderId: 'TGG-2026-8492',
+    updatedAt: '2026-09-29T09:15:00Z',
+  },
+  {
+    id: 'contact-cust-saad',
+    contactType: 'customer',
+    fullName: 'Saad Mahmood',
+    whatsappNumber: '0321 8923411',
+    email: 'saad.mahmood@example.com',
+    instagramHandle: '@saad.m_khi',
+    city: 'Karachi',
+    address: 'Clifton Block 4, Near Abdullah Shah Ghazi, Karachi',
+    roleOrRelationship: 'Verified Customer',
+    notes: 'Booked Midnight Surprise Artisan Snacks & Chocolates Basket.',
+    linkedOrderId: 'TGG-2026-8499',
+    updatedAt: '2026-09-29T11:00:00Z',
+  },
+  {
+    id: 'contact-cust-usman',
+    contactType: 'customer',
+    fullName: 'Usman Qureshi',
+    whatsappNumber: '0333 5120984',
+    email: 'usman.q@example.com',
+    instagramHandle: '@usmanq_isb',
+    city: 'Islamabad',
+    address: 'Blue Area, Jinnah Avenue Tower, Islamabad',
+    roleOrRelationship: 'Corporate Customer',
+    notes: 'Booked Signature Leather Wallet & Chain Set.',
+    linkedOrderId: 'TGG-2026-8503',
+    updatedAt: '2026-09-29T13:45:00Z',
+  },
+];
+
+export const INITIAL_FORM_SUBMISSIONS: FormSubmissionRecord[] = INITIAL_ORDERS.map((o, idx) => ({
+  id: `SUB-2026-${8490 + idx}`,
+  submissionType: o.paymentMethodType === 'Card' ? 'checkout_booking' : 'custom_order_form',
+  linkedOrderId: o.id,
+  linkedProductId: o.selectedProductId,
+  linkedContactId: `contact-cust-${o.fullName.split(' ')[0].toLowerCase()}`,
+  fullName: o.fullName,
+  whatsappNumber: o.whatsappNumber,
+  email: o.email,
+  instagramHandle: o.instagramHandle,
+  city: o.city,
+  deliveryAddress: o.deliveryAddress,
+  giftType: o.giftType,
+  giftFor: o.giftFor,
+  budgetRange: o.budgetRange,
+  deliveryDate: o.deliveryDate,
+  deliveryTime: o.deliveryTime,
+  recipientName: o.recipientName,
+  personalMessage: o.personalMessage,
+  specialRequests: o.specialRequests,
+  createdAt: o.createdAt,
+}));
+
 export function parseAmountFromBudget(budgetRange: string): number {
   const cleaned = budgetRange.replace(/,/g, '');
   const matches = cleaned.match(/\d+/g);
@@ -353,9 +737,18 @@ interface PortalContextValue {
   userProfile: UserProfile;
   savedRecipients: SavedRecipient[];
   wishlistIds: string[];
+  seoMetadata: SeoPageMetadata[];
+  socialPages: SocialPageOrPost[];
+  knowledgeBase: KnowledgeBaseEntry[];
+  contacts: ContactDirectoryEntry[];
+  formSubmissions: FormSubmissionRecord[];
   isUserAuthenticated: boolean;
   isAdminAuthenticated: boolean;
   isSupabaseConnected: boolean;
+  isSyncingDb: boolean;
+  lastSyncReport: SupabaseSyncResult | null;
+  syncFullDatabase: (options?: { accessToken?: string }) => Promise<SupabaseSyncResult>;
+  pullFromActiveDatabase: () => Promise<boolean>;
   authModalOpen: boolean;
   authModalReason: string;
   openAuthModal: (reason?: string, onSuccess?: () => void) => void;
@@ -414,6 +807,10 @@ interface PortalContextValue {
   addRecipient: (recipient: Omit<SavedRecipient, 'id'>) => void;
   deleteRecipient: (id: string) => void;
   toggleWishlist: (productId: string) => void;
+  updateSeoMetadata: (items: SeoPageMetadata[]) => void;
+  updateSocialPages: (items: SocialPageOrPost[]) => void;
+  updateKnowledgeBase: (items: KnowledgeBaseEntry[]) => void;
+  updateContacts: (items: ContactDirectoryEntry[]) => void;
 }
 
 const PortalContext = createContext<PortalContextValue | undefined>(undefined);
@@ -511,6 +908,51 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   });
 
+  const [seoMetadata, setSeoMetadata] = useState<SeoPageMetadata[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.SEO_METADATA);
+      return saved ? JSON.parse(saved) : INITIAL_SEO_METADATA;
+    } catch {
+      return INITIAL_SEO_METADATA;
+    }
+  });
+
+  const [socialPages, setSocialPages] = useState<SocialPageOrPost[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.SOCIAL_PAGES);
+      return saved ? JSON.parse(saved) : INITIAL_SOCIAL_PAGES;
+    } catch {
+      return INITIAL_SOCIAL_PAGES;
+    }
+  });
+
+  const [knowledgeBase, setKnowledgeBase] = useState<KnowledgeBaseEntry[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.KNOWLEDGE_BASE);
+      return saved ? JSON.parse(saved) : INITIAL_KNOWLEDGE_BASE;
+    } catch {
+      return INITIAL_KNOWLEDGE_BASE;
+    }
+  });
+
+  const [contacts, setContacts] = useState<ContactDirectoryEntry[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.CONTACTS);
+      return saved ? JSON.parse(saved) : INITIAL_CONTACTS;
+    } catch {
+      return INITIAL_CONTACTS;
+    }
+  });
+
+  const [formSubmissions, setFormSubmissions] = useState<FormSubmissionRecord[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.FORM_SUBMISSIONS);
+      return saved ? JSON.parse(saved) : INITIAL_FORM_SUBMISSIONS;
+    } catch {
+      return INITIAL_FORM_SUBMISSIONS;
+    }
+  });
+
   const [isUserAuthenticated, setIsUserAuthenticated] = useState<boolean>(() => {
     try {
       return localStorage.getItem(STORAGE_KEYS.USER_AUTH) === 'true';
@@ -535,26 +977,173 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     'TGG-2026-8492'
   );
   const [checkoutDraft, setCheckoutDraft] = useState<CheckoutDraft | null>(null);
+  const [isSyncingDb, setIsSyncingDb] = useState<boolean>(false);
+  const [lastSyncReport, setLastSyncReport] = useState<SupabaseSyncResult | null>(null);
 
-  // Hydrate from Supabase if connected
+  const applyRemoteSnapshot = (remote: Record<string, unknown>) => {
+    if (Array.isArray(remote.orders) && remote.orders.length > 0) {
+      setOrders(remote.orders as PortalOrder[]);
+    }
+    if (Array.isArray(remote.products) && remote.products.length > 0) {
+      setProducts(remote.products as Product[]);
+    }
+    if (remote.siteSettings && typeof remote.siteSettings === 'object') {
+      setSiteSettings((prev) => ({ ...prev, ...(remote.siteSettings as SiteSettings) }));
+    }
+    if (remote.formOptions && typeof remote.formOptions === 'object') {
+      setFormOptions((prev) => ({
+        ...prev,
+        ...(remote.formOptions as FormCustomizeOptions),
+      }));
+    }
+    if (Array.isArray(remote.categories) && remote.categories.length > 0) {
+      setCategories(remote.categories as Category[]);
+    }
+    if (Array.isArray(remote.occasions) && remote.occasions.length > 0) {
+      setOccasions(remote.occasions as Occasion[]);
+    }
+    if (Array.isArray(remote.policies) && remote.policies.length > 0) {
+      setPolicies(remote.policies as PolicyItem[]);
+    }
+    if (remote.userProfile && typeof remote.userProfile === 'object') {
+      setUserProfile((prev) => ({ ...prev, ...(remote.userProfile as UserProfile) }));
+    }
+    if (Array.isArray(remote.savedRecipients) && remote.savedRecipients.length > 0) {
+      setSavedRecipients(remote.savedRecipients as SavedRecipient[]);
+    }
+    if (Array.isArray(remote.wishlistIds)) {
+      setWishlistIds(remote.wishlistIds as string[]);
+    }
+    if (Array.isArray(remote.seoMetadata) && remote.seoMetadata.length > 0) {
+      setSeoMetadata(remote.seoMetadata as SeoPageMetadata[]);
+    }
+    if (Array.isArray(remote.socialPages) && remote.socialPages.length > 0) {
+      setSocialPages(remote.socialPages as SocialPageOrPost[]);
+    }
+    if (Array.isArray(remote.knowledgeBase) && remote.knowledgeBase.length > 0) {
+      setKnowledgeBase(remote.knowledgeBase as KnowledgeBaseEntry[]);
+    }
+    if (Array.isArray(remote.contacts) && remote.contacts.length > 0) {
+      setContacts(remote.contacts as ContactDirectoryEntry[]);
+    }
+    if (Array.isArray(remote.formSubmissions) && remote.formSubmissions.length > 0) {
+      setFormSubmissions(remote.formSubmissions as FormSubmissionRecord[]);
+    }
+  };
+
+  const pullFromActiveDatabase = async (): Promise<boolean> => {
+    if (!isSupabaseConnected) return false;
+    setIsSyncingDb(true);
+    try {
+      const remote = await fetchAllStateFromSupabase();
+      if (remote && Object.keys(remote).length > 0) {
+        applyRemoteSnapshot(remote);
+        setIsSyncingDb(false);
+        return true;
+      }
+      setIsSyncingDb(false);
+      return false;
+    } catch {
+      setIsSyncingDb(false);
+      return false;
+    }
+  };
+
+  const syncFullDatabase = async (options?: {
+    accessToken?: string;
+  }): Promise<SupabaseSyncResult> => {
+    setIsSyncingDb(true);
+    try {
+      const snapshot: FullDatabaseSnapshot = {
+        orders,
+        products,
+        categories,
+        occasions,
+        policies,
+        siteSettings,
+        formOptions,
+        userProfile,
+        savedRecipients,
+        wishlistIds,
+        seoMetadata,
+        socialPages,
+        knowledgeBase,
+        contacts,
+        formSubmissions,
+      };
+      const result = await pushAndSyncFullDatabase(snapshot, options);
+      setLastSyncReport(result);
+
+      if (result.status === 'synced') {
+        const remote = await fetchAllStateFromSupabase();
+        if (remote && Object.keys(remote).length > 0) {
+          applyRemoteSnapshot(remote);
+        }
+      }
+      setIsSyncingDb(false);
+      return result;
+    } catch {
+      const fallback: SupabaseSyncResult = {
+        status: 'error',
+        tablesReady: false,
+        recordsPushed: 0,
+        tablesSynced: [],
+        missingTables: [],
+        lastSyncedAt: new Date().toISOString(),
+        message: 'Unexpected error while syncing with Supabase.',
+      };
+      setLastSyncReport(fallback);
+      setIsSyncingDb(false);
+      return fallback;
+    }
+  };
+
+  // Hydrate from Supabase if connected, or auto-push initial state if active DB is empty
   useEffect(() => {
     let mounted = true;
-    if (isSupabaseConnected) {
+    if (isSupabaseConnected && supabase) {
       fetchAllStateFromSupabase().then((remote) => {
-        if (!mounted || !remote) return;
-        if (remote.orders) setOrders(remote.orders as PortalOrder[]);
-        if (remote.products) setProducts(remote.products as Product[]);
-        if (remote.siteSettings)
-          setSiteSettings((prev) => ({ ...prev, ...(remote.siteSettings as SiteSettings) }));
-        if (remote.formOptions)
-          setFormOptions((prev) => ({
-            ...prev,
-            ...(remote.formOptions as FormCustomizeOptions),
-          }));
-        if (remote.categories) setCategories(remote.categories as Category[]);
-        if (remote.occasions) setOccasions(remote.occasions as Occasion[]);
-        if (remote.policies) setPolicies(remote.policies as PolicyItem[]);
+        if (!mounted) return;
+        if (remote && Object.keys(remote).length > 0) {
+          applyRemoteSnapshot(remote);
+        } else if (remote !== null) {
+          // Tables exist in Supabase and are currently empty — seed all website data automatically!
+          pushAndSyncFullDatabase({
+            orders,
+            products,
+            categories,
+            occasions,
+            policies,
+            siteSettings,
+            formOptions,
+            userProfile,
+            savedRecipients,
+            wishlistIds,
+            seoMetadata,
+            socialPages,
+            knowledgeBase,
+            contacts,
+            formSubmissions,
+          }).then((res) => {
+            if (mounted) setLastSyncReport(res);
+          });
+        }
       });
+
+      // Subscribe to live Realtime broadcasts so any Admin sync updates the entire website across tabs/devices
+      const channel = supabase
+        .channel('tgg_active_db_sync')
+        .on('broadcast', { event: 'db_state_updated' }, (event) => {
+          if (mounted && event.payload) {
+            applyRemoteSnapshot(event.payload as Record<string, unknown>);
+          }
+        })
+        .subscribe();
+
+      return () => {
+        mounted = false;
+        supabase.removeChannel(channel);
+      };
     }
     return () => {
       mounted = false;
@@ -627,6 +1216,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEYS.PROFILE, JSON.stringify(userProfile));
+      syncStateToSupabase('userProfile', userProfile);
     } catch {
       // ignore
     }
@@ -635,6 +1225,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEYS.RECIPIENTS, JSON.stringify(savedRecipients));
+      syncStateToSupabase('savedRecipients', savedRecipients);
     } catch {
       // ignore
     }
@@ -643,10 +1234,70 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEYS.WISHLIST, JSON.stringify(wishlistIds));
+      syncStateToSupabase('wishlistIds', wishlistIds);
     } catch {
       // ignore
     }
   }, [wishlistIds]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEYS.SEO_METADATA, JSON.stringify(seoMetadata));
+      syncStateToSupabase('seoMetadata', seoMetadata);
+      const primarySeo = seoMetadata.find((s) => s.pagePath === '/') || seoMetadata[0];
+      if (primarySeo && typeof document !== 'undefined') {
+        document.title = primarySeo.pageTitle;
+        const setMeta = (selector: string, content: string) => {
+          const el = document.querySelector(selector);
+          if (el) el.setAttribute('content', content);
+        };
+        setMeta('meta[name="description"]', primarySeo.metaDescription);
+        setMeta('meta[name="keywords"]', primarySeo.metaKeywords);
+        setMeta('meta[property="og:title"]', primarySeo.ogTitle);
+        setMeta('meta[property="og:description"]', primarySeo.ogDescription);
+        setMeta('meta[name="twitter:title"]', primarySeo.ogTitle);
+        setMeta('meta[name="twitter:description"]', primarySeo.ogDescription);
+      }
+    } catch {
+      // ignore
+    }
+  }, [seoMetadata]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEYS.SOCIAL_PAGES, JSON.stringify(socialPages));
+      syncStateToSupabase('socialPages', socialPages);
+    } catch {
+      // ignore
+    }
+  }, [socialPages]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEYS.KNOWLEDGE_BASE, JSON.stringify(knowledgeBase));
+      syncStateToSupabase('knowledgeBase', knowledgeBase);
+    } catch {
+      // ignore
+    }
+  }, [knowledgeBase]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEYS.CONTACTS, JSON.stringify(contacts));
+      syncStateToSupabase('contacts', contacts);
+    } catch {
+      // ignore
+    }
+  }, [contacts]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEYS.FORM_SUBMISSIONS, JSON.stringify(formSubmissions));
+      syncStateToSupabase('formSubmissions', formSubmissions);
+    } catch {
+      // ignore
+    }
+  }, [formSubmissions]);
 
   const openAuthModal = (reason?: string, onSuccess?: () => void) => {
     setAuthModalReason(
@@ -801,6 +1452,47 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setOrders((prev) => [newOrder, ...prev]);
     setActiveTrackedOrderId(newOrder.id);
 
+    const formContactId = `contact-cust-${Date.now().toString().slice(-5)}`;
+    const formContact: ContactDirectoryEntry = {
+      id: formContactId,
+      contactType: 'customer',
+      fullName: newOrder.fullName,
+      whatsappNumber: newOrder.whatsappNumber,
+      email: userProfile.email || '',
+      instagramHandle: newOrder.instagramHandle || '',
+      city: newOrder.city,
+      address: newOrder.deliveryAddress,
+      roleOrRelationship: `Order Form Customer (${newOrder.giftType})`,
+      notes: `Recipient: ${newOrder.recipientName} · Product: ${newOrder.selectedProductName || newOrder.giftType}`,
+      linkedOrderId: newOrder.id,
+      updatedAt: now,
+    };
+    setContacts((prev) => [formContact, ...prev]);
+
+    const formSub: FormSubmissionRecord = {
+      id: `SUB-${Date.now().toString().slice(-6)}`,
+      submissionType: 'custom_order_form',
+      linkedOrderId: newOrder.id,
+      linkedProductId: newOrder.selectedProductId,
+      linkedContactId: formContactId,
+      fullName: newOrder.fullName,
+      whatsappNumber: newOrder.whatsappNumber,
+      email: userProfile.email,
+      instagramHandle: newOrder.instagramHandle,
+      city: newOrder.city,
+      deliveryAddress: newOrder.deliveryAddress,
+      giftType: newOrder.giftType,
+      giftFor: newOrder.giftFor,
+      budgetRange: newOrder.budgetRange,
+      deliveryDate: newOrder.deliveryDate,
+      deliveryTime: newOrder.deliveryTime,
+      recipientName: newOrder.recipientName,
+      personalMessage: newOrder.personalMessage,
+      specialRequests: newOrder.specialRequests,
+      createdAt: now,
+    };
+    setFormSubmissions((prev) => [formSub, ...prev]);
+
     if (supabase) {
       supabase
         .from('tgg_orders')
@@ -842,6 +1534,47 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     setOrders((prev) => [newOrder, ...prev]);
     setActiveTrackedOrderId(newOrder.id);
+
+    const contactId = `contact-cust-${Date.now().toString().slice(-5)}`;
+    const newContact: ContactDirectoryEntry = {
+      id: contactId,
+      contactType: 'customer',
+      fullName: newOrder.fullName,
+      whatsappNumber: newOrder.whatsappNumber,
+      email: newOrder.email || userProfile.email || '',
+      instagramHandle: newOrder.instagramHandle || '',
+      city: newOrder.city,
+      address: newOrder.deliveryAddress,
+      roleOrRelationship: `Checkout Customer (${newOrder.paymentMethodType || 'Card'})`,
+      notes: `Recipient: ${newOrder.recipientName} · Amount: PKR ${newOrder.amountPKR}`,
+      linkedOrderId: newOrder.id,
+      updatedAt: now,
+    };
+    setContacts((prev) => [newContact, ...prev]);
+
+    const newSubmission: FormSubmissionRecord = {
+      id: `SUB-${Date.now().toString().slice(-6)}`,
+      submissionType: 'checkout_booking',
+      linkedOrderId: newOrder.id,
+      linkedProductId: newOrder.selectedProductId,
+      linkedContactId: contactId,
+      fullName: newOrder.fullName,
+      whatsappNumber: newOrder.whatsappNumber,
+      email: newOrder.email || userProfile.email,
+      instagramHandle: newOrder.instagramHandle,
+      city: newOrder.city,
+      deliveryAddress: newOrder.deliveryAddress,
+      giftType: newOrder.giftType,
+      giftFor: newOrder.giftFor,
+      budgetRange: newOrder.budgetRange,
+      deliveryDate: newOrder.deliveryDate,
+      deliveryTime: newOrder.deliveryTime,
+      recipientName: newOrder.recipientName,
+      personalMessage: newOrder.personalMessage,
+      specialRequests: newOrder.specialRequests,
+      createdAt: now,
+    };
+    setFormSubmissions((prev) => [newSubmission, ...prev]);
 
     setUserProfile((prev) => ({
       ...prev,
@@ -937,6 +1670,13 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const deleteOrder = (orderId: string) => {
     setOrders((prev) => prev.filter((o) => o.id !== orderId));
+    if (supabase) {
+      supabase
+        .from('tgg_orders')
+        .delete()
+        .eq('id', orderId)
+        .then(() => {});
+    }
   };
 
   const addProduct = (productData: Omit<Product, 'id'>): Product => {
@@ -971,6 +1711,13 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const deleteProduct = (id: string) => {
     setProducts((prev) => prev.filter((p) => p.id !== id));
+    if (supabase) {
+      supabase
+        .from('tgg_products')
+        .delete()
+        .eq('id', id)
+        .then(() => {});
+    }
   };
 
   const resetCatalog = () => {
@@ -1034,6 +1781,13 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const deleteRecipient = (id: string) => {
     setSavedRecipients((prev) => prev.filter((r) => r.id !== id));
+    if (supabase) {
+      supabase
+        .from('tgg_recipients')
+        .delete()
+        .eq('id', id)
+        .then(() => {});
+    }
   };
 
   const toggleWishlist = (productId: string) => {
@@ -1042,6 +1796,22 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         ? prev.filter((id) => id !== productId)
         : [...prev, productId]
     );
+  };
+
+  const updateSeoMetadata = (items: SeoPageMetadata[]) => {
+    setSeoMetadata(items);
+  };
+
+  const updateSocialPages = (items: SocialPageOrPost[]) => {
+    setSocialPages(items);
+  };
+
+  const updateKnowledgeBase = (items: KnowledgeBaseEntry[]) => {
+    setKnowledgeBase(items);
+  };
+
+  const updateContacts = (items: ContactDirectoryEntry[]) => {
+    setContacts(items);
   };
 
   return (
@@ -1057,9 +1827,18 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         userProfile,
         savedRecipients,
         wishlistIds,
+        seoMetadata,
+        socialPages,
+        knowledgeBase,
+        contacts,
+        formSubmissions,
         isUserAuthenticated,
         isAdminAuthenticated,
         isSupabaseConnected,
+        isSyncingDb,
+        lastSyncReport,
+        syncFullDatabase,
+        pullFromActiveDatabase,
         authModalOpen,
         authModalReason,
         openAuthModal,
@@ -1094,6 +1873,10 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         addRecipient,
         deleteRecipient,
         toggleWishlist,
+        updateSeoMetadata,
+        updateSocialPages,
+        updateKnowledgeBase,
+        updateContacts,
       }}
     >
       {children}

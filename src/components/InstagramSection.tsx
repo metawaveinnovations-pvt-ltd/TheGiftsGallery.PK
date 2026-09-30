@@ -5,7 +5,24 @@ import { Instagram, Heart, ExternalLink } from 'lucide-react';
 import { OptimizedImage } from './OptimizedImage';
 
 export const InstagramSection: React.FC = () => {
-  const { siteSettings } = usePortal();
+  const { siteSettings, socialPages } = usePortal();
+
+  const posts = React.useMemo(() => {
+    const fromDb = socialPages.filter((s) => s.entryType === 'instagram_post' && s.isActive);
+    if (fromDb.length > 0) {
+      return fromDb.map((s) => ({
+        id: s.id,
+        image: s.imageUrl || '/assets/images/tgg_hero_curated_gifting_1790253103850.jpg',
+        caption: s.caption,
+        likes: s.likesCount || '500+',
+        url: s.url || siteSettings.instagramUrl,
+      }));
+    }
+    return INSTAGRAM_POSTS.map((p) => ({
+      ...p,
+      url: siteSettings.instagramUrl,
+    }));
+  }, [socialPages, siteSettings.instagramUrl]);
 
   return (
     <section className="py-10 min-[800px]:py-24 bg-[#FBF9F5] border-t border-[#EADBCE]">
@@ -41,10 +58,10 @@ export const InstagramSection: React.FC = () => {
 
         {/* Visual Instagram Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mb-7 min-[800px]:mb-10">
-          {INSTAGRAM_POSTS.map((post) => (
+          {posts.map((post) => (
             <a
               key={post.id}
-              href={siteSettings.instagramUrl}
+              href={post.url}
               target="_blank"
               rel="noopener noreferrer"
               className="group relative aspect-square rounded-2xl overflow-hidden bg-[#F4EFE6] border border-[#EADBCE] shadow-xs block active:scale-[0.98] transition-transform"
