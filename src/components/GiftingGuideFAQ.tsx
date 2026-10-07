@@ -26,7 +26,16 @@ export const GiftingGuideFAQ: React.FC = () => {
     }));
   }, [knowledgeBase]);
 
-  const tabs = ['All', 'Anniversary & Birthday', 'Baskets', 'Makeup Basket & Accessories', 'Watches & Wallets', 'Packaging'];
+  const tabs = [
+    'All',
+    'Fresh Flowers',
+    'Customized Gift Baskets',
+    'Anniversary & Birthday',
+    'Makeup Basket & Accessories',
+    'Watches & Wallets',
+    'Packaging',
+    'Commercials & Reels',
+  ];
 
   const filteredFaqs = activeTab === 'All'
     ? faqItems

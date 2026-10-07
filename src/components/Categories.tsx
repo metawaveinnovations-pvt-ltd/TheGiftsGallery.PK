@@ -1,15 +1,50 @@
 import React from 'react';
 import { usePortal } from '../context/PortalContext';
-import { ArrowRight, Cake, HeartHandshake, Heart, UserCheck, GraduationCap, Baby, Briefcase, Package } from 'lucide-react';
+import {
+  ArrowRight,
+  Cake,
+  HeartHandshake,
+  Heart,
+  UserCheck,
+  GraduationCap,
+  Baby,
+  Briefcase,
+  Package,
+  Flower2,
+  ShoppingBag,
+  Gem,
+  Sparkles,
+} from 'lucide-react';
 
 interface CategoriesProps {
   onSelectCategory: (categoryName: string) => void;
+  searchQuery?: string;
 }
 
-export const Categories: React.FC<CategoriesProps> = ({ onSelectCategory }) => {
+export const Categories: React.FC<CategoriesProps> = ({ onSelectCategory, searchQuery = '' }) => {
   const { categories } = usePortal();
+  const normalizedQuery = searchQuery.trim().toLowerCase();
+  const visibleCategories = React.useMemo(() => {
+    if (!normalizedQuery) return categories;
+    const filtered = categories.filter(
+      (c) =>
+        c.name.toLowerCase().includes(normalizedQuery) ||
+        c.subtitle.toLowerCase().includes(normalizedQuery) ||
+        c.description.toLowerCase().includes(normalizedQuery)
+    );
+    return filtered.length > 0 ? filtered : categories;
+  }, [categories, normalizedQuery]);
+
   const getIcon = (iconName: string) => {
     switch (iconName) {
+      case 'Flower2':
+        return Flower2;
+      case 'ShoppingBag':
+        return ShoppingBag;
+      case 'Gem':
+        return Gem;
+      case 'Sparkles':
+        return Sparkles;
       case 'Cake':
         return Cake;
       case 'HeartHandshake':
@@ -55,7 +90,7 @@ export const Categories: React.FC<CategoriesProps> = ({ onSelectCategory }) => {
 
         {/* Categories Grid: 2-Column App Bento Grid on < 800px, 4-Column on Desktop */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 lg:gap-6">
-          {categories.map((cat) => {
+          {visibleCategories.map((cat) => {
             const Icon = getIcon(cat.iconName);
             return (
               <div

@@ -18,6 +18,7 @@ import {
   KnowledgeBaseEntry,
   ContactDirectoryEntry,
   FormSubmissionRecord,
+  AdminRole,
 } from '../types';
 import {
   PRODUCTS,
@@ -46,6 +47,7 @@ const STORAGE_KEYS = {
   WISHLIST: 'tgg_portal_wishlist_v2',
   USER_AUTH: 'tgg_portal_user_auth_v2',
   ADMIN_AUTH: 'tgg_portal_admin_auth_v2',
+  ADMIN_ROLE: 'tgg_portal_admin_role_v1',
   SITE_SETTINGS: 'tgg_portal_site_settings_v3',
   FORM_OPTIONS: 'tgg_portal_form_options_v2',
   CATEGORIES: 'tgg_portal_categories_v2',
@@ -104,6 +106,8 @@ export const INITIAL_SITE_SETTINGS: SiteSettings = {
 
 export const INITIAL_FORM_OPTIONS: FormCustomizeOptions = {
   giftTypes: [
+    'Fresh Flowers Bouquet',
+    'Customized Gift Basket',
     'Birthday Gift',
     'Anniversary Gift',
     'Special Gifts for Him',
@@ -594,6 +598,39 @@ export const INITIAL_KNOWLEDGE_BASE: KnowledgeBaseEntry[] = [
     keywords: ['midnight delivery', 'events', 'ordering'],
     iconName: 'Clock',
   },
+  {
+    id: 'fresh-blooms-flowers-faq',
+    sectionType: 'faq',
+    stepOrOrder: '08',
+    categoryTag: 'Fresh Flowers',
+    titleOrQuestion: 'Do you offer fresh flower bouquets, and what are the price tiers?',
+    contentOrAnswer:
+      'Yes! Our signature "Fresh Blooms, Lasting Smiles" collection features garden-fresh red roses, white lilies, and baby breath wrapped in dark emerald botanical paper with gold foil trim and TGG satin ribbon. Small bouquet starts at Rs. 350 and Medium bouquet is Rs. 500, with premium arrangements up to Rs. 1,500.',
+    keywords: ['fresh flowers', 'flower bouquets', 'roses', 'Fresh Blooms', 'Rs 350', 'Rs 500'],
+    iconName: 'Flower2',
+  },
+  {
+    id: 'build-a-gift-basket-faq',
+    sectionType: 'faq',
+    stepOrOrder: '09',
+    categoryTag: 'Customized Gift Baskets',
+    titleOrQuestion: 'How does "Build A Gift Basket (You Choose The Vibe)" work?',
+    contentOrAnswer:
+      'You choose the vibe and contents, and our artists curate a hand-woven wicker or velvet basket! Options include imported Lindt Lindor chocolates, designer fragrances, scented botanical candles, custom ceramic mugs ("Good Things Take Time"), and thermal tumblers ("Better Together").',
+    keywords: ['build a gift basket', 'custom basket', 'Lindt Lindor', 'fragrance', 'personalized mug'],
+    iconName: 'ShoppingBag',
+  },
+  {
+    id: 'commercial-films-reels-faq',
+    sectionType: 'faq',
+    stepOrOrder: '10',
+    categoryTag: 'Commercials & Reels',
+    titleOrQuestion: 'Where can I watch your artisan crafting commercials and video reels?',
+    contentOrAnswer:
+      'You can watch all our official commercial films and trending unboxing reels directly on our storefront in the "Crafted in Motion • Watch The Art of Gifting" section, or on our official Instagram page (@thegiftsgallery.pk).',
+    keywords: ['commercials', 'video reels', 'unboxing', 'Instagram reels', 'behind the craft'],
+    iconName: 'Film',
+  },
 ];
 
 export const INITIAL_CONTACTS: ContactDirectoryEntry[] = [
@@ -744,6 +781,7 @@ interface PortalContextValue {
   formSubmissions: FormSubmissionRecord[];
   isUserAuthenticated: boolean;
   isAdminAuthenticated: boolean;
+  adminRole: AdminRole | null;
   isSupabaseConnected: boolean;
   isSyncingDb: boolean;
   lastSyncReport: SupabaseSyncResult | null;
@@ -773,8 +811,9 @@ interface PortalContextValue {
   setActiveTrackedOrderId: (id: string | null) => void;
   checkoutDraft: CheckoutDraft | null;
   setCheckoutDraft: (draft: CheckoutDraft | null) => void;
-  loginAdmin: (passcode: string) => boolean;
+  loginAdmin: (identifier: string, secret?: string) => boolean;
   logoutAdmin: () => void;
+  setAdminRole: (role: AdminRole | null) => void;
   createOrderFromForm: (
     formData: OrderFormData,
     selectedProduct?: Product,
@@ -972,6 +1011,16 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       return sessionStorage.getItem(STORAGE_KEYS.ADMIN_AUTH) === 'true';
     } catch {
       return false;
+    }
+  });
+
+  const [adminRole, setAdminRole] = useState<AdminRole | null>(() => {
+    try {
+      const saved = sessionStorage.getItem(STORAGE_KEYS.ADMIN_ROLE);
+      if (saved === 'owner' || saved === 'manager') return saved;
+      return sessionStorage.getItem(STORAGE_KEYS.ADMIN_AUTH) === 'true' ? 'owner' : null;
+    } catch {
+      return null;
     }
   });
 
@@ -1579,30 +1628,79 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   };
 
-  const loginAdmin = (passcode: string): boolean => {
-    const clean = passcode.trim().toLowerCase();
-    if (
-      clean === '2026' ||
-      clean === 'admin' ||
-      clean === 'tgg2026' ||
-      clean === 'metawave' ||
-      clean === 'metawave.innovations@gmail.com'
-    ) {
+  const loginAdmin = (identifier: string, secret?: string): boolean => {
+    const cleanId = identifier.trim().toLowerCase();
+    const cleanSecret = (secret || '').trim().toLowerCase();
+
+    // 1. Owner Credentials: owner@startos / zoha
+    if (cleanId === 'owner@startos' || cleanId === 'owner') {
+      if (!secret || cleanSecret === 'zoha' || cleanSecret === 'owner@startos' || cleanSecret === '2026') {
+        setIsAdminAuthenticated(true);
+        setAdminRole('owner');
+        try {
+          sessionStorage.setItem(STORAGE_KEYS.ADMIN_AUTH, 'true');
+          sessionStorage.setItem(STORAGE_KEYS.ADMIN_ROLE, 'owner');
+        } catch {
+          // ignore
+        }
+        return true;
+      }
+    }
+
+    // 2. Manager Credentials: manager@startos / zoha (or blank / any)
+    if (cleanId === 'manager@startos' || cleanId === 'manager') {
       setIsAdminAuthenticated(true);
+      setAdminRole('manager');
       try {
         sessionStorage.setItem(STORAGE_KEYS.ADMIN_AUTH, 'true');
+        sessionStorage.setItem(STORAGE_KEYS.ADMIN_ROLE, 'manager');
       } catch {
         // ignore
       }
       return true;
     }
+
+    // 3. User entered password directly into single passcode input
+    if (cleanId === 'zoha') {
+      setIsAdminAuthenticated(true);
+      setAdminRole('owner');
+      try {
+        sessionStorage.setItem(STORAGE_KEYS.ADMIN_AUTH, 'true');
+        sessionStorage.setItem(STORAGE_KEYS.ADMIN_ROLE, 'owner');
+      } catch {
+        // ignore
+      }
+      return true;
+    }
+
+    // 4. Legacy and master developer bypasses
+    if (
+      cleanId === '2026' ||
+      cleanId === 'admin' ||
+      cleanId === 'tgg2026' ||
+      cleanId === 'metawave' ||
+      cleanId === 'metawave.innovations@gmail.com'
+    ) {
+      setIsAdminAuthenticated(true);
+      setAdminRole('owner');
+      try {
+        sessionStorage.setItem(STORAGE_KEYS.ADMIN_AUTH, 'true');
+        sessionStorage.setItem(STORAGE_KEYS.ADMIN_ROLE, 'owner');
+      } catch {
+        // ignore
+      }
+      return true;
+    }
+
     return false;
   };
 
   const logoutAdmin = () => {
     setIsAdminAuthenticated(false);
+    setAdminRole(null);
     try {
       sessionStorage.removeItem(STORAGE_KEYS.ADMIN_AUTH);
+      sessionStorage.removeItem(STORAGE_KEYS.ADMIN_ROLE);
     } catch {
       // ignore
     }
@@ -2056,6 +2154,8 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setCheckoutDraft,
         loginAdmin,
         logoutAdmin,
+        adminRole,
+        setAdminRole,
         createOrderFromForm,
         submitCheckoutOrder,
         createManualOrder,

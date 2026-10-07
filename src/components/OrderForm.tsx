@@ -90,9 +90,10 @@ export const OrderForm: React.FC<OrderFormProps> = ({
       setSelectedTier(tier || '');
 
       let targetGiftType = 'Gift Hamper';
-      if (product.category.includes('Him')) targetGiftType = 'Special Gifts for Him';
-      if (product.category.includes('Personalized')) targetGiftType = 'Personalized Gift';
-      if (product.category.includes('Basket')) targetGiftType = 'Gift Hamper';
+      if (product.category.includes('Flowers') || product.category.includes('Fresh')) targetGiftType = 'Fresh Flowers Bouquet';
+      else if (product.category.includes('Him') || product.category.includes('Special')) targetGiftType = 'Special Gifts for Him';
+      else if (product.category.includes('Personalized')) targetGiftType = 'Personalized Gift';
+      else if (product.category.includes('Basket')) targetGiftType = 'Customized Gift Basket';
 
       // Set budget range based on product price
       let budget = product.priceDisplay;

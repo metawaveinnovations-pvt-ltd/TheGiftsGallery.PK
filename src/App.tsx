@@ -6,6 +6,7 @@
 import { useState, useEffect } from 'react';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
+import { StorefrontSearchBar } from './components/StorefrontSearchBar';
 import { BrandIntro } from './components/BrandIntro';
 import { Categories } from './components/Categories';
 import { FeaturedGifts } from './components/FeaturedGifts';
@@ -15,6 +16,7 @@ import { DeliveryService } from './components/DeliveryService';
 import { Policies } from './components/Policies';
 import { GiftingGuideFAQ } from './components/GiftingGuideFAQ';
 import { OrderForm } from './components/OrderForm';
+import { BrandReelsShowcase } from './components/BrandReelsShowcase';
 import { InstagramSection } from './components/InstagramSection';
 import { FinalCTA } from './components/FinalCTA';
 import { Footer } from './components/Footer';
@@ -34,6 +36,7 @@ export default function App() {
     openAuthModal,
     setCheckoutDraft,
     seoMetadata,
+    products,
   } = usePortal();
 
   const [activeView, setActiveView] = useState<AppViewMode>('storefront');
@@ -84,6 +87,8 @@ export default function App() {
   } | null>(null);
 
   const [selectedOccasionForOrder, setSelectedOccasionForOrder] = useState<string | null>(null);
+  const [storefrontSearchQuery, setStorefrontSearchQuery] = useState<string>('');
+  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>('All');
 
   const handleNavigateView = (view: AppViewMode) => {
     setActiveView(view);
@@ -141,13 +146,46 @@ export default function App() {
     }
   };
 
-  const handleSelectCategory = () => {
+  const handleSelectCategory = (categoryName?: string) => {
+    if (categoryName) {
+      const mappedCategories = [
+        'Fresh Flowers',
+        'Customized Gift Baskets',
+        'Special Gifts',
+        'Accessories',
+        'Customized Packaging & Boxes',
+        'Anniversary Gifts',
+        'Birthday Gifts',
+        'Personalized Gifts',
+        'Snacks Basket',
+        'Makeup Basket',
+      ];
+      const exactMatch = mappedCategories.find(
+        (c) => c.toLowerCase() === categoryName.toLowerCase()
+      );
+      if (exactMatch) {
+        setSelectedCategoryFilter(exactMatch);
+        setStorefrontSearchQuery('');
+      } else {
+        setSelectedCategoryFilter('All');
+        setStorefrontSearchQuery(categoryName);
+      }
+    }
     scrollToGifts();
   };
 
   const handleSelectOccasion = (occasionName: string) => {
     setSelectedOccasionForOrder(occasionName);
     scrollToOrder();
+  };
+
+  const handleSelectProductFromReel = (productId: string) => {
+    const found = products.find((p) => p.id === productId);
+    if (found) {
+      handleOrderProduct(found);
+    } else {
+      scrollToGifts();
+    }
   };
 
   return (
@@ -192,20 +230,43 @@ export default function App() {
             {/* 2. Hero Section */}
             <Hero onExploreClick={scrollToGifts} />
 
+            {/* 2.5. Storefront Search Bar (Find Products, Categories & Occasions by Name or Description) */}
+            <StorefrontSearchBar
+              searchQuery={storefrontSearchQuery}
+              onSearchQueryChange={setStorefrontSearchQuery}
+              onSelectProductForOrder={(product) => handleOrderProduct(product)}
+              onSelectProductForCheckout={(product) => handleCheckoutProduct(product)}
+              onSelectCategory={handleSelectCategory}
+              onSelectOccasion={handleSelectOccasion}
+            />
+
             {/* 3. Brand Introduction (Thoughtfully Chosen. Beautifully Gifted.) */}
             <BrandIntro />
 
             {/* 4. Gift Categories (Find a Gift They’ll Remember) */}
-            <Categories onSelectCategory={handleSelectCategory} />
+            <Categories
+              onSelectCategory={handleSelectCategory}
+              searchQuery={storefrontSearchQuery}
+            />
 
             {/* 5. Featured / Curated Gifts (Curated With Love) */}
             <FeaturedGifts
               onOrderProduct={handleOrderProduct}
               onCheckoutProduct={handleCheckoutProduct}
+              externalSearchQuery={storefrontSearchQuery}
+              onExternalSearchChange={setStorefrontSearchQuery}
+              externalCategory={selectedCategoryFilter}
+              onExternalCategoryChange={setSelectedCategoryFilter}
             />
 
+            {/* 5.5. Cinematic Commercial Films & Trending Video Reels Showcase */}
+            <BrandReelsShowcase onSelectProductForOrder={handleSelectProductFromReel} />
+
             {/* 6. Occasions (Gifts for Every Occasion) */}
-            <Occasions onSelectOccasion={handleSelectOccasion} />
+            <Occasions
+              onSelectOccasion={handleSelectOccasion}
+              searchQuery={storefrontSearchQuery}
+            />
 
             {/* 7. How It Works (4-Step Timeline) */}
             <HowItWorks />

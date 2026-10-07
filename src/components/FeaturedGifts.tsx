@@ -8,29 +8,52 @@ import { OptimizedImage } from './OptimizedImage';
 interface FeaturedGiftsProps {
   onOrderProduct: (product: Product, selectedTier?: string) => void;
   onCheckoutProduct?: (product: Product, selectedTier?: string) => void;
+  externalSearchQuery?: string;
+  onExternalSearchChange?: (query: string) => void;
+  externalCategory?: string;
+  onExternalCategoryChange?: (category: string) => void;
 }
 
 export const FeaturedGifts: React.FC<FeaturedGiftsProps> = ({
   onOrderProduct,
   onCheckoutProduct,
+  externalSearchQuery,
+  onExternalSearchChange,
+  externalCategory,
+  onExternalCategoryChange,
 }) => {
   const { products, wishlistIds, toggleWishlist } = usePortal();
-  const [selectedCategory, setSelectedCategory] = useState<string>('All');
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [internalCategory, setInternalCategory] = useState<string>('All');
+  const [internalSearchQuery, setInternalSearchQuery] = useState<string>('');
   const [activeTiers, setActiveTiers] = useState<Record<string, number>>({});
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
   const [mobileCompactGrid, setMobileCompactGrid] = useState<boolean>(true);
 
+  const selectedCategory = externalCategory !== undefined ? externalCategory : internalCategory;
+  const setSelectedCategory = (cat: string) => {
+    setInternalCategory(cat);
+    onExternalCategoryChange?.(cat);
+  };
+
+  const searchQuery =
+    externalSearchQuery !== undefined ? externalSearchQuery : internalSearchQuery;
+  const setSearchQuery = (q: string) => {
+    setInternalSearchQuery(q);
+    onExternalSearchChange?.(q);
+  };
+
   const categories = [
     'All',
+    'Fresh Flowers',
+    'Customized Gift Baskets',
+    'Special Gifts',
+    'Accessories',
+    'Customized Packaging & Boxes',
     'Anniversary Gifts',
     'Birthday Gifts',
+    'Personalized Gifts',
     'Snacks Basket',
     'Makeup Basket',
-    'Watches & Accessories',
-    'Wallets & Accessories',
-    'Bracelets & Accessories',
-    'Gifts Packaging',
   ];
 
   const filteredProducts = useMemo(() => {

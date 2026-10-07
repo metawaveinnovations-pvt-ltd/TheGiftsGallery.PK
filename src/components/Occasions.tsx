@@ -4,10 +4,21 @@ import { Cake, Heart, Sparkles, Gem, GraduationCap, Smile, ArrowUpRight } from '
 
 interface OccasionsProps {
   onSelectOccasion: (occasionName: string) => void;
+  searchQuery?: string;
 }
 
-export const Occasions: React.FC<OccasionsProps> = ({ onSelectOccasion }) => {
+export const Occasions: React.FC<OccasionsProps> = ({ onSelectOccasion, searchQuery = '' }) => {
   const { occasions } = usePortal();
+  const normalizedQuery = searchQuery.trim().toLowerCase();
+  const visibleOccasions = React.useMemo(() => {
+    if (!normalizedQuery) return occasions;
+    const filtered = occasions.filter(
+      (o) =>
+        o.name.toLowerCase().includes(normalizedQuery) ||
+        o.tagline.toLowerCase().includes(normalizedQuery)
+    );
+    return filtered.length > 0 ? filtered : occasions;
+  }, [occasions, normalizedQuery]);
   const getIcon = (iconName: string) => {
     switch (iconName) {
       case 'Cake':
@@ -50,7 +61,7 @@ export const Occasions: React.FC<OccasionsProps> = ({ onSelectOccasion }) => {
 
         {/* Occasions Cards Grid: 2-col app grid on < 800px, 3-col on desktop */}
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
-          {occasions.map((occasion) => {
+          {visibleOccasions.map((occasion) => {
             const Icon = getIcon(occasion.iconName);
             return (
               <div

@@ -295,3 +295,5 @@ export interface FormSubmissionRecord {
 
 export type AppViewMode = 'storefront' | 'checkout' | 'user-portal' | 'admin-portal';
 
+export type AdminRole = 'owner' | 'manager';
+

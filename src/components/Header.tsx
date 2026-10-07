@@ -19,6 +19,8 @@ import {
   ShoppingBag,
   Truck,
   ArrowUpRight,
+  Search,
+  Film,
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -74,6 +76,12 @@ export const Header: React.FC<HeaderProps> = ({
   }, []);
 
   const exploreDropdownItems = [
+    {
+      label: 'Commercial Films & Reels',
+      subtitle: 'Watch bouquet wrapping, unboxings & video reels',
+      href: '#brand-reels',
+      icon: Film,
+    },
     {
       label: 'Occasions & Milestones',
       subtitle: 'Birthdays, Anniversaries, Nikkah & Corporate',
@@ -375,8 +383,26 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           </nav>
 
-          {/* Zone 3: Actions (User Sign In / Portal + Instagram + Checkout Order Now) */}
+          {/* Zone 3: Actions (Search + User Sign In / Portal + Instagram + Checkout Order Now) */}
           <div className="flex items-center gap-1.5 sm:gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                handleNavAnchor('#storefront-search');
+                setTimeout(() => {
+                  const searchInput = document.querySelector<HTMLInputElement>(
+                    '#storefront-search input[type="search"]'
+                  );
+                  searchInput?.focus();
+                }, 150);
+              }}
+              aria-label="Search Storefront"
+              title="Search products, categories & occasions (⌘K)"
+              className="inline-flex items-center justify-center w-8 h-8 text-slate-700 hover:text-[#14382C] bg-white/80 hover:bg-[#F4EFE6] border border-[#EADBCE]/80 hover:border-[#C59B27]/60 rounded-full transition-all duration-200 cursor-pointer"
+            >
+              <Search className="w-3.5 h-3.5 text-[#C59B27]" />
+            </button>
+
             <button
               type="button"
               onClick={handleUserPortalClick}

@@ -31,6 +31,13 @@ import {
   Sparkles,
   ExternalLink,
   RefreshCw,
+  Crown,
+  Briefcase,
+  Users,
+  Mail,
+  Eye,
+  EyeOff,
+  KeyRound,
 } from 'lucide-react';
 
 interface AdminPortalProps {
@@ -73,6 +80,8 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onBackToStore }) => {
     contacts,
     formSubmissions,
     isAdminAuthenticated,
+    adminRole,
+    setAdminRole,
     isSyncingDb,
     lastSyncReport,
     lastSavedDbTimestamp,
@@ -100,8 +109,15 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onBackToStore }) => {
     updateContacts,
   } = usePortal();
 
+  const [loginEmail, setLoginEmail] = useState('owner@startos');
+  const [loginPassword, setLoginPassword] = useState('zoha');
+  const [loginRoleSelect, setLoginRoleSelect] = useState<'owner' | 'manager'>('owner');
+  const [showPassword, setShowPassword] = useState(false);
   const [passcodeInput, setPasscodeInput] = useState('');
   const [authError, setAuthError] = useState('');
+
+  const isOwner = adminRole === 'owner';
+  const isManager = adminRole === 'manager';
 
   const [activeTab, setActiveTab] = useState<
     | 'overview'
@@ -110,6 +126,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onBackToStore }) => {
     | 'website-cms'
     | 'customize-options'
     | 'seo-knowledge-db'
+    | 'staff-roles'
   >('overview');
 
   // Orders Filter & Inspector State
@@ -128,7 +145,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onBackToStore }) => {
   const [prodDesc, setProdDesc] = useState('');
   const [prodPrice, setProdPrice] = useState('PKR 4,500 – 9,500');
   const [prodImage, setProdImage] = useState(
-    '/assets/images/tgg_snacks_basket_1790253106884.jpg'
+    '/assets/images/tgg_snack_chocolate_basket_1790253121230.jpg'
   );
   const [prodPopular, setProdPopular] = useState(true);
 
@@ -329,7 +346,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onBackToStore }) => {
       description:
         prodDesc.trim() ||
         'Bespoke luxury gift creation presented with signature emerald ribbon and gold-foil sentiment card.',
-      image: prodImage.trim() || '/assets/images/tgg_snacks_basket_1790253106884.jpg',
+      image: prodImage.trim() || '/assets/images/tgg_snack_chocolate_basket_1790253121230.jpg',
       priceDisplay: prodPrice.trim() || 'PKR 5,000',
       isPopular: prodPopular,
       tiers: [
@@ -353,67 +370,199 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onBackToStore }) => {
 
   if (!isAdminAuthenticated) {
     return (
-      <section className="py-16 md:py-24 bg-[#0C1A14] text-[#FBF9F5] min-h-[80vh] flex items-center justify-center px-4">
-        <div className="max-w-md w-full bg-[#14382C] rounded-2xl p-8 border border-[#C59B27]/40 shadow-2xl text-center space-y-5">
-          <div className="w-14 h-14 rounded-2xl bg-[#0C1A14] text-[#DFC066] flex items-center justify-center mx-auto border border-[#C59B27]/40">
-            <Lock className="w-6 h-6" />
-          </div>
-          <div>
-            <div className="text-[11px] font-semibold uppercase tracking-widest text-[#DFC066] mb-1">
-              THE GIFTS GALLERY × METAWAVE INNOVATIONS LTD
+      <section className="py-16 md:py-24 bg-[#0C1A14] text-[#FBF9F5] min-h-[85vh] flex items-center justify-center px-4">
+        <div className="max-w-lg w-full bg-[#14382C] rounded-3xl p-6 sm:p-8 border border-[#C59B27]/40 shadow-2xl space-y-6">
+          <div className="text-center">
+            <div className="w-14 h-14 rounded-2xl bg-[#0C1A14] text-[#DFC066] flex items-center justify-center mx-auto border border-[#C59B27]/40 shadow-md mb-3">
+              <Lock className="w-6 h-6" />
             </div>
-            <h1 className="text-2xl sm:text-3xl font-serif font-bold text-white">
-              Executive Admin Portal
+            <div className="text-[11px] font-semibold uppercase tracking-widest text-[#DFC066] mb-1">
+              THE GIFT GALLERY • MANAGEMENT CONSOLE
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-serif font-bold text-white tracking-tight">
+              Executive Access Portal
             </h1>
-            <p className="text-xs text-emerald-100/80 mt-1.5 leading-relaxed">
-              Manage orders, Card/COD/Transfer payments, product catalog, Hero content, and custom form options.
+            <p className="text-xs text-emerald-100/80 mt-1 leading-relaxed max-w-sm mx-auto">
+              Secure administrative access for Sovereign Owner and Store Operations Manager.
             </p>
           </div>
 
+          {/* Role Mode Selector Tabs */}
+          <div className="grid grid-cols-2 p-1 rounded-2xl bg-[#0C1A14] border border-[#C59B27]/30 shadow-inner">
+            <button
+              type="button"
+              onClick={() => {
+                setLoginRoleSelect('owner');
+                setLoginEmail('owner@startos');
+                setLoginPassword('zoha');
+                setAuthError('');
+              }}
+              className={`py-2.5 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                loginRoleSelect === 'owner'
+                  ? 'bg-[#DFC066] text-[#0C1A14] font-bold shadow-sm'
+                  : 'text-emerald-100/70 hover:text-white'
+              }`}
+            >
+              <Crown className="w-3.5 h-3.5" />
+              <span>Owner Role</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setLoginRoleSelect('manager');
+                setLoginEmail('manager@startos');
+                setLoginPassword('zoha');
+                setAuthError('');
+              }}
+              className={`py-2.5 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                loginRoleSelect === 'manager'
+                  ? 'bg-[#DFC066] text-[#0C1A14] font-bold shadow-sm'
+                  : 'text-emerald-100/70 hover:text-white'
+              }`}
+            >
+              <Briefcase className="w-3.5 h-3.5" />
+              <span>Manager Role</span>
+            </button>
+          </div>
+
           {authError && (
-            <div className="p-3 rounded-xl bg-red-950/80 border border-red-500/40 text-xs text-red-200">
+            <div className="p-3 rounded-xl bg-red-950/90 border border-red-500/50 text-xs text-red-200 text-center animate-shake">
               {authError}
             </div>
           )}
 
+          {/* Login Form */}
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              if (!loginAdmin(passcodeInput)) {
-                setAuthError('Invalid passcode. Try 2026 or click Quick Demo Unlock below.');
+              const ok = loginAdmin(loginEmail, loginPassword);
+              if (!ok) {
+                setAuthError(
+                  loginRoleSelect === 'owner'
+                    ? 'Invalid credentials for Owner. Use owner@startos with password zoha.'
+                    : 'Invalid credentials for Manager. Use manager@startos with password zoha.'
+                );
               } else {
                 setAuthError('');
               }
             }}
-            className="space-y-3"
+            className="space-y-4"
           >
-            <input
-              type="password"
-              value={passcodeInput}
-              onChange={(e) => setPasscodeInput(e.target.value)}
-              placeholder="Enter Admin Passcode (2026)"
-              className="w-full px-4 py-3 rounded-xl bg-[#0C1A14] border border-[#C59B27]/40 text-sm text-white placeholder:text-emerald-100/40 text-center focus:outline-none focus:border-[#DFC066]"
-            />
+            <div>
+              <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#DFC066] mb-1.5 text-left">
+                Username / Work Email
+              </label>
+              <div className="relative">
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-100/40 pointer-events-none" />
+                <input
+                  type="text"
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
+                  placeholder={loginRoleSelect === 'owner' ? 'owner@startos' : 'manager@startos'}
+                  required
+                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#0C1A14] border border-[#C59B27]/40 text-sm text-white placeholder:text-emerald-100/30 focus:outline-none focus:border-[#DFC066]"
+                />
+              </div>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#DFC066]">
+                  Password
+                </label>
+                <span className="text-[10px] text-emerald-200/60 font-mono">
+                  Default: zoha
+                </span>
+              </div>
+              <div className="relative">
+                <KeyRound className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-100/40 pointer-events-none" />
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
+                  placeholder="Enter password (zoha)"
+                  required
+                  className="w-full pl-10 pr-10 py-3 rounded-xl bg-[#0C1A14] border border-[#C59B27]/40 text-sm text-white placeholder:text-emerald-100/30 focus:outline-none focus:border-[#DFC066]"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-emerald-100/50 hover:text-white p-1 cursor-pointer"
+                  title={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+
             <button
               type="submit"
-              className="w-full py-3.5 px-5 rounded-xl bg-[#DFC066] hover:bg-[#e7c973] text-[#0C1A14] font-bold text-xs tracking-wide transition-colors cursor-pointer"
+              className="w-full py-3.5 px-5 rounded-xl bg-[#DFC066] hover:bg-[#e7c973] text-[#0C1A14] font-bold text-xs tracking-wider uppercase transition-colors cursor-pointer shadow-lg active:scale-[0.99] flex items-center justify-center gap-2"
             >
-              Unlock Admin Console
+              <ShieldCheck className="w-4 h-4" />
+              <span>
+                Unlock Console as {loginRoleSelect === 'owner' ? 'Owner' : 'Manager'}
+              </span>
             </button>
           </form>
 
-          <div className="pt-3 border-t border-emerald-900/80 space-y-2">
-            <button
-              type="button"
-              onClick={() => loginAdmin('2026')}
-              className="w-full py-2.5 px-4 rounded-xl bg-white/10 hover:bg-white/15 text-[#DFC066] text-xs font-semibold transition-colors cursor-pointer"
-            >
-              ⚡ Instant Demo Admin Unlock (Passcode: 2026)
-            </button>
+          {/* Quick One-Click Unlock Actions */}
+          <div className="pt-4 border-t border-emerald-900/80 space-y-2.5">
+            <div className="text-[10px] uppercase tracking-wider text-emerald-200/60 text-center font-semibold">
+              Instant Verified 1-Click Access
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setLoginRoleSelect('owner');
+                  setLoginEmail('owner@startos');
+                  setLoginPassword('zoha');
+                  loginAdmin('owner@startos', 'zoha');
+                }}
+                className="py-2.5 px-3 rounded-xl bg-white/10 hover:bg-white/15 text-[#DFC066] text-xs font-semibold transition-all border border-[#C59B27]/30 flex items-center justify-center gap-1.5 cursor-pointer text-center"
+              >
+                <Crown className="w-3.5 h-3.5 shrink-0" />
+                <span className="truncate">Login as Owner</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setLoginRoleSelect('manager');
+                  setLoginEmail('manager@startos');
+                  setLoginPassword('zoha');
+                  loginAdmin('manager@startos', 'zoha');
+                }}
+                className="py-2.5 px-3 rounded-xl bg-white/10 hover:bg-white/15 text-[#DFC066] text-xs font-semibold transition-all border border-[#C59B27]/30 flex items-center justify-center gap-1.5 cursor-pointer text-center"
+              >
+                <Briefcase className="w-3.5 h-3.5 shrink-0" />
+                <span className="truncate">Login as Manager</span>
+              </button>
+            </div>
+
+            {/* Configured Role Credentials Legend */}
+            <div className="p-3 rounded-xl bg-[#0C1A14]/90 border border-[#C59B27]/25 text-[11px] text-emerald-100/90 space-y-1.5 text-left">
+              <div className="flex items-center justify-between font-mono">
+                <span className="text-[#DFC066] font-semibold flex items-center gap-1">
+                  <Crown className="w-3 h-3" /> Owner:
+                </span>
+                <span className="text-white">owner@startos</span>
+                <span className="text-slate-400">pass: <strong className="text-[#DFC066]">zoha</strong></span>
+              </div>
+              <div className="flex items-center justify-between font-mono pt-1 border-t border-emerald-900/60">
+                <span className="text-[#DFC066] font-semibold flex items-center gap-1">
+                  <Briefcase className="w-3 h-3" /> Manager:
+                </span>
+                <span className="text-white">manager@startos</span>
+                <span className="text-slate-400">pass: <strong className="text-[#DFC066]">zoha</strong></span>
+              </div>
+            </div>
+
             <button
               type="button"
               onClick={onBackToStore}
-              className="w-full py-2 text-xs text-emerald-100/60 hover:text-white transition-colors cursor-pointer"
+              className="w-full py-2 text-xs text-emerald-100/60 hover:text-white transition-colors cursor-pointer text-center block"
             >
               ← Return to Public Storefront
             </button>
@@ -439,8 +588,21 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onBackToStore }) => {
             </button>
             <span className="text-slate-300">/</span>
             <div>
-              <div className="text-[10px] font-semibold uppercase tracking-widest text-[#C59B27]">
-                TGG × MetaWave Innovations LTD · Management Console
+              <div className="flex flex-wrap items-center gap-2 mb-0.5">
+                <span className="text-[10px] font-semibold uppercase tracking-widest text-[#C59B27]">
+                  TGG × MetaWave Innovations LTD · Management Console
+                </span>
+                {isOwner ? (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-900 font-bold text-[10px]">
+                    <Crown className="w-3 h-3 text-amber-600" />
+                    <span>Owner (owner@startos)</span>
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-900 font-bold text-[10px]">
+                    <Briefcase className="w-3 h-3 text-blue-600" />
+                    <span>Manager (manager@startos)</span>
+                  </span>
+                )}
               </div>
               <h1 className="text-xl sm:text-2xl font-serif font-bold text-[#14382C]">
                 Admin Portal &amp; Website CMS
@@ -454,6 +616,36 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onBackToStore }) => {
                 ✓ {savedNotice}
               </span>
             )}
+            {/* Quick Role Switcher Button */}
+            <button
+              type="button"
+              onClick={() => {
+                const nextRole = isOwner ? 'manager' : 'owner';
+                setAdminRole(nextRole);
+                try {
+                  sessionStorage.setItem('tgg_portal_admin_role_v1', nextRole);
+                } catch {
+                  // ignore
+                }
+                triggerSavedToast(
+                  `Switched session to ${nextRole === 'owner' ? 'Owner (owner@startos)' : 'Manager (manager@startos)'}`
+                );
+              }}
+              className="px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-950 border border-amber-300 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs whitespace-nowrap"
+              title="Toggle view between Owner (owner@startos) and Manager (manager@startos)"
+            >
+              {isOwner ? (
+                <>
+                  <Briefcase className="w-3.5 h-3.5 text-blue-700" />
+                  <span>Test Manager View</span>
+                </>
+              ) : (
+                <>
+                  <Crown className="w-3.5 h-3.5 text-amber-600" />
+                  <span>Switch to Owner View</span>
+                </>
+              )}
+            </button>
             <button
               type="button"
               disabled={isSyncingDb}
@@ -476,10 +668,18 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onBackToStore }) => {
             </button>
             <button
               type="button"
-              disabled={isSyncingDb}
+              disabled={isSyncingDb || !isOwner}
               onClick={handleResetToOriginal}
-              className="px-3 py-1.5 rounded-lg bg-white hover:bg-[#F4EFE6] text-slate-700 hover:text-[#14382C] border border-[#EADBCE] hover:border-[#C59B27]/50 text-xs font-medium flex items-center gap-1.5 transition-all duration-200 cursor-pointer active:scale-[0.98] disabled:opacity-60 whitespace-nowrap"
-              title="Reset all catalog, settings & database records to original defaults"
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-all duration-200 cursor-pointer active:scale-[0.98] whitespace-nowrap ${
+                isOwner
+                  ? 'bg-white hover:bg-[#F4EFE6] text-slate-700 hover:text-[#14382C] border border-[#EADBCE] hover:border-[#C59B27]/50'
+                  : 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed opacity-60'
+              }`}
+              title={
+                isOwner
+                  ? 'Reset all catalog, settings & database records to original defaults'
+                  : 'Master Reset restricted to owner@startos'
+              }
             >
               <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
               <span>Reset to Original</span>
@@ -606,6 +806,24 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onBackToStore }) => {
                 </span>
                 <span className="font-mono text-[11px] opacity-80 tabular-nums">
                   (13 Tbls)
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab('staff-roles')}
+                className={`min-h-[42px] shrink-0 lg:w-full flex items-center justify-between gap-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap ${
+                  activeTab === 'staff-roles'
+                    ? 'bg-[#14382C] text-white shadow-xs'
+                    : 'text-slate-700 hover:bg-[#F4EFE6]'
+                }`}
+              >
+                <span className="flex items-center gap-2">
+                  <Users className="w-4 h-4 shrink-0 text-[#C59B27]" />
+                  <span>Staff &amp; Roles</span>
+                </span>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#DFC066]/20 text-[#DFC066] font-mono font-bold">
+                  2 Accounts
                 </span>
               </button>
             </div>
@@ -2638,9 +2856,356 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onBackToStore }) => {
                 </div>
               </div>
             )}
+
+            {/* 7. Staff & Roles Management Tab */}
+            {activeTab === 'staff-roles' && (
+              <div className="space-y-6 animate-in fade-in duration-200">
+                {/* Header Banner */}
+                <div className="bg-white rounded-2xl p-6 border border-[#EADBCE] flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div>
+                    <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-widest text-[#C59B27] mb-1">
+                      <Users className="w-3.5 h-3.5 text-[#C59B27]" />
+                      <span>ACCESS CONTROL ARCHITECTURE</span>
+                    </div>
+                    <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#14382C]">
+                      Staff &amp; Executive Roles Management
+                    </h2>
+                    <p className="text-xs text-slate-600 font-light mt-1 max-w-xl">
+                      Two distinct operational roles configured with granular permissions: Sovereign Owner for full master control and Store Operations Manager for daily orders, courier dispatch &amp; payment verification.
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2 p-3 rounded-xl bg-[#FBF9F5] border border-[#EADBCE] shrink-0">
+                    <div className="text-right">
+                      <div className="text-[10px] text-slate-500 font-medium">Current Active Session:</div>
+                      <div className="text-xs font-bold text-[#14382C] flex items-center gap-1 justify-end">
+                        {isOwner ? (
+                          <>
+                            <Crown className="w-3.5 h-3.5 text-amber-600" />
+                            <span>owner@startos</span>
+                          </>
+                        ) : (
+                          <>
+                            <Briefcase className="w-3.5 h-3.5 text-blue-600" />
+                            <span>manager@startos</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const nextRole = isOwner ? 'manager' : 'owner';
+                        setAdminRole(nextRole);
+                        try {
+                          sessionStorage.setItem('tgg_portal_admin_role_v1', nextRole);
+                        } catch {
+                          // ignore
+                        }
+                        triggerSavedToast(
+                          `Active session switched to ${nextRole === 'owner' ? 'Owner (owner@startos)' : 'Manager (manager@startos)'}`
+                        );
+                      }}
+                      className="px-3 py-1.5 rounded-lg bg-[#14382C] text-[#DFC066] text-xs font-semibold hover:bg-[#0D261E] transition-colors cursor-pointer"
+                    >
+                      {isOwner ? 'Switch to Manager' : 'Switch to Owner'}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Dual Role Accounts Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Account 1: Sovereign Owner */}
+                  <div className={`rounded-2xl p-6 border transition-all ${
+                    isOwner
+                      ? 'bg-gradient-to-b from-amber-50/70 to-white border-amber-300 shadow-md ring-1 ring-amber-300'
+                      : 'bg-white border-[#EADBCE] shadow-xs'
+                  }`}>
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-2xl bg-amber-500/15 text-amber-700 flex items-center justify-center border border-amber-300/50">
+                          <Crown className="w-6 h-6" />
+                        </div>
+                        <div>
+                          <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700">
+                            MASTER ADMINISTRATOR
+                          </div>
+                          <h3 className="text-lg font-serif font-bold text-[#14382C]">
+                            Sovereign Owner Role
+                          </h3>
+                        </div>
+                      </div>
+
+                      {isOwner ? (
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold">
+                          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                          <span>Active Now</span>
+                        </span>
+                      ) : (
+                        <span className="text-[11px] text-slate-400 font-medium">Configured</span>
+                      )}
+                    </div>
+
+                    {/* Credentials Info Box */}
+                    <div className="p-4 rounded-xl bg-white border border-amber-200/80 mb-5 space-y-2">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-slate-500 font-medium">Work Email / Username:</span>
+                        <span className="font-mono font-bold text-[#14382C] bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                          owner@startos
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-slate-500 font-medium">Master Password:</span>
+                        <span className="font-mono font-bold text-[#14382C] bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                          zoha
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-slate-500 font-medium">Access Level:</span>
+                        <span className="font-bold text-amber-800">100% Unrestricted Sovereign Authority</span>
+                      </div>
+                    </div>
+
+                    {/* Permissions List */}
+                    <div className="space-y-2 mb-6 text-xs text-slate-700">
+                      <div className="font-semibold text-slate-900 uppercase text-[10px] tracking-wider mb-1">
+                        Owner Granted Capabilities:
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        <span>All orders, revenue metrics, status &amp; card/COD payment verification</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        <span>Full product catalog creation, tier pricing &amp; product deletion</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        <span>Website CMS, Hero typography, announcement bar &amp; brand guidelines</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        <span>Custom order form options (cities, delivery slots, budget tiers, add-ons)</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        <span>Full Supabase database synchronization &amp; master factory resets</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        <span>Staff account access &amp; credential management</span>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAdminRole('owner');
+                        try {
+                          sessionStorage.setItem('tgg_portal_admin_role_v1', 'owner');
+                        } catch {
+                          // ignore
+                        }
+                        triggerSavedToast('Session switched to Owner (owner@startos)');
+                      }}
+                      disabled={isOwner}
+                      className={`w-full py-2.5 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+                        isOwner
+                          ? 'bg-amber-100 text-amber-900 cursor-default opacity-80'
+                          : 'bg-[#14382C] hover:bg-[#0D261E] text-[#DFC066] cursor-pointer shadow-sm'
+                      }`}
+                    >
+                      <Crown className="w-4 h-4" />
+                      <span>{isOwner ? '✓ Active Session (Owner)' : 'Switch Session to Owner'}</span>
+                    </button>
+                  </div>
+
+                  {/* Account 2: Store Operations Manager */}
+                  <div className={`rounded-2xl p-6 border transition-all ${
+                    isManager
+                      ? 'bg-gradient-to-b from-blue-50/70 to-white border-blue-300 shadow-md ring-1 ring-blue-300'
+                      : 'bg-white border-[#EADBCE] shadow-xs'
+                  }`}>
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-2xl bg-blue-500/15 text-blue-700 flex items-center justify-center border border-blue-300/50">
+                          <Briefcase className="w-6 h-6" />
+                        </div>
+                        <div>
+                          <div className="text-[10px] font-bold uppercase tracking-wider text-blue-700">
+                            OPERATIONS SPECIALIST
+                          </div>
+                          <h3 className="text-lg font-serif font-bold text-[#14382C]">
+                            Store Operations Manager Role
+                          </h3>
+                        </div>
+                      </div>
+
+                      {isManager ? (
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-100 text-blue-800 text-[11px] font-bold">
+                          <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                          <span>Active Now</span>
+                        </span>
+                      ) : (
+                        <span className="text-[11px] text-slate-400 font-medium">Configured</span>
+                      )}
+                    </div>
+
+                    {/* Credentials Info Box */}
+                    <div className="p-4 rounded-xl bg-white border border-blue-200/80 mb-5 space-y-2">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-slate-500 font-medium">Work Email / Username:</span>
+                        <span className="font-mono font-bold text-[#14382C] bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+                          manager@startos
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-slate-500 font-medium">Operational Password:</span>
+                        <span className="font-mono font-bold text-[#14382C] bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+                          zoha
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-slate-500 font-medium">Access Level:</span>
+                        <span className="font-bold text-blue-800">Operational &amp; Order Fulfillment Authority</span>
+                      </div>
+                    </div>
+
+                    {/* Permissions List */}
+                    <div className="space-y-2 mb-6 text-xs text-slate-700">
+                      <div className="font-semibold text-slate-900 uppercase text-[10px] tracking-wider mb-1">
+                        Manager Granted Capabilities:
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        <span>Live orders queue, status updates &amp; courier tracking numbers</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        <span>Payment verification (Card, Bank Transfer, COD settlement)</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        <span>Customer concierge communication &amp; direct WhatsApp messaging</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        <span>Product catalog inventory view, price updates &amp; signature badge toggle</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-slate-400">
+                        <span className="w-3.5 h-3.5 flex items-center justify-center font-bold text-slate-400">✕</span>
+                        <span>Product deletion &amp; catalog purging (Restricted to owner@startos)</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-slate-400">
+                        <span className="w-3.5 h-3.5 flex items-center justify-center font-bold text-slate-400">✕</span>
+                        <span>Factory database reset &amp; credential modification (Restricted to owner@startos)</span>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAdminRole('manager');
+                        try {
+                          sessionStorage.setItem('tgg_portal_admin_role_v1', 'manager');
+                        } catch {
+                          // ignore
+                        }
+                        triggerSavedToast('Session switched to Manager (manager@startos)');
+                      }}
+                      disabled={isManager}
+                      className={`w-full py-2.5 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+                        isManager
+                          ? 'bg-blue-100 text-blue-900 cursor-default opacity-80'
+                          : 'bg-[#14382C] hover:bg-[#0D261E] text-[#DFC066] cursor-pointer shadow-sm'
+                      }`}
+                    >
+                      <Briefcase className="w-4 h-4" />
+                      <span>{isManager ? '✓ Active Session (Manager)' : 'Switch Session to Manager'}</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Role Matrix Comparison Table */}
+                <div className="bg-white rounded-2xl p-6 border border-[#EADBCE] space-y-4">
+                  <div className="border-b border-[#EADBCE] pb-3">
+                    <span className="text-[11px] font-semibold uppercase tracking-widest text-[#C59B27]">
+                      SECURITY &amp; COMPLIANCE MATRIX
+                    </span>
+                    <h3 className="text-lg font-serif font-bold text-[#14382C]">
+                      Role Capabilities &amp; Permission Breakdown
+                    </h3>
+                  </div>
+
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse text-xs">
+                      <thead>
+                        <tr className="border-b border-[#EADBCE] text-[11px] text-slate-500 uppercase bg-[#FBF9F5]">
+                          <th className="py-3 px-4">Feature / Action</th>
+                          <th className="py-3 px-4 text-center">Owner (owner@startos)</th>
+                          <th className="py-3 px-4 text-center">Manager (manager@startos)</th>
+                          <th className="py-3 px-4">Operational Policy</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        <tr>
+                          <td className="py-3 px-4 font-semibold text-slate-900">Orders Queue &amp; Inspection</td>
+                          <td className="py-3 px-4 text-center font-bold text-emerald-600">Full Access</td>
+                          <td className="py-3 px-4 text-center font-bold text-emerald-600">Full Access</td>
+                          <td className="py-3 px-4 text-slate-500">Both roles can monitor active, handcrafting &amp; completed orders.</td>
+                        </tr>
+                        <tr>
+                          <td className="py-3 px-4 font-semibold text-slate-900">Update Order Status &amp; Courier Tracking</td>
+                          <td className="py-3 px-4 text-center font-bold text-emerald-600">Full Access</td>
+                          <td className="py-3 px-4 text-center font-bold text-emerald-600">Full Access</td>
+                          <td className="py-3 px-4 text-slate-500">Essential manager duty to advance orders from review to delivery.</td>
+                        </tr>
+                        <tr>
+                          <td className="py-3 px-4 font-semibold text-slate-900">Card &amp; Bank Transfer Verification</td>
+                          <td className="py-3 px-4 text-center font-bold text-emerald-600">Full Access</td>
+                          <td className="py-3 px-4 text-center font-bold text-emerald-600">Full Access</td>
+                          <td className="py-3 px-4 text-slate-500">Manager verifies bank slips and marks payments as verified.</td>
+                        </tr>
+                        <tr>
+                          <td className="py-3 px-4 font-semibold text-slate-900">Direct WhatsApp Customer Dispatch</td>
+                          <td className="py-3 px-4 text-center font-bold text-emerald-600">Full Access</td>
+                          <td className="py-3 px-4 text-center font-bold text-emerald-600">Full Access</td>
+                          <td className="py-3 px-4 text-slate-500">Instant 1-click customer chats for address clarification &amp; card photos.</td>
+                        </tr>
+                        <tr>
+                          <td className="py-3 px-4 font-semibold text-slate-900">Product Price &amp; Stock Updates</td>
+                          <td className="py-3 px-4 text-center font-bold text-emerald-600">Full Access</td>
+                          <td className="py-3 px-4 text-center font-bold text-blue-600">Update Allowed</td>
+                          <td className="py-3 px-4 text-slate-500">Manager can adjust retail prices and mark popular items.</td>
+                        </tr>
+                        <tr>
+                          <td className="py-3 px-4 font-semibold text-slate-900">Delete Product or Delete Order</td>
+                          <td className="py-3 px-4 text-center font-bold text-emerald-600">Allowed</td>
+                          <td className="py-3 px-4 text-center font-mono text-slate-400 font-bold">Protected (Owner Only)</td>
+                          <td className="py-3 px-4 text-slate-500">Prevents accidental data loss during busy delivery shifts.</td>
+                        </tr>
+                        <tr>
+                          <td className="py-3 px-4 font-semibold text-slate-900">Website CMS &amp; Announcement Bar</td>
+                          <td className="py-3 px-4 text-center font-bold text-emerald-600">Full Access</td>
+                          <td className="py-3 px-4 text-center font-mono text-slate-400 font-bold">View Only</td>
+                          <td className="py-3 px-4 text-slate-500">Brand identity &amp; marketing text maintained by the owner.</td>
+                        </tr>
+                        <tr>
+                          <td className="py-3 px-4 font-semibold text-slate-900">Master Factory DB Reset &amp; Push</td>
+                          <td className="py-3 px-4 text-center font-bold text-emerald-600">Allowed</td>
+                          <td className="py-3 px-4 text-center font-mono text-slate-400 font-bold">Protected (Owner Only)</td>
+                          <td className="py-3 px-4 text-slate-500">Database resets require sovereign owner authorization.</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
     </section>
   );
 };
+

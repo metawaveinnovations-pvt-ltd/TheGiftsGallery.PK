@@ -74,9 +74,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onAdminLoginSuccess }) => 
     loginUser('ayesha.khan@example.com');
   };
 
-  const handleQuickAdminAccess = () => {
-    loginAdmin('2026');
-    loginUser('metawave.innovations@gmail.com');
+  const handleQuickOwnerAccess = () => {
+    loginAdmin('owner@startos', 'zoha');
+    loginUser('owner@startos');
+    if (onAdminLoginSuccess) {
+      onAdminLoginSuccess();
+    }
+  };
+
+  const handleQuickManagerAccess = () => {
+    loginAdmin('manager@startos', 'zoha');
+    loginUser('manager@startos');
     if (onAdminLoginSuccess) {
       onAdminLoginSuccess();
     }
@@ -311,22 +319,33 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onAdminLoginSuccess }) => 
             <div className="text-[11px] font-medium text-slate-500 text-center">
               Instant One-Tap Access
             </div>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-3 gap-1.5">
               <button
                 type="button"
                 onClick={handleQuickDemoCustomer}
-                className="py-2 px-3 rounded-xl bg-[#F4EFE6] hover:bg-[#EADBCE] text-[#14382C] font-semibold text-[11px] border border-[#C59B27]/30 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                className="py-2 px-2 rounded-xl bg-[#F4EFE6] hover:bg-[#EADBCE] text-[#14382C] font-semibold text-[10px] border border-[#C59B27]/30 transition-colors flex items-center justify-center gap-1 cursor-pointer truncate"
+                title="Customer Demo (Ayesha Khan)"
               >
-                <Sparkles className="w-3.5 h-3.5 text-[#C59B27]" />
-                <span>Customer Demo</span>
+                <Sparkles className="w-3 h-3 text-[#C59B27] shrink-0" />
+                <span className="truncate">Customer</span>
               </button>
               <button
                 type="button"
-                onClick={handleQuickAdminAccess}
-                className="py-2 px-3 rounded-xl bg-white hover:bg-slate-50 text-slate-700 font-semibold text-[11px] border border-slate-200 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                onClick={handleQuickOwnerAccess}
+                className="py-2 px-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-950 font-bold text-[10px] border border-amber-300 transition-colors flex items-center justify-center gap-1 cursor-pointer truncate"
+                title="Owner Login (owner@startos / zoha)"
               >
-                <ShieldCheck className="w-3.5 h-3.5 text-[#14382C]" />
-                <span>Admin Access</span>
+                <ShieldCheck className="w-3 h-3 text-amber-600 shrink-0" />
+                <span className="truncate">Owner</span>
+              </button>
+              <button
+                type="button"
+                onClick={handleQuickManagerAccess}
+                className="py-2 px-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-950 font-bold text-[10px] border border-blue-300 transition-colors flex items-center justify-center gap-1 cursor-pointer truncate"
+                title="Manager Login (manager@startos / zoha)"
+              >
+                <ShieldCheck className="w-3 h-3 text-blue-600 shrink-0" />
+                <span className="truncate">Manager</span>
               </button>
             </div>
           </div>
